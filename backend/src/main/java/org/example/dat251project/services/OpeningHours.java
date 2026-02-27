@@ -14,4 +14,8 @@ public class OpeningHours {
         this.open = open;
         this.close = close;
     }
+
+    public boolean withinOpeningHours(LocalTime currentTime) {
+        return (currentTime.isAfter(open) && currentTime.isBefore(close));
+    }
 }
