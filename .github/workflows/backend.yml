@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'backend/**'
+      - backend
   pull_request:
     branches:
       - backend
