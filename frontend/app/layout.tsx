@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased min-h-[100dvh] grid grid-rows-[auto_1fr_auto]`}
+        className={`antialiased min-h-dvh grid grid-rows-[auto_1fr_auto]`}
       >
           <nav className={"flex justify-between items-center mx-6"}>
               <Link href={"/"}>
@@ -50,7 +50,7 @@ export default function RootLayout({
                 <address className={"not-italic"}>
                     {/*<a href={}></a> placeholder for email*/}
                     <a href={"tel:+47-553-136-90"} className={"flex gap-2 underline"}>
-                        <PhoneArrowDownLeftIcon className={"h-[18px] w-[18px]"}/>
+                        <PhoneArrowDownLeftIcon className={"h-4.5 w-4.5"}/>
                         <p>55313690</p>
                     </a>
                     <a href={"https://www.facebook.com/szechuanhousebergen/"} className={"underline"}>Facebook</a>
