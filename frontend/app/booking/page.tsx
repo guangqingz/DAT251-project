@@ -49,7 +49,7 @@ export default function Page () {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={"flex flex-col gap-3"}>
-            <div className={"mt-6 w-full max-w-[400px] m-auto"}>
+            <div className={"mt-6 w-full max-w-100 m-auto"}>
                 <div className={"flex flex-col border-2 px-4 py-2 rounded-xs border-gray-400 w-full"}>
                     <label htmlFor="numberOfGuest">Gjester</label>
                     <select id="numberOfGuest" {...register("numberOfGuest")}>
