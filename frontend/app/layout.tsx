@@ -32,7 +32,7 @@ export default function RootLayout({
           <div>
             {children}
           </div>
-        <footer className={"flex justify-between px-30 py-6 bg-red-900 text-white"}>
+        <footer className={"flex justify-between px-30 py-6 mt-10 bg-red-900 text-white"}>
             <div>
                 <h3 className={"text-2xl mb-3"}>Opening hours</h3>
                 <p>Open Tuesday to Sunday 1:30 - 9:30 pm</p>
