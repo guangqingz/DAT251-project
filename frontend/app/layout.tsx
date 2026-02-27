@@ -48,7 +48,7 @@ export default function RootLayout({
             <div>
                 <h3 className={"text-2xl mb-3"}>Contact</h3>
                 <address className={"not-italic"}>
-                    {/*<a href={}></a>*/}
+                    {/*<a href={}></a> placeholder for email*/}
                     <a href={"tel:+47-553-136-90"} className={"flex gap-2 underline"}>
                         <PhoneArrowDownLeftIcon className={"h-[18px] w-[18px]"}/>
                         <p>55313690</p>
