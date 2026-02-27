@@ -9,8 +9,8 @@ export default function Home() {
             <h1 className={"text-red-900 text-6xl font-bold"}>Sze Chuan House</h1>
             <p className={"text-gray-700 text-xl"}>Nedre Korskirkeallmenningen 9, 5017 Bergen</p>
             <div className={"flex gap-2"}>
-              <button className={"bg-gray-400 rounded-md px-3"}>Menu</button>
-              <button className={"bg-black text-white rounded-md px-3"}>Book now</button>
+                <Link href="/booking" className={"p-2 bg-gray-400 rounded-md px-3 border-2 border-gray-400 hover:bg-white hover:border-2 hover:border-gray-400"}>Menu</Link>
+                <Link href="/booking" className={"p-2 bg-gray-400 rounded-md px-3 border-2 border-gray-400 hover:bg-white hover:border-2 hover:border-gray-400"}>Book now</Link>
             </div>
           </section>
             <div className={"w-full h-96 overflow-hidden flex justify-center"}>
