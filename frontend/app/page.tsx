@@ -6,7 +6,7 @@ export default function Home() {
     <>
         <main>
           <section className={"flex flex-col justify-center items-center w-full m-auto my-10 gap-2"}>
-            <h1 className={"text-red-700 text-6xl font-bold"}>Sze Chuan House</h1>
+            <h1 className={"text-red-900 text-6xl font-bold"}>Sze Chuan House</h1>
             <p className={"text-gray-700 text-xl"}>Nedre Korskirkeallmenningen 9, 5017 Bergen</p>
             <div className={"flex gap-2"}>
               <button className={"bg-gray-400 rounded-md px-3"}>Menu</button>
