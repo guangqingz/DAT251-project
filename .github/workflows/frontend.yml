@@ -9,6 +9,8 @@ on:
       - frontend
       - dev
       - main
+    paths:
+      - 'frontend/**'
 
 jobs:
   release:
