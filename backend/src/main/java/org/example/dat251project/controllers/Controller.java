@@ -1,7 +1,7 @@
 package org.example.dat251project.controllers;
 
 import org.example.dat251project.models.Booking;
-import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URL;
 
 @RestController
-@RequestMapping()
+@RequestMapping("")
 public class Controller {
     @GetMapping("/menu")
-    public RequestEntity<URL> menu() {
+    public ResponseEntity<URL> menu() {
         return null;
     }
 
     @GetMapping("/booking")
-    public RequestEntity<String> bookingPage() {
-        return null;
+    public ResponseEntity<String> bookingPage() {
+        return ResponseEntity.ok("Hello");
     }
 
     @PostMapping("/booking/createBooking")
-    public RequestEntity<String> createBooking(Booking booking) {
+    public ResponseEntity<String> createBooking(Booking booking) {
         return null;
 
     }
