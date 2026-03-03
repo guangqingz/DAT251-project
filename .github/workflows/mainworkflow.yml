@@ -8,7 +8,7 @@ on:
 jobs:
   backend:
     name: Backend
-    uses: .github/workflows/backend.yml
+    uses: ./.github/workflows/backend.yml
   frontend:
     name: Backend
-    uses: .github/workflows/frontend.yml
+    uses: ./.github/workflows/frontend.yml
