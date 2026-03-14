@@ -24,9 +24,9 @@ export default function RootLayout({
                 <Image src={"/logo.PNG"} alt={"Logo of the restaurant"} width={100} height={100}/>
               </Link>
               <ul className={"flex gap-3"}>
-                  <li><Link href="/menu" className={"hover:text-gray-600"}>Menu</Link></li>
-                  <li><Link href="/booking" className={"p-2 bg-gray-400 rounded-md px-3 border-2 border-gray-400 hover:bg-white hover:border-2 hover:border-gray-400"}>Book now</Link></li>
-                  <li><Link href="/contact" className={"p-2 bg-gray-400 rounded-md px-3 border-2 border-gray-400 hover:bg-white hover:border-2 hover:border-gray-400"}>Contact</Link></li>
+                  <li><Link href="/menu" className={"text-white hover:text-black"}>Menu</Link></li>
+                  <li><Link href="/contact" className={"p-2 text-white px-3 hover:text-black"}>Contact</Link></li>
+                  <li><Link href="/booking" className={"p-2 text-white rounded-md px-3 border-2 border-white hover:bg-custom-red hover:border-2 hover:border-black"}>Book now</Link></li>
               </ul>
           </nav>
           <div>
