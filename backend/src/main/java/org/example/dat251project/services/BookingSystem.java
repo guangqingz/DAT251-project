@@ -1,28 +1,34 @@
 package org.example.dat251project.services;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.dat251project.models.Restaurant;
+import org.example.dat251project.repositories.BookingRepository;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@Service
 public class BookingSystem {
-    private List<LocalTime> timeSlots;
+    private BookingRepository bookingRepo;
+    private Restaurant restaurant;
     private Integer remainingSeats;
-    private OpeningHours openingHours;
-    private List<ClosingDay> closingDays;
 
-    public BookingSystem(List<LocalTime> timeSlots, Integer remainingSeats,
-                         OpeningHours openingHours, List<ClosingDay> closingDays) {
-        sanityCheck(remainingSeats, timeSlots, openingHours);
-        this.timeSlots = timeSlots;
-        this.remainingSeats = remainingSeats;
-        this.openingHours = openingHours;
-        this.closingDays = closingDays;
+    public BookingSystem(BookingRepository bookingRepo, Restaurant restaurant) {
+        this.bookingRepo = bookingRepo;
+        this.restaurant = restaurant;
+        this.remainingSeats = restaurant.getTableCapacity();
+        // Sanity checks to ensure restaurant is valid
+        sanityCheck(remainingSeats, restaurant.getTimeSlots(), restaurant.getNormalOpeningHours());
     }
-
 
     private void sanityCheck(Integer remainingSeats, List<LocalTime> timeSlots, OpeningHours openingHours) {
         if (remainingSeats < 0) {
@@ -41,5 +47,25 @@ public class BookingSystem {
         }
         return true;
     }
-//algorithm part
+
+    private boolean checkAvailability(LocalDate date, LocalTime time, int numGuests) {
+        Integer totalGuests = bookingRepo.sumGuestsByDateAndTime(date, time);
+        if (totalGuests == null) totalGuests = 0;
+
+        return numGuests + totalGuests <= restaurant.getTableCapacity();
+    }
+
+    public Map<LocalTime, Boolean> getAvailabilityForDate(LocalDate date, int numGuests) {
+        Map<LocalTime, Boolean> availabilityMap = new HashMap<>();
+        for (LocalTime timeslot : restaurant.getTimeSlots()) {
+            availabilityMap.put(timeslot, checkAvailability(date, timeslot, numGuests));
+        }
+        return availabilityMap;
+    }
+
+    //algorithm part
+    public boolean createBooking(LocalDate date, LocalTime time, int numGuests) {
+        // TODO complex algorithm must be in place
+        return checkAvailability(date, time, numGuests);
+    }
 }
