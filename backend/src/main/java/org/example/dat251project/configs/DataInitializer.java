@@ -1,5 +1,9 @@
 package org.example.dat251project.configs;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.HashSet;
+
 import org.example.dat251project.models.Restaurant;
 import org.example.dat251project.repositories.BookingRepository;
 import org.example.dat251project.repositories.RestaurantRepository;
@@ -13,11 +17,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
 
 @Configuration
 public class DataInitializer {
@@ -45,7 +44,7 @@ public class DataInitializer {
                 closedDays.add(DayOfWeek.MONDAY);
                 restaurantService.createRestaurant(
                         "Sze Chuan House", "Nedre Korskirkeallmenningen 9",
-                        55323690, 20, opHours, 30, closedDays
+                        55313690, 20, opHours, 30, closedDays
                 );
             }
             if (userRepo.count() == 0) {
@@ -53,6 +52,7 @@ public class DataInitializer {
             }
         };
     }
+    
     @Bean
     @Lazy
     public BookingSystem bookingSystem() {
