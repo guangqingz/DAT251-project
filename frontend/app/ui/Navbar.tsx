@@ -11,7 +11,7 @@ export default function Navbar(){
     const [isOpen, setIsOpen] = useState(false);
 
     return <Container>
-        <nav className={"relative z-100 flex justify-between items-center border-b-2 border-white px-5 md:p-0"}>
+        <nav className={"relative z-100 flex justify-between items-center md:border-b-1 border-custom-eggwhite px-5 md:p-0"}>
             <Link href={"/"}>
                 <Image src={"/logo.png"} alt={"Logo of the restaurant"} width={200} height={200}/>
             </Link>

@@ -26,21 +26,21 @@ export default function RootLayout({
         <footer className={"bg-custom-red text-white"}>
             <Container style={"flex flex-col px-30 py-8 gap-10 items-center md:flex-row md:justify-between text-center md:text-left"}>
                 <section>
-                    <h3 className={"text-xl mb-3 uppercase font-bold"}>åpningstider</h3>
+                    <h3 className={"text-lg mb-3 uppercase font-bold"}>åpningstider</h3>
                     <ul className={"flex flex-col gap-2"}>
                         <li>Tirsdag - søndag 13:30 - 21:30</li>
                         <li>Mandag: stengt</li>
                     </ul>
                 </section>
                 <section>
-                    <h3 className={"text-xl mb-3 uppercase font-bold"}>Addresse</h3>
+                    <h3 className={"text-lg mb-3 uppercase font-bold"}>Addresse</h3>
                     <address className={"not-italic flex flex-col gap-2"}>
                         <a href={"https://maps.app.goo.gl/RTmRGc1UnXhyFcev5"} className={"underline"}>Nedre Korskirkeallmenningen 9</a>
                         <p>5017 Bergen, Norge</p>
                     </address>
                 </section>
                 <section>
-                    <h3 className={"text-xl mb-3 uppercase font-bold"}>Kontakt</h3>
+                    <h3 className={"text-lg mb-3 uppercase font-bold"}>Kontakt</h3>
                     <address className={"not-italic flex flex-col gap-2"}>
                         {/*<a href={}></a> placeholder for email*/}
                         <a href={"tel:+47-553-136-90"} className={"flex gap-2 underline items-center"}>
