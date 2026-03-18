@@ -28,13 +28,13 @@ export default function RootLayout({
               <ul className={"flex gap-10 uppercase font-title"}>
                   <li><Link href="/menu" className={"btn py-2 text-white"}>Meny</Link></li>
                   <li><Link href="/contact" className={"btn py-2 text-white"}>Kontakt oss</Link></li>
-                  <li><Link href="/booking" className={"py-3 px-5 text-white border-2 border-white rounded-3xl hover:bg-custom-eggwhite  hover:border-2 hover:border-custom-eggwhite hover:text-black transition-colors duration-300"}>Reserver bord</Link></li>
+                  <li><Link href="/booking" className={"default-btn text-white border-white hover:bg-custom-eggwhite hover:border-2 hover:border-custom-eggwhite hover:text-black"}>Reserver bord</Link></li>
               </ul>
           </nav>
       </Container>
-          <section>
+          <main>
             {children}
-          </section>
+          </main>
         <footer className={"bg-custom-red text-white"}>
             <Container style={"flex justify-between px-30 py-8"}>
                 <section>
