@@ -34,30 +34,34 @@ export default function RootLayout({
           <div>
             {children}
           </div>
-        <footer className={"flex justify-between px-30 py-6 bg-custom-red text-white"}>
-            <div>
-                <h3 className={"text-2xl mb-3"}>Opening hours</h3>
-                <p>Open Tuesday to Sunday 1:30 - 9:30 pm</p>
-            </div>
-            <div>
-                <h3 className={"text-2xl mb-3"}>Address</h3>
-                <address className={"not-italic"}>
-                    <a href={"https://maps.app.goo.gl/RTmRGc1UnXhyFcev5"} className={"underline"}>Nedre Korskirkeallmenningen 9</a>
-                    <p>5017 Bergen</p>
-                    <p>Norway</p>
-                </address>
-            </div>
-            <div>
-                <h3 className={"text-2xl mb-3"}>Contact</h3>
-                <address className={"not-italic"}>
-                    {/*<a href={}></a> placeholder for email*/}
-                    <a href={"tel:+47-553-136-90"} className={"flex gap-2 underline"}>
-                        <PhoneArrowDownLeftIcon className={"h-[18px] w-[18px]"}/>
-                        <p>55313690</p>
-                    </a>
-                    <a href={"https://www.facebook.com/szechuanhousebergen/"} className={"underline"}>Facebook</a>
-                </address>
-            </div>
+        <footer className={"bg-custom-red text-white"}>
+            <section className={"max-w-372 w-full mx-auto px-10 flex justify-between px-30 py-8"}>
+                <section>
+                    <h3 className={"text-xl mb-3 uppercase font-bold"}>åpningstider</h3>
+                    <ul className={"flex flex-col gap-2"}>
+                        <li>Tirsdag - søndag 13:30 - 21:30</li>
+                        <li>Mandag: stengt</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3 className={"text-xl mb-3 uppercase font-bold"}>Addresse</h3>
+                    <address className={"not-italic flex flex-col gap-2"}>
+                        <a href={"https://maps.app.goo.gl/RTmRGc1UnXhyFcev5"} className={"underline"}>Nedre Korskirkeallmenningen 9</a>
+                        <p>5017 Bergen, Norge</p>
+                    </address>
+                </section>
+                <section>
+                    <h3 className={"text-xl mb-3 uppercase font-bold"}>Kontakt</h3>
+                    <address className={"not-italic flex flex-col gap-2"}>
+                        {/*<a href={}></a> placeholder for email*/}
+                        <a href={"tel:+47-553-136-90"} className={"flex gap-2 underline items-center"}>
+                            <PhoneArrowDownLeftIcon className={"h-4.5 w-4.5"}/>
+                            <p>+47 553 136 90</p>
+                        </a>
+                        <a href={"https://www.facebook.com/szechuanhousebergen/"} className={"underline"}>Facebook</a>
+                    </address>
+                </section>
+            </section>
         </footer>
       </body>
     </html>
