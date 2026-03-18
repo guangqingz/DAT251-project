@@ -24,7 +24,7 @@ export default function RootLayout({
             {children}
           </main>
         <footer className={"bg-custom-red text-white"}>
-            <Container style={"flex justify-between px-30 py-8"}>
+            <Container style={"flex flex-col px-30 py-8 gap-10 items-center md:flex-row md:justify-between text-center md:text-left"}>
                 <section>
                     <h3 className={"text-xl mb-3 uppercase font-bold"}>åpningstider</h3>
                     <ul className={"flex flex-col gap-2"}>
