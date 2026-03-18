@@ -18,7 +18,7 @@ export default function Home() {
                     </div>
                 </section>
                 <div className={"w-full h-96 overflow-hidden flex justify-center"}>
-                    <Image src={"/hero.webp"} width={800} height={600} style={{objectFit: "cover"}}
+                    <Image src={"/hero.jpg"} width={800} height={600} style={{objectFit: "cover"}}
                            alt={"Image of a dish from the restaurant. Deepfried aubergine with special salt."}/>
                 </div>
                 <section>
