@@ -18,7 +18,7 @@ export default function Home() {
                 </section>
                 <div className={"w-full h-96 overflow-hidden flex justify-center"}>
                     <Image src={"/hero.jpg"} width={800} height={600} className={"object-cover md:rounded-2xl"}
-                           alt={"Image of a dish from the restaurant. Deepfried aubergine with special salt."}/>
+                           alt={"Image of a several dishes from the restaurant."}/>
                 </div>
             </Container>
             <section className={"bg-custom-eggwhite py-10"}>
