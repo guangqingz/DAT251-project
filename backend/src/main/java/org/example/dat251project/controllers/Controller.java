@@ -2,29 +2,25 @@ package org.example.dat251project.controllers;
 
 import org.example.dat251project.models.Booking;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/")
 public class Controller {
-    @GetMapping("/menu")
+    @GetMapping("menu")
     public ResponseEntity<URL> menu() {
         return null;
     }
 
-    @GetMapping("/booking")
+    @GetMapping("booking")
     public ResponseEntity<String> bookingPage() {
-        return ResponseEntity.ok("Hello");
+        return null;
     }
 
-    @PostMapping("/booking/createBooking")
-    public ResponseEntity<String> createBooking(Booking booking) {
+    @PostMapping("booking")
+    public ResponseEntity<String> createBooking(@RequestBody Booking booking) {
         return null;
-
     }
 }
