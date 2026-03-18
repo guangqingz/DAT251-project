@@ -6,7 +6,7 @@ import Container from "./ui/Container";
 export default function Home() {
     return (
         <>
-            <Container style={"grid grid-cols-2 py-20"}>
+            <Container style={"grid grid-cols-2 py-25"}>
                 <section className={"flex flex-col w-full my-10 gap-5"}>
                     <h1 className={"text-white text-3xl font-bold"}>Velkommen til Sze Chuan House</h1>
                     <div className={"flex gap-2"}>
@@ -21,9 +21,15 @@ export default function Home() {
                            alt={"Image of a dish from the restaurant. Deepfried aubergine with special salt."}/>
                 </div>
             </Container>
-            <section>
-                    <p className={"flex justify-center my-10"}>Galleri</p>
+            <section className={"bg-custom-eggwhite py-10"}>
+                <Container>
+                    <h2 className={"flex justify-center items-center gap-3 text-2xl uppercase"}>
+                        <span className={"inline-block w-8 h-0.5 bg-black"}></span>
+                        Galleri
+                        <span className={"inline-block w-8 h-0.5 bg-black"}></span>
+                    </h2>
                     <Carousel/>
+                </Container>
             </section>
         </>
     );

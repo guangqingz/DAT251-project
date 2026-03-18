@@ -1,5 +1,7 @@
 'use client'
 import {useState} from "react";
+import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/24/outline';
+import clsx from "clsx";
 
 const files = [
     "stekte_nudler_m_biff.png",
@@ -18,13 +20,15 @@ function cleanName(file: string) {
 }
 
 export default function Carousel() {
+    const [dishIndex, setDishIndex] = useState(0);
+
     // Set of all the dishes
-    const dishData = files.map((file, i) => ({
+    const dishData = files.map((file: string, i: number) => ({
         id: i + 1,
         name: cleanName(file),
         imageUrl: `/images/dishes/${file}`
     }));
-    const [dishIndex, setDishIndex] = useState(0);
+
     // If no dishes are in the system
     if (dishData.length === 0) {
         return <div></div>;
@@ -36,40 +40,34 @@ export default function Carousel() {
         dishData[(dishIndex + 1) % dishData.length]
     ];
 
-    const handlePrevDish = () => {
+    const handleNextDish = () => {
         setDishIndex((prevIndex) => {
             if (prevIndex === 0) return dishData.length - 1;
             return prevIndex - 1;
         });
     };
 
-    const handleNextDish = () => {
+    const handlePrevDish = () => {
         setDishIndex((index) => {
             return (index + 1) % dishData.length
         });
     };
 
-
     return (
-        <div className={"my-10 flex items-center justify-center overflow-hidden gap-30"}>
+        <div className={"my-5 flex items-center justify-center overflow-hidden gap-20"}>
             {/* left button */}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                 className="size-6 cursor-pointer"
-                 onClick={handlePrevDish}>
-                <path fillRule="evenodd"
-                      d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"
-                      clipRule="evenodd"/>
-            </svg>
+            <ChevronLeftIcon className={"size-6 cursor-pointer"} onClick={handlePrevDish}/>
             {/* carousel content */}
-            <ul className={`flex gap-20 flex-wrap h-80 justify-center`}>
+            <ul className={`flex justify-center items-center gap-10 py-10`}>
                 {visibleDishes.map((dish, i) => {
                     return (
-                        <li key={i} className="flex flex-col items-center">
+                        <li key={i} className={clsx(
+                            "flex flex-col items-center",
+                            "transition-transform duration-200 ease-in-out hover:scale-105",
+                            i === 1 ? "w-100 scale-100" : "w-80 scale-90")}>
                             <img src={dish.imageUrl}
                                  alt={dish.name}
-                                 className={`transition-transform duration-500 ease-in-out hover:scale-110 mb-4
-                            ${i === 1 ? `w-64 h-64 ease-in-out hover:scale-110 mb-4`
-                                     : `w-36 h-36 scale-100`}`}
+                                 className={"mb-4"}
                             />
                             <p>{dish.name}</p>
                         </li>
@@ -77,13 +75,7 @@ export default function Carousel() {
                 })}
             </ul>
             {/* right button */}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                 className="size-6 cursor-pointer"
-                 onClick={handleNextDish}>
-                <path fillRule="evenodd"
-                      d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
-                      clipRule="evenodd"/>
-            </svg>
+            <ChevronRightIcon className={"size-6 cursor-pointer"} onClick={handleNextDish}/>
         </div>
     );
 }
