@@ -21,7 +21,7 @@ export default function Home() {
                            alt={"Image of a dish from the restaurant. Deepfried aubergine with special salt."}/>
                 </div>
             </Container>
-            {/*<section className={"bg-custom-eggwhite py-10"}>
+            <section className={"bg-custom-eggwhite py-10"}>
                 <Container>
                     <h2 className={"flex justify-center items-center gap-3 text-2xl uppercase"}>
                         <span className={"inline-block w-8 h-0.5 bg-black"}></span>
@@ -30,7 +30,7 @@ export default function Home() {
                     </h2>
                     <Carousel/>
                 </Container>
-            </section>*/}
+            </section>
         </>
     );
 }
