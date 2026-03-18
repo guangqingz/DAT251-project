@@ -69,7 +69,7 @@ export default function Carousel() {
                         return (
                             <li key={i} className={clsx(
                                 "flex flex-col items-center",
-                                "transition-transform duration-200 ease-in-out hover:scale-105",
+                                "transition-transform duration-200 ease-in-out hover:scale-95 lg:hover:scale-105",
                                 i === 1 ? "scale-100 w-95 md:w-100 lg:w-70 xl:w-90 2xl:w-110" : "scale-90 w-95 md:w-100 lg:w-55 xl:w-60 2xl:w-90",
                             )}>
                                 <img src={dish.imageUrl}
