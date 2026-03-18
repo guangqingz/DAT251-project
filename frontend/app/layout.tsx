@@ -23,7 +23,7 @@ export default function RootLayout({
           <main>
             {children}
           </main>
-        <footer className={"bg-custom-red text-white"}>
+        <footer className={"bg-custom-red text-white z-20"}>
             <Container style={"flex flex-col px-30 py-8 gap-10 items-center md:flex-row md:justify-between text-center md:text-left"}>
                 <section>
                     <h3 className={"text-lg mb-3 uppercase font-bold"}>åpningstider</h3>
