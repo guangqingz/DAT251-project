@@ -6,13 +6,16 @@ import {Bars3Icon, XMarkIcon} from "@heroicons/react/24/outline";
 import Container from "@/app/ui/Container";
 import {useState} from "react";
 import clsx from "clsx";
+import {usePathname} from "next/navigation";
 
 export default function Navbar(){
     const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname();
 
     return <header className={"relative bg-background z-20"}>
         <Container>
-            <nav className={"flex justify-between items-center md:border-b-1 border-custom-eggwhite px-5 md:p-0"}>
+            <nav className={clsx("flex justify-between items-center border-custom-eggwhite px-5 md:p-0",
+                {"md:border-b-1" : pathname === "/"})}>
                 <Link href={"/"}>
                     <Image src={"/logo.png"} alt={"Logo of the restaurant"} width={200} height={200} className={"w-40 md:w-60"}/>
                 </Link>
@@ -35,9 +38,17 @@ export default function Navbar(){
                     "md:static md:bg-background md:flex-row md:p-0 md:transition-none md:gap-10 md:justify-end",
                     isOpen ? "top-0" : "-top-full",
                 )}>
-                    <li><Link href="/menu" className={"btn py-2 text-white"}>Meny</Link></li>
-                    <li><Link href="/contact" className={"btn py-2 text-white"}>Kontakt oss</Link></li>
-                    <li><Link href="/booking" className={"default-btn text-white border-white hover:bg-custom-eggwhite hover:border-2 hover:border-custom-eggwhite hover:text-black"}>Reserver bord</Link></li>
+                    <li><Link href="/menu" className={clsx("py-2 text-white",
+                        {"font-bold": pathname === "/menu"},
+                        {"btn": pathname !== "/menu"})}
+                        aria-current={pathname === "/menu" ? "true" : "false"}>Meny</Link></li>
+                    <li><Link href="/contact" className={clsx("py-2 text-white",
+                        {"font-bold": pathname === "/contact"},
+                        {"btn": pathname !== "/contact"})}
+                        aria-current={pathname === "/contact" ? "true" : "false"}>Kontakt oss</Link></li>
+                    <li><Link href="/booking"
+                              aria-current={pathname === "/booking" ? "true" : "false"}
+                              className={"default-btn text-white border-white hover:bg-custom-eggwhite hover:border-2 hover:border-custom-eggwhite hover:text-black"}>Reserver bord</Link></li>
                 </ul>
             </nav>
         </Container>
