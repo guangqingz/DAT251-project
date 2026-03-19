@@ -10,25 +10,30 @@ import clsx from "clsx";
 export default function Navbar(){
     const [isOpen, setIsOpen] = useState(false);
 
-    return <header className={"bg-background z-20"}>
+    return <header className={"relative bg-background z-20"}>
         <Container>
-            <nav className={"relative z-100 flex justify-between items-center md:border-b-1 border-custom-eggwhite px-5 md:p-0"}>
+            <nav className={"flex justify-between items-center md:border-b-1 border-custom-eggwhite px-5 md:p-0"}>
                 <Link href={"/"}>
-                    <Image src={"/logo.png"} alt={"Logo of the restaurant"} width={200} height={200}/>
+                    <Image src={"/logo.png"} alt={"Logo of the restaurant"} width={200} height={200} className={"w-40 md:w-60"}/>
                 </Link>
                 {/* Mobile menu button */}
-                <button type={"button"} aria-expanded={isOpen} onClick={() => setIsOpen(!isOpen)}
-                        className={"group text-white md:hidden"}>
+                <button type={"button"}
+                        aria-expanded={isOpen}
+                        aria-controls={"navbar"}
+                        aria-label={isOpen ? "close menu" : "open menu"}
+                        onClick={() => setIsOpen(!isOpen)}
+                        className={"group text-white md:hidden z-5"}>
                     <span className="sr-only">Åpne hovedmeny</span>
                     <Bars3Icon aria-hidden={"true"} className={"block size-8 group-aria-expanded:hidden"}/>
                     <XMarkIcon aria-hidden={"true"} className={"hidden size-8 group-aria-expanded:block"}/>
                 </button>
-                <ul className={clsx(
-                    "absolute top-full w-full right-0 z-1",
-                    "flex flex-col items-end gap-8 uppercase font-title pt-5 pb-10 bg-background",
-                    "transition-all md:transition-none duration-200 ease-in-out",
-                    "md:static md:flex-row md:w-auto md:gap-10 md:p-0 md:translate-0",
-                    isOpen ? "translate-x-0 pr-5" : "-translate-x-full",
+                <ul id={"navbar"}
+                    className={clsx(
+                    "fixed right-0 w-full bg-custom-red pt-30 pb-15",
+                    "flex flex-col items-center gap-8 uppercase font-title",
+                    "transition-top duration-400 ease-in-out",
+                    "md:static md:bg-background md:flex-row md:p-0 md:transition-none md:gap-10 md:justify-end",
+                    isOpen ? "top-0" : "-top-full",
                 )}>
                     <li><Link href="/menu" className={"btn py-2 text-white"}>Meny</Link></li>
                     <li><Link href="/contact" className={"btn py-2 text-white"}>Kontakt oss</Link></li>
