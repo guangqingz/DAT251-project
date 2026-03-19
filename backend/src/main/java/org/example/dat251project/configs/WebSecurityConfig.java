@@ -35,8 +35,8 @@ public class WebSecurityConfig {
                 .cors(cors -> {
                 })// TODO TODO fix the matches
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/staff/**").hasAnyAuthority(Role.ADMIN.getAuthority(), Role.STAFF.getAuthority())
-                        .requestMatchers("/admin/**").hasAnyAuthority(Role.ADMIN.getAuthority())
+                        .requestMatchers("/users/staff/**").hasAnyAuthority(Role.ADMIN.getAuthority(), Role.STAFF.getAuthority())
+                        .requestMatchers("/users/admin/**").hasAnyAuthority(Role.ADMIN.getAuthority())
                         //TROR VI KAN FJERNE DENNE
                         .requestMatchers("/api/v1/polls/**").authenticated()
                         .anyRequest().permitAll())
