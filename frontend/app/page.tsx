@@ -8,7 +8,7 @@ export default function Home() {
         <>
             <Container style={"grid grid-cols-1 md:grid-cols-2 md:py-25"}>
                 <section className={"flex flex-col items-center md:items-start w-full my-20 md:my-10 gap-5"}>
-                    <h1 className={"text-white text-3xl font-bold"}>Velkommen til Sze Chuan House</h1>
+                    <h1 className={"text-white text-3xl font-bold text-wrap text-center px-5 sm:px-0 sm:text-left"}>Velkommen til Sze Chuan House</h1>
                     <div className={"flex gap-2"}>
                         <Link href="/booking"
                               className={"default-btn bg-custom-gold border-custom-gold hover:bg-background hover:text-custom-gold"}>Reserver bord</Link>
@@ -17,7 +17,9 @@ export default function Home() {
                     </div>
                 </section>
                 <div className={"w-full h-96 overflow-hidden flex justify-center"}>
-                    <Image src={"/hero.jpg"} width={800} height={600} className={"object-cover md:rounded-2xl"}
+                    <Image src={"/hero.jpg"} width={800} height={600}
+                           priority
+                           className={"object-cover md:rounded-2xl"}
                            alt={"Image of a several dishes from the restaurant."}/>
                 </div>
             </Container>

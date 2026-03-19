@@ -46,7 +46,7 @@ export default function Navbar(){
             <nav className={clsx("flex justify-between items-center border-custom-eggwhite px-5 md:p-0",
                 {"md:border-b" : pathname === "/"})}>
                 <Link href={"/"}>
-                    <Image src={"/logo.png"} alt={"Logo of the restaurant"} width={200} height={200} className={"w-40 md:w-60"}/>
+                    <Image src={"/logo.png"} alt={"Logo of the restaurant"} priority width={200} height={200} className={"w-40 md:w-60 h-auto"}/>
                 </Link>
                 {/* Mobile menu button */}
                 <button type={"button"}
