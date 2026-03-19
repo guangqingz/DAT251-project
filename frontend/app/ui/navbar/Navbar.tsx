@@ -69,7 +69,7 @@ export default function Navbar(){
                 )}>
                     {navLinks.map((link, index) =>
                         <li key={index}>
-                            <NavLink navLink={link} pathname={pathname}/>
+                            <NavLink navLink={link} pathname={pathname} handleClick={() => setIsOpen(false)}/>
                         </li>
                     )}
                 </ul>
