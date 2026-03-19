@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import {PhoneArrowDownLeftIcon} from '@heroicons/react/24/outline';
 import Container from "@/app/ui/Container";
-import Navbar from "@/app/ui/Navbar";
+import Navbar from "@/app/ui/navbar/Navbar";
 
 export const metadata: Metadata = {
   title: "Sze Chuan House",

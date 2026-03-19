@@ -7,6 +7,35 @@ import Container from "@/app/ui/Container";
 import {useState} from "react";
 import clsx from "clsx";
 import {usePathname} from "next/navigation";
+import NavLink from "@/app/ui/navbar/NavLink";
+
+export type NavLinkProps = {
+    href: string,
+    name: string,
+    style: string,
+    isButton: boolean,
+}
+
+const navLinks: NavLinkProps[] = [
+    {
+        href: "/menu",
+        name: "meny",
+        style: "py-2 text-white",
+        isButton: false
+    },
+    {
+        href: "/contact",
+        name: "kontakt oss",
+        style: "py-2 text-white",
+        isButton: false
+    },
+    {
+        href: "/booking",
+        name: "reserver bord",
+        style: "default-btn text-white border-white hover:bg-custom-eggwhite hover:border-2 hover:border-custom-eggwhite hover:text-black",
+        isButton: true
+    },
+]
 
 export default function Navbar(){
     const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +44,7 @@ export default function Navbar(){
     return <header className={"relative bg-background z-20"}>
         <Container>
             <nav className={clsx("flex justify-between items-center border-custom-eggwhite px-5 md:p-0",
-                {"md:border-b-1" : pathname === "/"})}>
+                {"md:border-b" : pathname === "/"})}>
                 <Link href={"/"}>
                     <Image src={"/logo.png"} alt={"Logo of the restaurant"} width={200} height={200} className={"w-40 md:w-60"}/>
                 </Link>
@@ -38,17 +67,11 @@ export default function Navbar(){
                     "md:static md:bg-background md:flex-row md:p-0 md:transition-none md:gap-10 md:justify-end",
                     isOpen ? "top-0" : "-top-full",
                 )}>
-                    <li><Link href="/menu" className={clsx("py-2 text-white",
-                        {"font-bold": pathname === "/menu"},
-                        {"btn": pathname !== "/menu"})}
-                        aria-current={pathname === "/menu" ? "true" : "false"}>Meny</Link></li>
-                    <li><Link href="/contact" className={clsx("py-2 text-white",
-                        {"font-bold": pathname === "/contact"},
-                        {"btn": pathname !== "/contact"})}
-                        aria-current={pathname === "/contact" ? "true" : "false"}>Kontakt oss</Link></li>
-                    <li><Link href="/booking"
-                              aria-current={pathname === "/booking" ? "true" : "false"}
-                              className={"default-btn text-white border-white hover:bg-custom-eggwhite hover:border-2 hover:border-custom-eggwhite hover:text-black"}>Reserver bord</Link></li>
+                    {navLinks.map((link, index) =>
+                        <li key={index}>
+                            <NavLink navLink={link} pathname={pathname}/>
+                        </li>
+                    )}
                 </ul>
             </nav>
         </Container>
