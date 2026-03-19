@@ -1,22 +1,38 @@
 import Image from "next/image";
 import Link from "next/link";
+import Carousel from "./ui/Carousel";
+import Container from "./ui/Container";
 
 export default function Home() {
-  return (
-    <>
-        <main>
-          <section className={"flex flex-col justify-center items-center w-full m-auto my-10 gap-2"}>
-            <h1 className={"text-red-900 text-6xl font-bold"}>Sze Chuan House</h1>
-            <p className={"text-gray-700 text-xl"}>Nedre Korskirkeallmenningen 9, 5017 Bergen</p>
-            <div className={"flex gap-2"}>
-                <Link href="/booking" className={"p-2 bg-gray-400 rounded-md px-3 border-2 border-gray-400 hover:bg-white hover:border-2 hover:border-gray-400"}>Menu</Link>
-                <Link href="/booking" className={"p-2 bg-gray-400 rounded-md px-3 border-2 border-gray-400 hover:bg-white hover:border-2 hover:border-gray-400"}>Book now</Link>
-            </div>
-          </section>
-            <div className={"w-full h-96 overflow-hidden flex justify-center"}>
-                <Image src={"/hero.webp"} width={800} height={600} style={{objectFit: "cover"}} alt={"Image of a dish from the restaurant. Deepfried aubergine with special salt."}/>
-            </div>
-        </main>
-      </>
-  );
+    return (
+        <>
+            <Container style={"grid grid-cols-1 md:grid-cols-2 md:py-25"}>
+                <section className={"flex flex-col items-center md:items-start w-full my-20 md:my-10 gap-5"}>
+                    <h1 className={"text-white text-3xl font-bold text-wrap text-center px-5 sm:px-0 sm:text-left"}>Velkommen til Sze Chuan House</h1>
+                    <div className={"flex gap-2"}>
+                        <Link href="/booking"
+                              className={"default-btn bg-custom-gold border-custom-gold hover:bg-background hover:text-custom-gold"}>Reserver bord</Link>
+                        <Link href="/menu"
+                              className={"default-btn border-custom-gold text-custom-gold hover:bg-custom-gold hover:text-black"}>Se meny</Link>
+                    </div>
+                </section>
+                <div className={"w-full h-96 overflow-hidden flex justify-center"}>
+                    <Image src={"/hero.jpg"} width={800} height={600}
+                           priority
+                           className={"object-cover md:rounded-2xl"}
+                           alt={"Image of a several dishes from the restaurant."}/>
+                </div>
+            </Container>
+            <section className={"bg-custom-eggwhite py-10"}>
+                <Container>
+                    <h2 className={"flex justify-center items-center gap-3 text-2xl uppercase"}>
+                        <span className={"inline-block w-8 h-0.5 bg-black"}></span>
+                        Galleri
+                        <span className={"inline-block w-8 h-0.5 bg-black"}></span>
+                    </h2>
+                    <Carousel/>
+                </Container>
+            </section>
+        </>
+    );
 }

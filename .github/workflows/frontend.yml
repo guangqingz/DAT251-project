@@ -7,18 +7,24 @@ on:
   pull_request:
     branches:
       - frontend
-      - dev
-      - main
+    paths:
+      - 'frontend/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./frontend
+
     steps:
-      - name: Checkout sources
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-      - name: Build with Gradle
-        run: ./gradlew build
-      - name: Run tests
-        run: ./gradlew test
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org/'
+      - name: Install dependencies
+        run: npm install
