@@ -7,6 +7,11 @@ import Navbar from "@/app/ui/navbar/Navbar";
 export const metadata: Metadata = {
   title: "Sze Chuan House",
   description: "Sze Chuan House's official website",
+    icons: {
+      icon: [
+          {rel: "icon", url: "/logo.png"}
+      ]
+    }
 };
 
 export default function RootLayout({
