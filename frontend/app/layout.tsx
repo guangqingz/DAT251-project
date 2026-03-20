@@ -38,7 +38,7 @@ export default function RootLayout({
                     </ul>
                 </section>
                 <section>
-                    <h3 className={"text-lg mb-3 uppercase font-bold"}>Addresse</h3>
+                    <h3 className={"text-lg mb-3 uppercase font-bold"}>Adresse</h3>
                     <address className={"not-italic flex flex-col gap-2"}>
                         <a href={"https://maps.app.goo.gl/RTmRGc1UnXhyFcev5"} className={"underline"}>Nedre Korskirkeallmenningen 9</a>
                         <p>5017 Bergen, Norge</p>
