@@ -4,11 +4,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm, SubmitHandler, Controller} from "react-hook-form";
 import {z} from "zod";
 import {useState} from "react";
-import {InformationCircleIcon, ArrowLeftIcon} from "@heroicons/react/24/outline";
+import {InformationCircleIcon, ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/outline";
 import clsx from "clsx";
-
-const date = new Date();
-const todayDate = date.toISOString().slice(0,10);
 
 type TimeSlot = {
     time: string,
@@ -70,18 +67,26 @@ const timeSlots: TimeSlot[] = [
     }
 ]
 
+const days: string[] = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"]
+let date: Date = new Date();
+let year: number = date.getFullYear();
+let month: string = date.toLocaleDateString("no-NO", {month: "long"})
+const maxFutureMonth = 2;
+let maxMonth = (date.getMonth() + maxFutureMonth + 1) % 12
+
 const maxNumberGuest = 5;
 const guestsList: number[] = Array.from({length: maxNumberGuest}, (_, index) => index + 1);
 
-const testSchema = z.object({
+const bookingSchema = z.object({
     numberOfGuest: z.number(),
     time: z.string(),
+    date: z.string(),
     email: z.email(),
     phoneNumber: z.string(),
     comment: z.string().optional()
 })
 
-type BookingSchema = z.infer<typeof testSchema>
+type BookingSchemaType = z.infer<typeof bookingSchema>
 
 type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
@@ -89,32 +94,40 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     const {
         register,
         handleSubmit,
-        getValues,
         watch,
         setValue,
         control,
         formState: { errors },
-    } = useForm<BookingSchema>({
-        resolver: zodResolver(testSchema),
+    } = useForm<BookingSchemaType>({
+        resolver: zodResolver(bookingSchema),
         defaultValues:{
             numberOfGuest: 0,
-            time: ""
+            date: "",
+            time: "",
         }
     })
     const [showErrorGuest, setShowErrorGuest] = useState(false);
-    const [schemaSection, setSchemaSection] = useState<SchemaSections>("TIME");
+    const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
+    const [currYear, setCurrYear] = useState(year);
+    const [currMonthString, setCurrMonthString] = useState(month); // used for calendar header
 
     const selectedTime = watch("time");
+    const selectedDate = watch("date");
     const selectedNumberOfGuest = watch("numberOfGuest");
 
-    const onSubmit: SubmitHandler<BookingSchema> = (data) => {
+    let firstDayOfMonth = new Date(currYear, date.getMonth(), 1).getDay();
+    let lastDateOfMonth = new Date(currYear, date.getMonth() + 1, 0).getDate();
+    let todaysDate = new Date().getDate();
+    let todaysMonth = new Date().getMonth();
+
+    const dateInMonth = Array.from({length: lastDateOfMonth}, (_, index) => index + 1);
+    let gridSpace = (firstDayOfMonth + 6) % 7; // used to place the date numbers under correct day
+
+    const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
         console.log("FORM BOOKING DETAILS SUBMITTED")
         console.log(data)
         setBookingDetails(data)
     }
-
-    console.log(getValues());
-    console.log(errors);
 
     const handleWrongGuests = () => {
         setShowErrorGuest(true);
@@ -127,13 +140,38 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
         setSchemaSection("DATE")
     }
 
+    const handleNextMonth = () =>{
+        // enforce maximum days ahead a customer can book table
+        if (maxMonth !== (date.getMonth() + 1)){
+            date.setMonth(date.getMonth() + 1);
+            const month: string = date.toLocaleDateString("no-NO", {month: "long"})
+            setCurrMonthString(month)
+            setCurrYear(date.getFullYear())
+        }
+    }
+
+    const handlePrevMonth = () => {
+        const todaysDate = new Date();
+
+        // prevent going back in time
+        if (todaysDate < date){
+            date.setMonth(date.getMonth() - 1);
+            const month: string = date.toLocaleDateString("no-NO", {month: "long"})
+            setCurrMonthString(month)
+            setCurrYear(date.getFullYear())
+        }
+    }
+
+    const handleSelectDate = (dateValue: number) => {
+        const dateString = `${currYear}-${date.getMonth() + 1}-${dateValue}`;
+        setValue("date", dateString, {shouldValidate: true})
+        setSchemaSection("TIME");
+    }
+
     const handleTime = (time: string) => {
         setValue("time", time, {shouldValidate: true})
         setSchemaSection("CONTACT")
     }
-
-    console.log(selectedNumberOfGuest);
-    console.log(showErrorGuest);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
@@ -179,9 +217,66 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
                 <section className={"flex flex-col gap-5"}>
                     <h2 className={"text-xl text-custom-gray text-center"}>{selectedNumberOfGuest} personer</h2>
                     <h3 className={"text-2xl text-center"}>Velg dato</h3>
+                    <Controller
+                        control={control}
+                        name={"date"}
+                        render={({field}) =>
+                            <input
+                                   aria-label={"choose date of booking"}
+                                   aria-controls={"calendar"}
+                                   aria-describedby={"calendar-error"}
+                                   className={"sr-only"}
+                                   {...field}
+                                   onChange={e => field.onChange(e.target.value)}/>}
+                    />
+                    <div role={"group"} id={"calendar"}>
+                        {/*calendar header*/}
+                        <div className={"flex justify-between px-1"}>
+                            <h4 className={"text-2xl capitalize"}>{currMonthString} {currYear}</h4>
+                            <div className={"flex gap-2"}>
+                                <ArrowLeftIcon className={"w-6"} onClick={handlePrevMonth}/>
+                                <ArrowRightIcon className={"w-6"} onClick={handleNextMonth}/>
+                            </div>
+                        </div>
+                        {/*calendar days*/}
+                        <div className={"grid grid-cols-7 mt-5 text-center gap-5"}>
+                            {days.map((day: string) =>
+                                <h4 key={day} className={"text-xl"}>{day}</h4>
+                            )}
+                            {Array.from({length: gridSpace}).map((_, i) =>(
+                                <div key={i}></div>
+                            ))}
+                            {dateInMonth.map((dateItem: number) => {
+                                let chosenDate: string[] = selectedDate.split("-")
+                                let chosenYear: number = Number(chosenDate[0]);
+                                let chosenMonth: number = Number(chosenDate[1])
+                                let chosenDay: number = Number(chosenDate[2]);
+                                let isSelectedDay: boolean = false;
+                                let isValidDay: boolean = true;
+
+                                if (chosenYear === currYear && (chosenMonth - 1) === date.getMonth() && chosenDay === dateItem){
+                                    isSelectedDay = true;
+                                }
+
+                                if (dateItem < todaysDate && date.getMonth() === todaysMonth){
+                                    isValidDay = false;
+                                }
+
+                               return <button key={dateItem}
+                                        onClick={() => handleSelectDate(Number(dateItem))}
+                                              aria-disabled={isValidDay}
+                                              aria-pressed={isSelectedDay}
+                                        className={clsx("text-xl p-2 rounded-md hover:bg-gray-300 transition-colors",
+                                            { "text-custom-red": dateItem === todaysDate && date.getMonth() === todaysMonth},
+                                            {"text-gray-400": !isValidDay},
+                                            {"bg-gray-300": isSelectedDay})}>{dateItem}</button>
+                            })}
+                        </div>
+                    </div>
+                    {errors.date && <span id={"calendar-error"}>{errors.date.message}</span>}
                     <button
                         onClick={() => setSchemaSection("GUESTS")}
-                        className={"p-2 border-2 rounded-full w-fit scale-90 hover:scale-100 transition-all"}>
+                        className={"mt-5 p-2 border-2 rounded-full w-fit scale-90 hover:scale-100 transition-all"}>
                         <ArrowLeftIcon className={"w-8 h-8"}/>
                     </button>
                 </section>
@@ -189,7 +284,7 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
             {schemaSection === "TIME" &&
                 <section className={"flex flex-col gap-5"}>
                     <h2 className={"text-xl text-custom-gray text-center"}>{selectedNumberOfGuest} personer</h2>
-                    <h2 className={"text-xl text-custom-gray text-center"}>velg dato</h2>
+                    <h2 className={"text-xl text-custom-gray text-center"}>{selectedDate}</h2>
                     <label htmlFor="time" className={"text-2xl text-center font-title"}>Velg tid</label>
                     <Controller
                         control={control}
@@ -230,7 +325,7 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
             {schemaSection === "CONTACT" &&
                 <section className={"flex flex-col gap-5"}>
                     <h2 className={"text-xl text-custom-gray text-center"}>{selectedNumberOfGuest} personer</h2>
-                    <h2 className={"text-xl text-custom-gray text-center"}>kl. {selectedTime}</h2>
+                    <h2 className={"text-xl text-custom-gray text-center"}>{selectedDate}, kl. {selectedTime}</h2>
                     <h3 className={"text-2xl text-center font-title"}>Fyll ut kontaktinformasjon</h3>
 
                     <section className={"flex flex-col gap-9 mt-5"}>
