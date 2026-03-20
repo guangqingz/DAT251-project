@@ -3,13 +3,13 @@ import {z} from "zod";
 const customTimeRegex = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/;
 
 export const bookingSchema = z.object({
-    numberOfGuest: z.coerce.number(),
+    numberGuest: z.coerce.number(),
     time: z.string().refine(
         (val) => customTimeRegex.test(val),
         {
             message: "Invalid time format, expected HH:MM or HH:MM:SS",
         }),
-    date: z.coerce.date(),
+    date: z.string(),
     email: z.email(),
     phoneNumber: z.string().length(8, "Telefonnummer må være på 8 siffer"),
     comment: z.string().optional(),

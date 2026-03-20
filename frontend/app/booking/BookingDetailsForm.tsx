@@ -8,7 +8,7 @@ import {InformationCircleIcon, ArrowLeftIcon, ArrowRightIcon} from "@heroicons/r
 import clsx from "clsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
-
+import {useRouter} from "next/navigation";
 
 type TimeSlot = {
     time: string,
@@ -101,7 +101,7 @@ type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
 let timeSlotsExtended: TimeSlotExtended[] = []
 
-export default function BookingDetailsForm({setBookingDetails}:{setBookingDetails: any}){
+export default function BookingDetailsForm({setBookingDetails, setBookingConfirmed}:{setBookingDetails: any, setBookingConfirmed: any}){
     const {
         register,
         handleSubmit,
@@ -122,6 +122,7 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     const [currYear, setCurrYear] = useState(year);
     const [currMonthString, setCurrMonthString] = useState(month); // used for calendar header
 
+
     // used to deactivate/activate calendar buttons
     const [prevMonth, setPrevMonth] = useState(false)
     const [nextMonth, setNextMonth] = useState(false)
@@ -137,6 +138,8 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
 
     const dateInMonth = Array.from({length: lastDateOfMonth}, (_, index) => index + 1);
     let gridSpace = (firstDayOfMonth + 6) % 7; // used to place the date numbers under correct day
+
+    const router = useRouter();
 
     const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
         console.log("FORM BOOKING DETAILS SUBMITTED")
@@ -223,6 +226,7 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['booking']})
             console.log("Booking successful, query invalidated.")
+            setBookingConfirmed(true);
         },
     })
 
@@ -457,5 +461,4 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
             }
         </form>
     )
-
 }
