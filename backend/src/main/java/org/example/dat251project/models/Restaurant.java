@@ -30,34 +30,38 @@ public class Restaurant {
     private Integer phoneNumber;
 
     @NotNull
-    private Integer tableCapacity;
+    private Integer restaurantCapacity;
 
     @ElementCollection
     @MapKeyColumn(name = "day_of_week")
     @Column(name = "openingDays")
     private Map<DayOfWeek, OpeningHours> openingDays = new HashMap<>();
-
+    @Embedded
     private OpeningHours normalOpeningHours;
 
     @ElementCollection
     @Column(name = "time_slots")
     private List<LocalTime> timeSlots;
 
-    @NotNull
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private List<Tables> tables;
-
-
+    @Transient
+    private Map<Tables, List<Tables>> combination;
 
     public Restaurant(String name, String address, Integer phoneNumber,
-                      Integer tableCapacity, Map<DayOfWeek, OpeningHours> openingDays, OpeningHours normalOpeningHours,
-                      List<LocalTime> timeSlots, List<Tables> tables) {
+                      Integer restaurantCapacity, Map<DayOfWeek, OpeningHours> openingDays, OpeningHours normalOpeningHours,
+                      List<LocalTime> timeSlots, List<Tables> tables, HashMap<Tables, List<Tables>> combination) {
         this.name = name;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.tableCapacity = tableCapacity;
+        this.restaurantCapacity = restaurantCapacity;
         this.openingDays = openingDays;
         this.normalOpeningHours = normalOpeningHours;
         this.timeSlots = timeSlots;
         this.tables = tables;
+        this.combination = combination;
     }
+
+
 }

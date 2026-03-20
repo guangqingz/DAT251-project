@@ -7,14 +7,12 @@ import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
 import org.example.dat251project.models.Tables;
 import org.example.dat251project.repositories.BookingRepository;
+import org.springframework.data.annotation.Transient;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @Setter
@@ -24,15 +22,21 @@ public class BookingSystem {
     private BookingRepository bookingRepo;
     private Restaurant restaurant;
     private Integer remainingSeats;
-    private List<Tables> smallTables;
-    private List<Tables> bigTables;
-    private HashMap<Tables, List<Tables>> combination;
 
+    @Transient
+    private List<Tables> smallTables;
+    @Transient
+    private List<Tables> bigTables;
+    @Transient
+    private Map<Tables, List<Tables>> combination = new HashMap<>();
 
     public BookingSystem(BookingRepository bookingRepo, Restaurant restaurant) {
         this.bookingRepo = bookingRepo;
         this.restaurant = restaurant;
-        this.remainingSeats = restaurant.getTableCapacity();
+        this.remainingSeats = restaurant.getRestaurantCapacity();
+        this.smallTables = divideTableSize(restaurant.getTables(), 1, 2);
+        this.bigTables = divideTableSize(restaurant.getTables(), 3, 4);
+        this.combination = restaurant.getCombination();
         // Sanity checks to ensure restaurant is valid
         sanityCheck(remainingSeats, restaurant.getTimeSlots(), restaurant.getNormalOpeningHours());
     }
@@ -44,6 +48,16 @@ public class BookingSystem {
         if (!timeSlotsWithinOpeningHours(timeSlots, openingHours)) {
             throw new IllegalArgumentException("TimeSlot is out of the opening hours");
         }
+    }
+
+    private List<Tables> divideTableSize(List<Tables> tables, int min, int max) {
+        List<Tables> tableDivision = new ArrayList<>();
+        for (Tables t : tables) {
+            if (t.getNumOfSeats() >= min && t.getNumOfSeats() <= max) {
+                tableDivision.add(t);
+            }
+        }
+        return tableDivision;
     }
 
     /**
@@ -72,10 +86,11 @@ public class BookingSystem {
      * @return true if there is enough capacity, false otherwise
      */
     private boolean checkAvailability(LocalDate date, LocalTime time, int numGuests) {
+        // TODO gottta fix
         Integer totalGuests = bookingRepo.sumGuestsByDateAndTime(date, time);
         if (totalGuests == null) totalGuests = 0;
 
-        return numGuests + totalGuests <= restaurant.getTableCapacity();
+        return numGuests + totalGuests <= restaurant.getRestaurantCapacity();
     }
 
     public Map<LocalTime, Boolean> getAvailabilityForDate(LocalDate date, int numGuests) {
@@ -85,50 +100,56 @@ public class BookingSystem {
         }
         return availabilityMap;
     }
-    public boolean createBooking(LocalDate date, LocalTime time, int numGuests){
+
+    public boolean createBooking(LocalDate date, LocalTime time, int numGuests) {
         return checkAvailability(date, time, numGuests);
     }
+
     //algorithm part
     public List<Tables> findBooking(LocalDate date, LocalTime time, int numGuests) {
-        // TODO complex algorithm must be in place
         // BookingDTO? instead of three parameters? can be used as refactor step
-        List<Tables> table = new ArrayList<>();
+        List<Tables> result = new ArrayList<>();
 
-        if (!checkAvailability(date, time, numGuests)) return table;
-        if (numGuests > 7) return table;
-
+        if (!checkAvailability(date, time, numGuests)) return result;
+        if (numGuests > 7) return result;
+        List<Booking> bookings = bookingRepo.findByDateAndTime(date, time);
+        Set<Tables> occupiedTables = new HashSet<>();
+        for (Booking b : bookings) {
+            occupiedTables.addAll(b.getTables());
+        }
         if (numGuests <= 2) {
             for (Tables t : smallTables) {
-                if (!t.isOccupied()) {
-                    t.setOccupied(true);
-                    table.add(t);
-                    return table;
+                if (!occupiedTables.contains(t)) {
+                    result.add(t);
+                    return result;
                 }
             }
         }
         if (numGuests <= 4) {
             for (Tables t : bigTables) {
-                if (!t.isOccupied()) {
-                    t.setOccupied(true);
-                    table.add(t);
-                    return table;
+                if (!occupiedTables.contains(t)) {
+                    result.add(t);
+                    return result;
                 }
             }
         }
 
-        combination.forEach((key, value) -> {
-            if (!key.isOccupied()) {
-                for (Tables t : value) {
-                    if (!t.isOccupied()) {
-                        t.setOccupied(true);
-                        table.add(t);
-                        table.add(key);
+        combination.forEach((key, values) -> {
+            if (!occupiedTables.contains(key)) {
+                for (Tables t : values) {
+                    if (!occupiedTables.contains(t)) {
+                        //Have to check if the combination even can satisfy the number of guests
+                        int totalSeatings = key.getNumOfSeats() + t.getNumOfSeats();
+                        // Greedy atm, can later fix it to minimize the difference
+                        if (totalSeatings >= numGuests) {
+                            result.add(t);
+                            result.add(key);
+                        }
                         break;
                     }
                 }
             }
         });
-
-        return table;
+        return result;
     }
 }

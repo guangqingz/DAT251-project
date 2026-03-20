@@ -22,7 +22,7 @@ public class RestaurantService {
             Map<DayOfWeek, OpeningHours> openingDays = generateOpeningDays(opHours, closedDays);
             Restaurant restaurant = new Restaurant(
                     name, address, phonenumber, tableCapacity, openingDays, opHours,
-                    generateTimeSlots(opHours, minuteInterval), tables
+                    generateTimeSlots(opHours, minuteInterval), tables, null
             );
             restaurantRepo.save(restaurant);
             return restaurant;

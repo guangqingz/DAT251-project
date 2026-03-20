@@ -1,6 +1,7 @@
 package org.example.dat251project.configs;
 
 import org.example.dat251project.models.Restaurant;
+import org.example.dat251project.models.Tables;
 import org.example.dat251project.repositories.BookingRepository;
 import org.example.dat251project.repositories.RestaurantRepository;
 import org.example.dat251project.repositories.UserRepository;
@@ -16,7 +17,9 @@ import org.springframework.context.annotation.Lazy;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @Configuration
 public class DataInitializer {
@@ -42,15 +45,27 @@ public class DataInitializer {
                 );
                 HashSet<DayOfWeek> closedDays = new HashSet<>();
                 closedDays.add(DayOfWeek.MONDAY);
-                restaurantService.createRestaurant(
+
+                Restaurant restaurant = restaurantService.createRestaurant(
                         "Sze Chuan House", "Nedre Korskirkeallmenningen 9",
-                        55313690, 20, opHours, 30, closedDays, null
+                        55313690, 20, opHours, 30, closedDays, createTables()
                 );
             }
             if (userRepo.count() == 0) {
                 userService.createUser("admin", "admin123@email.com", "admin123", Role.ADMIN);
             }
         };
+    }
+
+    private List<Tables> createTables() {
+        List<Tables> restTables = new ArrayList<>();
+        restTables.add(new Tables("T1", 4));
+        restTables.add(new Tables("T2", 2));
+        restTables.add(new Tables("T3", 4));
+        restTables.add(new Tables("T4", 2));
+        restTables.add(new Tables("T5", 4));
+        restTables.add(new Tables("T6", 4));
+        return restTables;
     }
 
     @Bean

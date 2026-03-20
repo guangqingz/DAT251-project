@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface BookingRepository extends JpaRepository<Booking, UUID> {
@@ -14,4 +15,6 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             SELECT SUM(b.numberGuest) FROM Booking b WHERE b.date = :date AND b.time = :time
             """)
     Integer sumGuestsByDateAndTime(@Param("date") LocalDate date, @Param("time") LocalTime time);
+
+    List<Booking> findByDateAndTime(LocalDate date, LocalTime time);
 }
