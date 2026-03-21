@@ -1,5 +1,6 @@
 package org.example.dat251project.services;
 
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,7 +8,6 @@ import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
 import org.example.dat251project.models.Tables;
 import org.example.dat251project.repositories.BookingRepository;
-import org.springframework.data.annotation.Transient;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,8 +34,8 @@ public class BookingSystem {
         this.bookingRepo = bookingRepo;
         this.restaurant = restaurant;
         this.remainingSeats = restaurant.getRestaurantCapacity();
-        this.smallTables = divideTableSize(restaurant.getTables(), 1, 2);
-        this.bigTables = divideTableSize(restaurant.getTables(), 3, 4);
+        this.smallTables = restaurant.getSmallTables();
+        this.bigTables = restaurant.getBigTables();
         this.combination = restaurant.getCombination();
         // Sanity checks to ensure restaurant is valid
         sanityCheck(remainingSeats, restaurant.getTimeSlots(), restaurant.getNormalOpeningHours());
@@ -50,15 +50,6 @@ public class BookingSystem {
         }
     }
 
-    private List<Tables> divideTableSize(List<Tables> tables, int min, int max) {
-        List<Tables> tableDivision = new ArrayList<>();
-        for (Tables t : tables) {
-            if (t.getNumOfSeats() >= min && t.getNumOfSeats() <= max) {
-                tableDivision.add(t);
-            }
-        }
-        return tableDivision;
-    }
 
     /**
      * helper method for checking if the timeslots given are within the {@link OpeningHours openingHours}
@@ -94,6 +85,7 @@ public class BookingSystem {
     }
 
     public Map<LocalTime, Boolean> getAvailabilityForDate(LocalDate date, int numGuests) {
+        // TODO gotta fix
         Map<LocalTime, Boolean> availabilityMap = new HashMap<>();
         for (LocalTime timeslot : restaurant.getTimeSlots()) {
             availabilityMap.put(timeslot, checkAvailability(date, timeslot, numGuests));
@@ -105,11 +97,31 @@ public class BookingSystem {
         return checkAvailability(date, time, numGuests);
     }
 
+    /**
+     * Count the amount of times that {@link Tables table} is a part of a combination
+     *
+     * @param table
+     * @return the amount of combinations it is a part of
+     */
+    private int countCombinations(Tables table) {
+        int count = 0;
+        for (Map.Entry<Tables, List<Tables>> entry : combination.entrySet()) {
+            if (entry.getKey().equals(table)) {
+                count++;
+            }
+            if (entry.getValue().contains(table)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     //algorithm part
     public List<Tables> findBooking(LocalDate date, LocalTime time, int numGuests) {
         // BookingDTO? instead of three parameters? can be used as refactor step
         List<Tables> result = new ArrayList<>();
-
+        int bestWaste = restaurant.getRestaurantCapacity() + 1;
+        int bestComboImpact = restaurant.getRestaurantCapacity();
         if (!checkAvailability(date, time, numGuests)) return result;
         if (numGuests > 7) return result;
         List<Booking> bookings = bookingRepo.findByDateAndTime(date, time);
@@ -118,38 +130,50 @@ public class BookingSystem {
             occupiedTables.addAll(b.getTables());
         }
         if (numGuests <= 2) {
-            for (Tables t : smallTables) {
-                if (!occupiedTables.contains(t)) {
-                    result.add(t);
-                    return result;
+            for (Tables table : smallTables) {
+                if (!occupiedTables.contains(table)) {
+                    int waste = table.getNumOfSeats() - numGuests;
+                    if (waste >= 0 && waste < bestWaste) {
+                        bestWaste = waste;
+                        result = new ArrayList<>();
+                        result.add(table);
+                    }
                 }
             }
         }
         if (numGuests <= 4) {
-            for (Tables t : bigTables) {
-                if (!occupiedTables.contains(t)) {
-                    result.add(t);
-                    return result;
-                }
-            }
-        }
-
-        combination.forEach((key, values) -> {
-            if (!occupiedTables.contains(key)) {
-                for (Tables t : values) {
-                    if (!occupiedTables.contains(t)) {
-                        //Have to check if the combination even can satisfy the number of guests
-                        int totalSeatings = key.getNumOfSeats() + t.getNumOfSeats();
-                        // Greedy atm, can later fix it to minimize the difference
-                        if (totalSeatings >= numGuests) {
-                            result.add(t);
-                            result.add(key);
-                        }
-                        break;
+            for (Tables table : bigTables) {
+                if (!occupiedTables.contains(table)) {
+                    int waste = table.getNumOfSeats() - numGuests;
+                    if (waste >= 0 && waste < bestWaste) {
+                        bestWaste = waste;
+                        result = new ArrayList<>();
+                        result.add(table);
                     }
                 }
             }
-        });
+        }
+        for (Map.Entry<Tables, List<Tables>> entry : combination.entrySet()) {
+            Tables key = entry.getKey();
+            List<Tables> values = entry.getValue();
+            if (!occupiedTables.contains(key)) {
+                for (Tables table2 : values) {
+                    if (!occupiedTables.contains(table2)) {
+                        //Have to check if the combination even can satisfy the number of guests
+                        int totalSeatings = key.getNumOfSeats() + table2.getNumOfSeats();
+                        int combinationImpact = countCombinations(key) + countCombinations(table2);
+                        int waste = totalSeatings - numGuests;
+
+                        if (waste >= 0 && waste < bestWaste && combinationImpact < bestComboImpact) {
+                            bestWaste = waste;
+                            result = new ArrayList<>();
+                            result.add(key);
+                            result.add(table2);
+                        }
+                    }
+                }
+            }
+        }
         return result;
     }
 }

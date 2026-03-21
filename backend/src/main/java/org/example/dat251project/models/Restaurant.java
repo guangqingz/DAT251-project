@@ -9,6 +9,7 @@ import org.example.dat251project.services.OpeningHours;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,11 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private List<Tables> tables;
+
+    @Transient
+    private List<Tables> smallTables;
+    @Transient
+    private List<Tables> bigTables;
     @Transient
     private Map<Tables, List<Tables>> combination;
 
@@ -60,8 +66,25 @@ public class Restaurant {
         this.normalOpeningHours = normalOpeningHours;
         this.timeSlots = timeSlots;
         this.tables = tables;
+        this.smallTables = divideTableSize(tables, 1, 2);
+        this.bigTables = divideTableSize(tables, 3, 4);
         this.combination = combination;
     }
 
+    private List<Tables> divideTableSize(List<Tables> tables, int min, int max) {
+        List<Tables> tableDivision = new ArrayList<>();
+        for (Tables t : tables) {
+            if (t.getNumOfSeats() >= min && t.getNumOfSeats() <= max) {
+                tableDivision.add(t);
+            }
+        }
+        return tableDivision;
+    }
+
+    public void setTables(List<Tables> tables) {
+        this.tables = tables;
+        this.smallTables = divideTableSize(tables, 1, 2);
+        this.bigTables = divideTableSize(tables, 3, 4);
+    }
 
 }

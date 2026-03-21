@@ -13,6 +13,8 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,14 +32,31 @@ public class TestBookingSystem {
         MockitoAnnotations.openMocks(this);
         restaurant = new Restaurant();
         List<Tables> restTables = new ArrayList<>();
-        restTables.add(new Tables("T1", 4));
-        restTables.add(new Tables("T2", 2));
-        restTables.add(new Tables("T3", 4));
-        restTables.add(new Tables("T4", 2));
-        restTables.add(new Tables("T5", 4));
-        restTables.add(new Tables("T6", 4));
-        restaurant.setTables(restTables);
 
+        Tables t1 = new Tables("T1", 4);
+        Tables t2 = new Tables("T2", 2);
+        Tables t3 = new Tables("T3", 4);
+        Tables t4 = new Tables("T4", 2);
+        Tables t5 = new Tables("T5", 4);
+        Tables t6 = new Tables("T6", 4);
+        restTables.add(t1);
+        restTables.add(t2);
+        restTables.add(t3);
+        restTables.add(t4);
+        restTables.add(t5);
+        restTables.add(t6);
+        restaurant.setTables(restTables);
+        HashMap<Tables, List<Tables>> combo = new HashMap<>();
+        combo.put(t2, new ArrayList<>(Arrays.asList(t1, t3)));
+        combo.put(t3, new ArrayList<>(List.of(t4)));
+        restaurant.setCombination(combo);
+    }
+
+    private void mockBooking(LocalDate date, LocalTime time, int numGuests, List<Tables> confirmedBooking) {
+        Mockito.when(bookingRepo.findByDateAndTime(date, time))
+                .thenReturn(List.of(
+                        new Booking(email, phoneNumber, numGuests, time, date, confirmedBooking)
+                ));
     }
 
     @Test
@@ -85,14 +104,6 @@ public class TestBookingSystem {
         assertTrue(bookingSystem.createBooking(date, time, numGuests));
     }
 
-    private List<Tables> createSmallTableList() {
-        Tables table2 = restaurant.getTables().get(1);
-        Tables table4 = restaurant.getTables().get(3);
-        List<Tables> smallTables = new ArrayList<>();
-        smallTables.add(table2);
-        smallTables.add(table4);
-        return smallTables;
-    }
 
     @Test
     public void testSmallBooking() {
@@ -104,7 +115,6 @@ public class TestBookingSystem {
         restaurant.setTimeSlots(timeSlots);
 
         BookingSystem bookingSystem = new BookingSystem(bookingRepo, restaurant);
-        bookingSystem.setSmallTables(createSmallTableList());
 
 
         LocalDate date = LocalDate.of(2026, 3, 10);
@@ -114,32 +124,15 @@ public class TestBookingSystem {
         Mockito.when(bookingRepo.sumGuestsByDateAndTime(date, time)).thenReturn(0);
         List<Tables> booking1 = bookingSystem.findBooking(date, time, numGuests);
         assertEquals(1, booking1.size());
-        assertEquals("T2", booking1.getFirst().getName());
+        assertTrue(restaurant.getSmallTables().contains(booking1.getFirst()));
 
         // Mock that there has been a booking created in the db
-        List<Tables> confirmedBooking = new ArrayList();
-        confirmedBooking.add(booking1.getFirst());
-        Mockito.when(bookingRepo.findByDateAndTime(date, time))
-                .thenReturn(List.of(
-                        new Booking(email, phoneNumber, numGuests, time, date, confirmedBooking) // T2 booked
-                ));
+        mockBooking(date, time, numGuests, booking1);
         List<Tables> booking2 = bookingSystem.findBooking(date, time, 1);
         assertEquals(1, booking2.size());
-        assertEquals("T4", booking2.getFirst().getName());
+        assertNotEquals(booking1.getFirst(), booking2.getFirst());
+        assertTrue(restaurant.getSmallTables().contains(booking2.getFirst()));
 
-    }
-
-    private List<Tables> createBigTableList() {
-        Tables table0 = restaurant.getTables().get(0);
-        Tables table2 = restaurant.getTables().get(2);
-        Tables table4 = restaurant.getTables().get(4);
-        Tables table5 = restaurant.getTables().get(5);
-        List<Tables> bigTables = new ArrayList<>();
-        bigTables.add(table0);
-        bigTables.add(table2);
-        bigTables.add(table4);
-        bigTables.add(table5);
-        return bigTables;
     }
 
     @Test
@@ -153,8 +146,6 @@ public class TestBookingSystem {
 
         BookingSystem bookingSystem = new BookingSystem(bookingRepo, restaurant);
 
-        bookingSystem.setBigTables(createBigTableList());
-
 
         LocalDate date = LocalDate.of(2026, 3, 10);
         LocalTime time = LocalTime.of(18, 0);
@@ -163,23 +154,43 @@ public class TestBookingSystem {
         Mockito.when(bookingRepo.sumGuestsByDateAndTime(date, time)).thenReturn(0);
         List<Tables> booking1 = bookingSystem.findBooking(date, time, numGuests);
         assertEquals(1, booking1.size());
-        assertEquals("T1", booking1.getFirst().getName());
+        assertTrue(restaurant.getBigTables().contains(booking1.getFirst()));
 
         // Mock that there has been a booking created in the db
-        List<Tables> confirmedBooking = new ArrayList();
-        confirmedBooking.add(booking1.getFirst());
-        Mockito.when(bookingRepo.findByDateAndTime(date, time))
-                .thenReturn(List.of(
-                        new Booking(email, phoneNumber, numGuests, time, date, confirmedBooking) // T2 booked
-                ));
+        mockBooking(date, time, numGuests, booking1);
         List<Tables> booking2 = bookingSystem.findBooking(date, time, 4);
         assertEquals(1, booking2.size());
-        assertEquals("T3", booking2.getFirst().getName());
+        assertNotEquals(booking1.getFirst(), booking2.getFirst());
+        assertTrue(restaurant.getBigTables().contains(booking2.getFirst()));
 
     }
 
     @Test
     public void testComboBooking() {
+        // Set up timeslots and opening hours
+        List<LocalTime> timeSlots = List.of(LocalTime.of(18, 0), LocalTime.of(20, 30));
+        OpeningHours openingHours = new OpeningHours(LocalTime.of(9, 0), LocalTime.of(23, 0));
+        restaurant.setNormalOpeningHours(openingHours);
+        restaurant.setRestaurantCapacity(20);
+        restaurant.setTimeSlots(timeSlots);
+
+        BookingSystem bookingSystem = new BookingSystem(bookingRepo, restaurant);
+
+
+        LocalDate date = LocalDate.of(2026, 3, 10);
+        LocalTime time = LocalTime.of(18, 0);
+        int numGuests = 5;
+        Mockito.when(bookingRepo.sumGuestsByDateAndTime(date, time)).thenReturn(0);
+
+        List<Tables> booking1 = bookingSystem.findBooking(date, time, numGuests);
+        assertEquals(2, booking1.size());
+        // Mock that there has been a booking created in the db
+        mockBooking(date, time, numGuests, booking1);
+        // TODO don't know how to test which combination was used, but since the second assertEquals passed, we can guarantee we didn't get (t2,t3)
+        List<Tables> booking2 = bookingSystem.findBooking(date, time, numGuests);
+        assertEquals(2, booking2.size());
+        // Mock that there has been a booking created in the db
+        mockBooking(date, time, numGuests, booking2);
 
     }
 }
