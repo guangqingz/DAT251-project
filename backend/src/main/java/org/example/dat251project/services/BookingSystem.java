@@ -24,6 +24,8 @@ public class BookingSystem {
     private Integer remainingSeats;
     @Autowired
     private BookingService bookingService;
+    @Autowired
+    private EmailService emailService;
 
     public BookingSystem(Restaurant restaurant) {
         if (restaurant != null) {
@@ -91,7 +93,7 @@ public class BookingSystem {
         Booking booking = bookingService.createBooking(bookingDTO, tables);
         if (booking != null) {
             try {
-                bookingService.createEmailBooking(booking);
+                emailService.createEmailBooking(booking);
                 return booking;
             } catch (MessagingException e) {
                 return null;
