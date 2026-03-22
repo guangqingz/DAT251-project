@@ -33,7 +33,7 @@ public class Controller {
 
     @PostMapping("booking")
     public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingDTO bookingDTO) {
-        List<Tables> bookedTables = bookingSystem.findBooking(bookingDTO.getDate(), bookingDTO.getTime(), bookingDTO.getNumberGuest());
+        List<Tables> bookedTables = bookingSystem.findAvailableTables(bookingDTO.getDate(), bookingDTO.getTime(), bookingDTO.getNumberGuest());
         if (!bookedTables.isEmpty()) {
             Booking booking = bookingSystem.createBooking(bookingDTO, bookedTables);
             if (booking != null) {

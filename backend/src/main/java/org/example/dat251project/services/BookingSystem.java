@@ -84,7 +84,7 @@ public class BookingSystem {
      * @return true if there is a table available, false otherwise
      */
     private boolean checkAvailability(LocalDate date, LocalTime time, int numGuests) {
-        List<Tables> possibleTables = findBooking(date, time, numGuests);
+        List<Tables> possibleTables = findAvailableTables(date, time, numGuests);
         return !possibleTables.isEmpty();
 
     }
@@ -129,43 +129,35 @@ public class BookingSystem {
         return count;
     }
 
-    //algorithm part
-    public List<Tables> findBooking(LocalDate date, LocalTime time, int numGuests) {
-        // BookingDTO? instead of three parameters? can be used as refactor step
-        List<Tables> result = new ArrayList<>();
-        int bestWaste = restaurant.getRestaurantCapacity() + 1;
-        int bestComboImpact = restaurant.getRestaurantCapacity();
-
-        if (numGuests > 7) return result;
+    private Set<Tables> getOccupiedTables(LocalDate date, LocalTime time) {
+        HashSet<Tables> occupiedTables = new HashSet<>();
         List<Booking> bookings = bookingService.findByDateAndTime(date, time);
-        Set<Tables> occupiedTables = new HashSet<>();
         for (Booking b : bookings) {
             occupiedTables.addAll(b.getTables());
         }
-        if (numGuests <= 2) {
-            for (Tables table : smallTables) {
-                if (!occupiedTables.contains(table)) {
-                    int waste = table.getNumOfSeats() - numGuests;
-                    if (waste >= 0 && waste < bestWaste) {
-                        bestWaste = waste;
-                        result = new ArrayList<>();
-                        result.add(table);
-                    }
+        return occupiedTables;
+    }
+
+    private List<Tables> findBestTables(List<Tables> tables, Set<Tables> occupiedTables, int numGuests) {
+        int bestWaste = restaurant.getRestaurantCapacity() + 1;
+        List<Tables> result = new ArrayList<>();
+        for (Tables table : tables) {
+            if (!occupiedTables.contains(table)) {
+                int waste = table.getNumOfSeats() - numGuests;
+                if (waste >= 0 && waste < bestWaste) {
+                    bestWaste = waste;
+                    result = new ArrayList<>();
+                    result.add(table);
                 }
             }
         }
-        if (numGuests <= 4) {
-            for (Tables table : bigTables) {
-                if (!occupiedTables.contains(table)) {
-                    int waste = table.getNumOfSeats() - numGuests;
-                    if (waste >= 0 && waste < bestWaste) {
-                        bestWaste = waste;
-                        result = new ArrayList<>();
-                        result.add(table);
-                    }
-                }
-            }
-        }
+        return result;
+    }
+
+    private List<Tables> findBestComboTables(Set<Tables> occupiedTables, int numGuests) {
+        int bestWaste = restaurant.getRestaurantCapacity() + 1;
+        int bestComboImpact = restaurant.getRestaurantCapacity();
+        List<Tables> bestComboTable = new ArrayList<>();
         for (Map.Entry<Tables, List<Tables>> entry : combination.entrySet()) {
             Tables key = entry.getKey();
             List<Tables> values = entry.getValue();
@@ -179,15 +171,33 @@ public class BookingSystem {
 
                         if (waste >= 0 && waste < bestWaste && combinationImpact < bestComboImpact) {
                             bestWaste = waste;
-                            result = new ArrayList<>();
-                            result.add(key);
-                            result.add(table2);
+                            bestComboTable = new ArrayList<>();
+                            bestComboTable.add(key);
+                            bestComboTable.add(table2);
                         }
                     }
                 }
             }
         }
-        return result;
+        return bestComboTable;
+    }
+
+    //algorithm part
+    public List<Tables> findAvailableTables(LocalDate date, LocalTime time, int numGuests) {
+        List<Tables> bestTables = new ArrayList<>();
+        Set<Tables> occupiedTables = getOccupiedTables(date, time);
+
+        if (numGuests > 7) return bestTables;
+        if (numGuests <= 2) {
+            bestTables = findBestTables(smallTables, occupiedTables, numGuests);
+        }
+        if (numGuests <= 4 && bestTables.isEmpty()) {
+            bestTables = findBestTables(bigTables, occupiedTables, numGuests);
+        }
+        if (bestTables.isEmpty()) {
+            bestTables = findBestComboTables(occupiedTables, numGuests);
+        }
+        return bestTables;
     }
 
     public List<String> getTableNames(List<Tables> tables) {
