@@ -25,6 +25,7 @@ public class TestBookingSystem {
     private final String email = "email@email.com";
     private final Integer phoneNumber = 1234;
     private Restaurant restaurant;
+    private BookingSystem bookingSystem;
     @Mock
     private BookingRepository bookingRepo;
     @Mock
@@ -54,6 +55,7 @@ public class TestBookingSystem {
         combo.put(t3, new ArrayList<>(List.of(t4)));
         restaurant.setCombination(combo);
         bookingService = Mockito.mock(BookingService.class);
+        bookingSystem = new BookingSystem();
     }
 
     private void mockBooking(LocalDate date, LocalTime time, int numGuests, List<Tables> bookedTables) {
@@ -67,8 +69,9 @@ public class TestBookingSystem {
     public void remainingSeatsNonNegative() {
         Integer negativeSeat = -5;
         restaurant.setRestaurantCapacity(negativeSeat);
+
         assertThrows(IllegalArgumentException.class, () ->
-                new BookingSystem(restaurant));
+                bookingSystem.initializeRestaurant(restaurant));
     }
 
     @Test
@@ -82,8 +85,9 @@ public class TestBookingSystem {
         restaurant.setTimeSlots(timeSlots);
         restaurant.setRestaurantCapacity(5);
         restaurant.setNormalOpeningHours(openingHours);
+
         assertThrows(IllegalArgumentException.class, () ->
-                new BookingSystem(restaurant));
+                bookingSystem.initializeRestaurant(restaurant));
 
     }
 
@@ -95,13 +99,14 @@ public class TestBookingSystem {
         restaurant.setNormalOpeningHours(openingHours);
         restaurant.setRestaurantCapacity(5);
         restaurant.setTimeSlots(timeSlots);
-        BookingSystem bookingSystem = new BookingSystem(restaurant);
+
+        bookingSystem.initializeRestaurant(restaurant);
         bookingSystem.setBookingService(bookingService);
         // If refactor to using DTO, remember to change it here as well
         LocalDate date = LocalDate.of(2026, 3, 10);
         LocalTime time = LocalTime.of(18, 0);
         int numGuests = 2;
-        // Mock the avilability
+        // Mock the availability
         for (LocalTime timeslot : restaurant.getTimeSlots()) {
             Mockito.when(bookingService.findByDateAndTime(date, timeslot))
                     .thenReturn(new ArrayList<>()); // No bookings yet, all tables free
@@ -120,7 +125,8 @@ public class TestBookingSystem {
         restaurant.setRestaurantCapacity(20);
         restaurant.setTimeSlots(timeSlots);
 
-        BookingSystem bookingSystem = new BookingSystem(restaurant);
+
+        bookingSystem.initializeRestaurant(restaurant);
         bookingSystem.setBookingService(bookingService);
 
         LocalDate date = LocalDate.of(2026, 3, 10);
@@ -148,7 +154,8 @@ public class TestBookingSystem {
         restaurant.setRestaurantCapacity(20);
         restaurant.setTimeSlots(timeSlots);
 
-        BookingSystem bookingSystem = new BookingSystem(restaurant);
+
+        bookingSystem.initializeRestaurant(restaurant);
         bookingSystem.setBookingService(bookingService);
 
         LocalDate date = LocalDate.of(2026, 3, 10);
@@ -177,7 +184,7 @@ public class TestBookingSystem {
         restaurant.setRestaurantCapacity(20);
         restaurant.setTimeSlots(timeSlots);
 
-        BookingSystem bookingSystem = new BookingSystem(restaurant);
+        bookingSystem.initializeRestaurant(restaurant);
         bookingSystem.setBookingService(bookingService);
 
         LocalDate date = LocalDate.of(2026, 3, 10);

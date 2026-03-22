@@ -17,17 +17,29 @@ public class RestaurantService {
 
     public Restaurant createRestaurant(String name, String address, Integer phonenumber,
                                        Integer tableCapacity, OpeningHours opHours, Integer minuteInterval,
-                                       Set<DayOfWeek> closedDays, List<Tables> tables) {
+                                       Set<DayOfWeek> closedDays, List<Tables> tables, HashMap<Tables, List<Tables>> combo, Integer sittingDurationInHour) {
         if (restaurantRepo.findByName(name).isEmpty()) {
             Map<DayOfWeek, OpeningHours> openingDays = generateOpeningDays(opHours, closedDays);
             Restaurant restaurant = new Restaurant(
                     name, address, phonenumber, tableCapacity, openingDays, opHours,
-                    generateTimeSlots(opHours, minuteInterval), tables, null
+                    generateTimeSlots(opHours, minuteInterval, sittingDurationInHour), tables, combo
             );
+            addRestaurantToTables(restaurant);
             restaurantRepo.save(restaurant);
             return restaurant;
         }
         return null;
+    }
+
+    /**
+     * Set each {@link Tables table} to be linked to the {@link Restaurant restaurant}
+     *
+     * @param restaurant
+     */
+    private void addRestaurantToTables(Restaurant restaurant) {
+        for (Tables t : restaurant.getTables()) {
+            t.setRestaurant(restaurant);
+        }
     }
 
     /**
@@ -37,10 +49,10 @@ public class RestaurantService {
      * @param minuteInterval
      * @return
      */
-    private List<LocalTime> generateTimeSlots(OpeningHours opHours, Integer minuteInterval) {
+    private List<LocalTime> generateTimeSlots(OpeningHours opHours, Integer minuteInterval, Integer sittingDurationInHour) {
         List<LocalTime> timeSlots = new ArrayList<>();
         LocalTime current = opHours.getOpen();
-        while (!current.isAfter(opHours.getClose())) {
+        while (!current.isAfter(opHours.getClose().minusHours(sittingDurationInHour))) {
             timeSlots.add(current);
             current = current.plusMinutes(minuteInterval);
         }

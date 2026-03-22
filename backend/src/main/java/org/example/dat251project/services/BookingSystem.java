@@ -1,5 +1,6 @@
 package org.example.dat251project.services;
 
+import jakarta.mail.MessagingException;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,12 +33,18 @@ public class BookingSystem {
     private Map<Tables, List<Tables>> combination = new HashMap<>();
 
     public BookingSystem(Restaurant restaurant) {
+        if (restaurant != null) {
+            initializeRestaurant(restaurant);
+        }
+    }
+
+    // Add a method to initialize the fields
+    public void initializeRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
         this.remainingSeats = restaurant.getRestaurantCapacity();
         this.smallTables = restaurant.getSmallTables();
         this.bigTables = restaurant.getBigTables();
         this.combination = restaurant.getCombination();
-        // Sanity checks to ensure restaurant is valid
         sanityCheck(remainingSeats, restaurant.getTimeSlots(), restaurant.getNormalOpeningHours());
     }
 
@@ -91,12 +98,16 @@ public class BookingSystem {
     }
 
     public Booking createBooking(BookingDTO bookingDTO, List<Tables> tables) {
-        // TODO, add email
         Booking booking = bookingService.createBooking(bookingDTO, tables);
         if (booking != null) {
-            bookingService.createEmailBooking();
+            try {
+                bookingService.createEmailBooking(booking);
+                return booking;
+            } catch (MessagingException e) {
+                return null;
+            }
         }
-        return booking;
+        return null;
     }
 
     /**
@@ -177,5 +188,13 @@ public class BookingSystem {
             }
         }
         return result;
+    }
+
+    public List<String> getTableNames(List<Tables> tables) {
+        ArrayList<String> tableNames = new ArrayList<>();
+        for (Tables t : tables) {
+            tableNames.add(t.getName());
+        }
+        return tableNames;
     }
 }

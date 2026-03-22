@@ -81,6 +81,21 @@ public class Restaurant {
         return tableDivision;
     }
 
+    /**
+     * In case the Restaurant object is lazy initialized, the fields aren't defined yet, thus will call this method
+     */
+    @PostLoad
+    private void postLoad() {
+        if (tables != null) {
+            this.smallTables = divideTableSize(tables, 1, 2);
+            this.bigTables = divideTableSize(tables, 3, 4);
+        } else {
+            this.smallTables = new ArrayList<>();
+            this.bigTables = new ArrayList<>();
+        }
+        if (combination == null) combination = new HashMap<>();
+    }
+
     public void setTables(List<Tables> tables) {
         this.tables = tables;
         this.smallTables = divideTableSize(tables, 1, 2);
