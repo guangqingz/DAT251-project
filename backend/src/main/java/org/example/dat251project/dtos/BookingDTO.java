@@ -16,4 +16,5 @@ public class BookingDTO {
     private int numberGuest;
     private LocalTime time;
     private LocalDate date;
+    private String comment;
 }

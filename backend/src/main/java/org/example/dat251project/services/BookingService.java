@@ -24,6 +24,7 @@ public class BookingService {
                 bookingDTO.getNumberGuest(),
                 bookingDTO.getTime(),
                 bookingDTO.getDate(),
+                bookingDTO.getComment(),
                 tables
         );
         bookingRepo.save(booking);

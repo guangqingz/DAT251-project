@@ -2,7 +2,6 @@ package org.example.dat251project.configs;
 
 import org.example.dat251project.models.Restaurant;
 import org.example.dat251project.models.Tables;
-import org.example.dat251project.repositories.BookingRepository;
 import org.example.dat251project.repositories.RestaurantRepository;
 import org.example.dat251project.repositories.UserRepository;
 import org.example.dat251project.services.BookingSystem;
@@ -31,8 +30,6 @@ public class DataInitializer {
     RestaurantRepository restaurantRepo;
     @Autowired
     UserRepository userRepo;
-    @Autowired
-    BookingRepository bookingRepo;
 
     @Bean
     CommandLineRunner init() {

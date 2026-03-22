@@ -56,10 +56,10 @@ public class TestBookingSystem {
         bookingService = Mockito.mock(BookingService.class);
     }
 
-    private void mockBooking(LocalDate date, LocalTime time, int numGuests, List<Tables> confirmedBooking) {
+    private void mockBooking(LocalDate date, LocalTime time, int numGuests, List<Tables> bookedTables) {
         Mockito.when(bookingService.findByDateAndTime(date, time))
                 .thenReturn(List.of(
-                        new Booking(email, phoneNumber, numGuests, time, date, confirmedBooking)
+                        new Booking(email, phoneNumber, numGuests, time, date, "", bookedTables)
                 ));
     }
 
