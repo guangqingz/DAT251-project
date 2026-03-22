@@ -9,10 +9,7 @@ import org.example.dat251project.services.OpeningHours;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @Setter
@@ -71,6 +68,14 @@ public class Restaurant {
         this.combination = combination;
     }
 
+    /**
+     * Divide {@link List<Tables> tables} into a subset of tables that have the amount of seats between {@link Integer min} and {@link Integer max}
+     *
+     * @param tables
+     * @param min
+     * @param max
+     * @return List of tables with seatings between {@link Integer min} and {@link Integer max}
+     */
     private List<Tables> divideTableSize(List<Tables> tables, int min, int max) {
         List<Tables> tableDivision = new ArrayList<>();
         for (Tables t : tables) {
@@ -82,7 +87,8 @@ public class Restaurant {
     }
 
     /**
-     * In case the Restaurant object is lazy initialized, the fields aren't defined yet, thus will call this method
+     * In case the Restaurant object is lazy initialized, the fields aren't defined yet, thus spring calls this method
+     * in order to avoid null fields.
      */
     @PostLoad
     private void postLoad() {
@@ -96,10 +102,81 @@ public class Restaurant {
         if (combination == null) combination = new HashMap<>();
     }
 
+    private List<Tables> findBestTables(List<Tables> tables, Set<Tables> occupiedTables, int numGuests) {
+        int bestWaste = restaurantCapacity + 1;
+        List<Tables> result = new ArrayList<>();
+        for (Tables table : tables) {
+            if (!occupiedTables.contains(table)) {
+                int waste = table.getNumOfSeats() - numGuests;
+                if (waste >= 0 && waste < bestWaste) {
+                    bestWaste = waste;
+                    result = new ArrayList<>();
+                    result.add(table);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Count the amount of times that {@link Tables table} is a part of a combination
+     *
+     * @param table
+     * @return the amount of combinations it is a part of
+     */
+    private int countCombinations(Tables table) {
+        int count = 0;
+        for (Map.Entry<Tables, List<Tables>> entry : combination.entrySet()) {
+            if (entry.getKey().equals(table)) {
+                count++;
+            }
+            if (entry.getValue().contains(table)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public void setTables(List<Tables> tables) {
         this.tables = tables;
         this.smallTables = divideTableSize(tables, 1, 2);
         this.bigTables = divideTableSize(tables, 3, 4);
     }
 
+    public List<Tables> findBestSmallTables(Set<Tables> occupiedTables, int numGuests) {
+        return findBestTables(smallTables, occupiedTables, numGuests);
+
+    }
+
+    public List<Tables> findBestBigTables(Set<Tables> occupiedTables, int numGuests) {
+        return findBestTables(bigTables, occupiedTables, numGuests);
+    }
+
+    public List<Tables> findBestComboTables(Set<Tables> occupiedTables, int numGuests) {
+        int bestWaste = restaurantCapacity + 1;
+        int bestComboImpact = restaurantCapacity;
+        List<Tables> bestComboTable = new ArrayList<>();
+        for (Map.Entry<Tables, List<Tables>> entry : combination.entrySet()) {
+            Tables key = entry.getKey();
+            List<Tables> values = entry.getValue();
+            if (!occupiedTables.contains(key)) {
+                for (Tables table2 : values) {
+                    if (!occupiedTables.contains(table2)) {
+                        //Have to check if the combination even can satisfy the number of guests
+                        int totalSeatings = key.getNumOfSeats() + table2.getNumOfSeats();
+                        int combinationImpact = countCombinations(key) + countCombinations(table2);
+                        int waste = totalSeatings - numGuests;
+
+                        if (waste >= 0 && waste < bestWaste && combinationImpact < bestComboImpact) {
+                            bestWaste = waste;
+                            bestComboTable = new ArrayList<>();
+                            bestComboTable.add(key);
+                            bestComboTable.add(table2);
+                        }
+                    }
+                }
+            }
+        }
+        return bestComboTable;
+    }
 }

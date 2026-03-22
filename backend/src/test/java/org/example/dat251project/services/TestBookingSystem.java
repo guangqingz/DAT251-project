@@ -132,13 +132,13 @@ public class TestBookingSystem {
         LocalDate date = LocalDate.of(2026, 3, 10);
         LocalTime time = LocalTime.of(18, 0);
         int numGuests = 2;
-        List<Tables> booking1 = bookingSystem.findBooking(date, time, numGuests);
+        List<Tables> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
         assertEquals(1, booking1.size());
         assertTrue(restaurant.getSmallTables().contains(booking1.getFirst()));
 
         // Mock that there has been a booking created in the db
         mockBooking(date, time, numGuests, booking1);
-        List<Tables> booking2 = bookingSystem.findBooking(date, time, 1);
+        List<Tables> booking2 = bookingSystem.findAvailableTables(date, time, 1);
         assertEquals(1, booking2.size());
         assertNotEquals(booking1.getFirst(), booking2.getFirst());
         assertTrue(restaurant.getSmallTables().contains(booking2.getFirst()));
@@ -162,13 +162,13 @@ public class TestBookingSystem {
         LocalTime time = LocalTime.of(18, 0);
         int numGuests = 3;
 
-        List<Tables> booking1 = bookingSystem.findBooking(date, time, numGuests);
+        List<Tables> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
         assertEquals(1, booking1.size());
         assertTrue(restaurant.getBigTables().contains(booking1.getFirst()));
 
         // Mock that there has been a booking created in the db
         mockBooking(date, time, numGuests, booking1);
-        List<Tables> booking2 = bookingSystem.findBooking(date, time, 4);
+        List<Tables> booking2 = bookingSystem.findAvailableTables(date, time, 4);
         assertEquals(1, booking2.size());
         assertNotEquals(booking1.getFirst(), booking2.getFirst());
         assertTrue(restaurant.getBigTables().contains(booking2.getFirst()));
@@ -192,12 +192,12 @@ public class TestBookingSystem {
         int numGuests = 5;
 
 
-        List<Tables> booking1 = bookingSystem.findBooking(date, time, numGuests);
+        List<Tables> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
         assertEquals(2, booking1.size());
         // Mock that there has been a booking created in the db
         mockBooking(date, time, numGuests, booking1);
         // TODO don't know how to test which combination was used, but since the second assertEquals passed, we can guarantee we didn't get (t2,t3)
-        List<Tables> booking2 = bookingSystem.findBooking(date, time, numGuests);
+        List<Tables> booking2 = bookingSystem.findAvailableTables(date, time, numGuests);
         assertEquals(2, booking2.size());
         // Mock that there has been a booking created in the db
         mockBooking(date, time, numGuests, booking2);

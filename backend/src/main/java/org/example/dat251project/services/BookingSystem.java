@@ -1,7 +1,6 @@
 package org.example.dat251project.services;
 
 import jakarta.mail.MessagingException;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,12 +24,6 @@ public class BookingSystem {
     private Integer remainingSeats;
     @Autowired
     private BookingService bookingService;
-    @Transient
-    private List<Tables> smallTables;
-    @Transient
-    private List<Tables> bigTables;
-    @Transient
-    private Map<Tables, List<Tables>> combination = new HashMap<>();
 
     public BookingSystem(Restaurant restaurant) {
         if (restaurant != null) {
@@ -42,9 +35,6 @@ public class BookingSystem {
     public void initializeRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
         this.remainingSeats = restaurant.getRestaurantCapacity();
-        this.smallTables = restaurant.getSmallTables();
-        this.bigTables = restaurant.getBigTables();
-        this.combination = restaurant.getCombination();
         sanityCheck(remainingSeats, restaurant.getTimeSlots(), restaurant.getNormalOpeningHours());
     }
 
@@ -110,25 +100,6 @@ public class BookingSystem {
         return null;
     }
 
-    /**
-     * Count the amount of times that {@link Tables table} is a part of a combination
-     *
-     * @param table
-     * @return the amount of combinations it is a part of
-     */
-    private int countCombinations(Tables table) {
-        int count = 0;
-        for (Map.Entry<Tables, List<Tables>> entry : combination.entrySet()) {
-            if (entry.getKey().equals(table)) {
-                count++;
-            }
-            if (entry.getValue().contains(table)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     private Set<Tables> getOccupiedTables(LocalDate date, LocalTime time) {
         HashSet<Tables> occupiedTables = new HashSet<>();
         List<Booking> bookings = bookingService.findByDateAndTime(date, time);
@@ -138,49 +109,6 @@ public class BookingSystem {
         return occupiedTables;
     }
 
-    private List<Tables> findBestTables(List<Tables> tables, Set<Tables> occupiedTables, int numGuests) {
-        int bestWaste = restaurant.getRestaurantCapacity() + 1;
-        List<Tables> result = new ArrayList<>();
-        for (Tables table : tables) {
-            if (!occupiedTables.contains(table)) {
-                int waste = table.getNumOfSeats() - numGuests;
-                if (waste >= 0 && waste < bestWaste) {
-                    bestWaste = waste;
-                    result = new ArrayList<>();
-                    result.add(table);
-                }
-            }
-        }
-        return result;
-    }
-
-    private List<Tables> findBestComboTables(Set<Tables> occupiedTables, int numGuests) {
-        int bestWaste = restaurant.getRestaurantCapacity() + 1;
-        int bestComboImpact = restaurant.getRestaurantCapacity();
-        List<Tables> bestComboTable = new ArrayList<>();
-        for (Map.Entry<Tables, List<Tables>> entry : combination.entrySet()) {
-            Tables key = entry.getKey();
-            List<Tables> values = entry.getValue();
-            if (!occupiedTables.contains(key)) {
-                for (Tables table2 : values) {
-                    if (!occupiedTables.contains(table2)) {
-                        //Have to check if the combination even can satisfy the number of guests
-                        int totalSeatings = key.getNumOfSeats() + table2.getNumOfSeats();
-                        int combinationImpact = countCombinations(key) + countCombinations(table2);
-                        int waste = totalSeatings - numGuests;
-
-                        if (waste >= 0 && waste < bestWaste && combinationImpact < bestComboImpact) {
-                            bestWaste = waste;
-                            bestComboTable = new ArrayList<>();
-                            bestComboTable.add(key);
-                            bestComboTable.add(table2);
-                        }
-                    }
-                }
-            }
-        }
-        return bestComboTable;
-    }
 
     //algorithm part
     public List<Tables> findAvailableTables(LocalDate date, LocalTime time, int numGuests) {
@@ -189,13 +117,13 @@ public class BookingSystem {
 
         if (numGuests > 7) return bestTables;
         if (numGuests <= 2) {
-            bestTables = findBestTables(smallTables, occupiedTables, numGuests);
+            bestTables = restaurant.findBestSmallTables(occupiedTables, numGuests);
         }
         if (numGuests <= 4 && bestTables.isEmpty()) {
-            bestTables = findBestTables(bigTables, occupiedTables, numGuests);
+            bestTables = restaurant.findBestBigTables(occupiedTables, numGuests);
         }
         if (bestTables.isEmpty()) {
-            bestTables = findBestComboTables(occupiedTables, numGuests);
+            bestTables = restaurant.findBestComboTables(occupiedTables, numGuests);
         }
         return bestTables;
     }
