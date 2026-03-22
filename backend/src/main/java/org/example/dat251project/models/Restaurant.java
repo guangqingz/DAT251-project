@@ -97,6 +97,16 @@ public class Restaurant {
         if (combination == null) combination = new HashMap<>();
     }
 
+    /**
+     * Find the best {@link Tables table} that is availalbe to serve {@link Integer numGuests}.
+     * It will filter away tables that are occupied {@link Set<Tables> OccupiedTables}
+     * and only consider tables within the {@link List<Tables> Tables}
+     *
+     * @param tables
+     * @param occupiedTables
+     * @param numGuests
+     * @return list of {@link List<Tables> tables} able to seat the {@link Integer numGuests}, otherwise an empty list
+     */
     private List<Tables> findBestTables(List<Tables> tables, Set<Tables> occupiedTables, int numGuests) {
         int bestWaste = restaurantCapacity + 1;
         List<Tables> result = new ArrayList<>();
@@ -132,11 +142,6 @@ public class Restaurant {
         return count;
     }
 
-    public void setTables(List<Tables> tables) {
-        this.tables = tables;
-        this.smallTables = divideTableSize(tables, 1, SMALLTABLEMAX);
-        this.bigTables = divideTableSize(tables, SMALLTABLEMAX + 1, BIGTABLEMAX);
-    }
 
     public List<Tables> findBestSmallTables(Set<Tables> occupiedTables, int numGuests) {
         return findBestTables(smallTables, occupiedTables, numGuests);
@@ -173,5 +178,11 @@ public class Restaurant {
             }
         }
         return bestComboTable;
+    }
+
+    public void setTables(List<Tables> tables) {
+        this.tables = tables;
+        this.smallTables = divideTableSize(tables, 1, SMALLTABLEMAX);
+        this.bigTables = divideTableSize(tables, SMALLTABLEMAX + 1, BIGTABLEMAX);
     }
 }
