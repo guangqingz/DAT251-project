@@ -6,7 +6,7 @@ import {z} from "zod";
 import {useEffect, useState} from "react";
 import {InformationCircleIcon, ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
@@ -235,6 +235,17 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
         },
     })
 
+    const {timeSlotData, isError} = useQuery({
+        queryKey: [`timeSlots`],
+        queryFn: async () => {
+            const response = await axios.get(`http://localhost:8080/booking`);
+            return response.data;
+        },
+        onSuccess: () => {
+            handlePastTimeSlots()
+            }
+    })
+
     function isPastTime(time: string): boolean {
         const todaysDate = new Date();
         const hour = Number(time.split(":")[0])
@@ -248,7 +259,7 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     }
 
     const handlePastTimeSlots = () => {
-        timeSlotsExtended = timeSlots.map((prev) => ({
+        timeSlotsExtended = timeSlotData.map((prev) => ({
             ...prev, pastTime: isPastTime(prev.time)
         }));
         return false;
@@ -257,7 +268,6 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     useEffect(()=> {
         handlePrevBtn();
         handleNextBtn();
-        handlePastTimeSlots();
     }, [])
 
     return (

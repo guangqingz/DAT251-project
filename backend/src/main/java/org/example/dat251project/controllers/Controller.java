@@ -2,6 +2,8 @@ package org.example.dat251project.controllers;
 
 import org.example.dat251project.dtos.BookingDTO;
 import org.example.dat251project.dtos.BookingResponseDTO;
+import org.example.dat251project.dtos.TimeSlotDTO;
+import org.example.dat251project.dtos.TimeSlotRequestDTO;
 import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Tables;
 import org.example.dat251project.repositories.BookingRepository;
@@ -24,14 +26,8 @@ public class Controller {
     @Autowired
     private BookingService bookingService;
 
-
     @GetMapping("menu")
     public ResponseEntity<URL> menu() {
-        return null;
-    }
-
-    @GetMapping("booking")
-    public ResponseEntity<String> bookingPage() {
         return null;
     }
 
@@ -73,6 +69,13 @@ public class Controller {
                 .comment(booking.getComment())
                 .build();
         return ResponseEntity.ok().body(bookingResponseDTO);
+    }
+
+    @GetMapping("booking")
+    public ResponseEntity<List<TimeSlotDTO>> getAvailableTimeSlot(@RequestBody TimeSlotRequestDTO timeSlotRequestDTO) {
+        List<TimeSlotDTO> timeSlotDTO = bookingSystem.getAvailabilityForDate(timeSlotRequestDTO.getDate(),
+                timeSlotRequestDTO.getNumGuests());
+        return ResponseEntity.ok().body(timeSlotDTO);
     }
 
 }
