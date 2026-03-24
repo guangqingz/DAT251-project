@@ -1,26 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #8E3318;
   --foreground: #171717;
+  --font-title: "PT Sans", sans-serif;
+  --font-body: "PT Serif", sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-custom-green: #8fbc8f;
+  --color-light-custom-green: #e9fde9;
+  --color-custom-red: #7A3018;
+   --color-custom-eggwhite: #F4F3EE;
+   --color-custom-eggwhite-dark: #E7E6DE;
+   --color-custom-gold: #C9AB81;
+   --color-custom-gray: #585857;
+   --color-custom-green: #63A439;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body), serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-title), sans-serif;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities{
+    .font-title {
+        font-family: var(--font-title), sans-serif;
+    }
+    .default-btn {
+        @apply py-3 px-5 border-2 rounded-3xl transition-all duration-300;
+    }
 }
+
+.btn{
+    position: relative;
+}
+
+.btn::before{
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: all 0.4s;
+}
+
+.btn:hover::before{
+    width: 100%;
+}
+
