@@ -76,6 +76,11 @@ const timeSlots: TimeSlot[] = [
     }
 ]
 
+type TimeSlotRequestType = {
+        date: string,
+        numGuest: number
+    }
+
 const days: string[] = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"]
 let date: Date = new Date();
 let year: number = date.getFullYear();
@@ -235,14 +240,14 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
         },
     })
 
-    const {timeSlotData, isError} = useQuery({
-        queryKey: [`timeSlots`],
-        queryFn: async () => {
-            const response = await axios.get(`http://localhost:8080/booking`);
-            return response.data;
+    const mutation = useMutation({
+        mutationFn: (timeSlotRequestData: TimeSlotRequestType) => {
+            console.log(timeSlotRequestData)
+            return axios.post(`http://localhost:8080/booking/timeslot`, timeSlotRequestData);
         },
-        onSuccess: () => {
-            handlePastTimeSlots()
+        onSuccess: (data) => {
+            console.log(data);
+            handlePastTimeSlots(data.data);
             }
     })
 
@@ -258,8 +263,9 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
         return false;
     }
 
-    const handlePastTimeSlots = () => {
-        timeSlotsExtended = timeSlotData.map((prev) => ({
+    const handlePastTimeSlots = (timeslotList) => {
+        console.log(timeslotList);
+        timeSlotsExtended = timeslotList.map((prev) => ({
             ...prev, pastTime: isPastTime(prev.time)
         }));
         return false;
@@ -268,7 +274,14 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     useEffect(()=> {
         handlePrevBtn();
         handleNextBtn();
+                const body = {
+                            date: "2026-03-24",
+                            numGuests: 2,
+                       }
+                mutation.mutate(body);
     }, [])
+
+
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>

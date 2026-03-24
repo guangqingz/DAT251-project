@@ -71,10 +71,11 @@ public class Controller {
         return ResponseEntity.ok().body(bookingResponseDTO);
     }
 
-    @GetMapping("booking")
+    @PostMapping("booking/timeslot")
     public ResponseEntity<List<TimeSlotDTO>> getAvailableTimeSlot(@RequestBody TimeSlotRequestDTO timeSlotRequestDTO) {
         List<TimeSlotDTO> timeSlotDTO = bookingSystem.getAvailabilityForDate(timeSlotRequestDTO.getDate(),
                 timeSlotRequestDTO.getNumGuests());
+        System.out.println(timeSlotDTO);
         return ResponseEntity.ok().body(timeSlotDTO);
     }
 
