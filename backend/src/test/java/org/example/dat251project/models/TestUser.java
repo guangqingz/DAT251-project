@@ -2,10 +2,12 @@ package org.example.dat251project.models;
 
 import org.example.dat251project.configs.Role;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+@SpringBootTest
 public class TestUser {
     private String name = "Mona";
     private String email = "mona@email.com";
