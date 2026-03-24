@@ -101,7 +101,7 @@ type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
 let timeSlotsExtended: TimeSlotExtended[] = []
 
-export default function BookingDetailsForm({setBookingDetails, setBookingConfirmed}:{setBookingDetails: any, setBookingConfirmed: any}){
+export default function BookingDetailsForm({setBookingDetails}:{setBookingDetails: any}){
     const {
         register,
         handleSubmit,
@@ -145,7 +145,7 @@ export default function BookingDetailsForm({setBookingDetails, setBookingConfirm
         console.log("FORM BOOKING DETAILS SUBMITTED")
         console.log(data)
         setBookingDetails(data)
-        mutation.mutate(data);
+        mutate(data);
     }
 
     const handleWrongGuests = () => {
@@ -219,14 +219,14 @@ export default function BookingDetailsForm({setBookingDetails, setBookingConfirm
     
     const queryClient = useQueryClient();
 
-    const mutation = useMutation({
+    const {data, mutate} = useMutation({
         mutationFn: (formData: BookingSchemaType) => {
             return axios.post("http://localhost:8080/booking", formData)
         },
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['booking']})
             console.log("Booking successful, query invalidated.")
-            setBookingConfirmed(true);
+            console.log(data);
         },
     })
 
