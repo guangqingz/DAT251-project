@@ -75,13 +75,13 @@ public class BookingSystem {
      * @param numGuests
      * @return true if there is a table available, false otherwise
      */
-    private boolean checkAvailability(Date date, LocalTime time, int numGuests) {
+    private boolean checkAvailability(LocalDate date, LocalTime time, int numGuests) {
         List<Tables> possibleTables = findAvailableTables(date, time, numGuests);
         return !possibleTables.isEmpty();
 
     }
 
-    public Map<LocalTime, Boolean> getAvailabilityForDate(Date date, int numGuests) {
+    public Map<LocalTime, Boolean> getAvailabilityForDate(LocalDate date, int numGuests) {
         Map<LocalTime, Boolean> availabilityMap = new HashMap<>();
         for (LocalTime timeslot : restaurant.getTimeSlots()) {
             availabilityMap.put(timeslot, checkAvailability(date, timeslot, numGuests));
@@ -102,7 +102,7 @@ public class BookingSystem {
         return null;
     }
 
-    private Set<Tables> getOccupiedTables(Date date, LocalTime time) {
+    private Set<Tables> getOccupiedTables(LocalDate date, LocalTime time) {
         HashSet<Tables> occupiedTables = new HashSet<>();
         List<Booking> bookings = bookingService.findByDateAndTime(date, time);
         for (Booking b : bookings) {
@@ -113,7 +113,7 @@ public class BookingSystem {
 
 
     //algorithm part
-    public List<Tables> findAvailableTables(Date date, LocalTime time, int numGuests) {
+    public List<Tables> findAvailableTables(LocalDate date, LocalTime time, int numGuests) {
         List<Tables> bestTables = new ArrayList<>();
         Set<Tables> occupiedTables = getOccupiedTables(date, time);
 
@@ -136,5 +136,13 @@ public class BookingSystem {
             tableNames.add(t.getName());
         }
         return tableNames;
+    }
+
+    public Booking getBookingById(UUID id) {
+        Booking booking = bookingService.getBookingById(id);
+        if (booking == null) {
+            throw new IllegalArgumentException("Cannot find booking with id: " + id.toString());
+        }
+        return booking;
     }
 }

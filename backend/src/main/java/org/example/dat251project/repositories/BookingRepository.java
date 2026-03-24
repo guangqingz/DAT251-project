@@ -10,5 +10,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface BookingRepository extends JpaRepository<Booking, UUID> {
-    List<Booking> findByDateAndTime(Date date, LocalTime time);
+    List<Booking> findByDateAndTime(LocalDate date, LocalTime time);
 }

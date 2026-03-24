@@ -4,8 +4,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -19,6 +17,6 @@ public class BookingResponseDTO {
     private Integer phoneNumber;
     private int numberGuest;
     private LocalTime time;
-    private Date date;
+    private LocalDate date;
     private String comment;
 }

@@ -10,9 +10,7 @@ import org.example.dat251project.services.BookingSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
@@ -26,8 +24,6 @@ public class Controller {
     @Autowired
     private BookingService bookingService;
 
-    @Autowired
-    private BookingRepository bookingRepository;
 
     @GetMapping("menu")
     public ResponseEntity<URL> menu() {
@@ -63,7 +59,10 @@ public class Controller {
 
     @GetMapping("booking/{id}")
     public ResponseEntity<BookingResponseDTO> getBooking(@PathVariable UUID id) {
-        Booking booking = bookingRepository.findById(id).orElse(null);
+        Booking booking = bookingSystem.getBookingById(id);
+        if (booking == null) {
+            return ResponseEntity.badRequest().build();
+        }
         BookingResponseDTO bookingResponseDTO = BookingResponseDTO.builder()
                 .id(booking.getId())
                 .email(booking.getEmail())
@@ -75,4 +74,5 @@ public class Controller {
                 .build();
         return ResponseEntity.ok().body(bookingResponseDTO);
     }
+
 }
