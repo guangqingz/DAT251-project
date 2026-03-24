@@ -1,32 +1,42 @@
 package org.example.dat251project.services;
 
+import jakarta.mail.MessagingException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.dat251project.dtos.BookingDTO;
+import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
-import org.example.dat251project.repositories.BookingRepository;
+import org.example.dat251project.models.Tables;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Service
 public class BookingSystem {
-    private BookingRepository bookingRepo;
     private Restaurant restaurant;
     private Integer remainingSeats;
+    @Autowired
+    private BookingService bookingService;
+    @Autowired
+    private EmailService emailService;
 
-    public BookingSystem(BookingRepository bookingRepo, Restaurant restaurant) {
-        this.bookingRepo = bookingRepo;
+    public BookingSystem(Restaurant restaurant) {
+        if (restaurant != null) {
+            initializeRestaurant(restaurant);
+        }
+    }
+
+    // Add a method to initialize the fields
+    public void initializeRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
-        this.remainingSeats = restaurant.getTableCapacity();
-        // Sanity checks to ensure restaurant is valid
+        this.remainingSeats = restaurant.getRestaurantCapacity();
         sanityCheck(remainingSeats, restaurant.getTimeSlots(), restaurant.getNormalOpeningHours());
     }
 
@@ -38,6 +48,7 @@ public class BookingSystem {
             throw new IllegalArgumentException("TimeSlot is out of the opening hours");
         }
     }
+
 
     /**
      * helper method for checking if the timeslots given are within the {@link OpeningHours openingHours}
@@ -62,13 +73,12 @@ public class BookingSystem {
      * @param date
      * @param time
      * @param numGuests
-     * @return true if there is enough capacity, false otherwise
+     * @return true if there is a table available, false otherwise
      */
     private boolean checkAvailability(LocalDate date, LocalTime time, int numGuests) {
-        Integer totalGuests = bookingRepo.sumGuestsByDateAndTime(date, time);
-        if (totalGuests == null) totalGuests = 0;
+        List<Tables> possibleTables = findAvailableTables(date, time, numGuests);
+        return !possibleTables.isEmpty();
 
-        return numGuests + totalGuests <= restaurant.getTableCapacity();
     }
 
     public Map<LocalTime, Boolean> getAvailabilityForDate(LocalDate date, int numGuests) {
@@ -79,10 +89,52 @@ public class BookingSystem {
         return availabilityMap;
     }
 
+    public Booking createBooking(BookingDTO bookingDTO, List<Tables> tables) {
+        Booking booking = bookingService.createBooking(bookingDTO, tables);
+        if (booking != null) {
+            try {
+                emailService.createEmailBooking(booking);
+                return booking;
+            } catch (MessagingException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private Set<Tables> getOccupiedTables(LocalDate date, LocalTime time) {
+        HashSet<Tables> occupiedTables = new HashSet<>();
+        List<Booking> bookings = bookingService.findByDateAndTime(date, time);
+        for (Booking b : bookings) {
+            occupiedTables.addAll(b.getTables());
+        }
+        return occupiedTables;
+    }
+
+
     //algorithm part
-    public boolean createBooking(LocalDate date, LocalTime time, int numGuests) {
-        // TODO complex algorithm must be in place
-        // BookingDTO? instead of three parameters? can be used as refactor step
-        return checkAvailability(date, time, numGuests);
+    public List<Tables> findAvailableTables(LocalDate date, LocalTime time, int numGuests) {
+        List<Tables> bestTables = new ArrayList<>();
+        Set<Tables> occupiedTables = getOccupiedTables(date, time);
+
+        if (numGuests > restaurant.MAXGROUPSIZE) return bestTables;
+        if (numGuests <= restaurant.SMALLTABLEMAX) {
+            bestTables = restaurant.findBestSmallTables(occupiedTables, numGuests);
+        }
+        if (numGuests <= restaurant.BIGTABLEMAX && bestTables.isEmpty()) {
+            bestTables = restaurant.findBestBigTables(occupiedTables, numGuests);
+        }
+        if (bestTables.isEmpty()) {
+            bestTables = restaurant.findBestComboTables(occupiedTables, numGuests);
+        }
+        return bestTables;
+    }
+
+    public List<String> getTableNames(List<Tables> tables) {
+        ArrayList<String> tableNames = new ArrayList<>();
+        for (Tables t : tables) {
+            tableNames.add(t.getName());
+        }
+        return tableNames;
     }
 }

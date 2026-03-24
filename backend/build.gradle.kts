@@ -36,7 +36,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-h2console:4.0.0-M1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-
+    //email
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    testImplementation("org.springframework.boot:spring-boot-starter-mail-test")
 
 }
 
