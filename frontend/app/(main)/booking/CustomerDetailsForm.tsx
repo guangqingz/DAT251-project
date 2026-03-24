@@ -1,5 +1,5 @@
 import {SubmitHandler, useForm} from "react-hook-form";
-import {CustomerFormInput, CustomerFormOutput, customerDetails} from "@/app/booking/FormTypes";
+import {CustomerFormInput, CustomerFormOutput, customerDetails} from "@/app/(main)/booking/FormTypes";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 export default function CustomerDetailsForm({setCustomerDetails}:{setCustomerDetails:any}){

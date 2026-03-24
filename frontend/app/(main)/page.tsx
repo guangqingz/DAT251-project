@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import Carousel from "./ui/Carousel";
-import Container from "./ui/Container";
+import Carousel from "../ui/Carousel";
+import Container from "../ui/Container";
 
 export default function Home() {
     return (

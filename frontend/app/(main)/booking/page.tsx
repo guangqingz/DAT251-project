@@ -1,9 +1,9 @@
 'use client';
 
 import {useState} from "react";
-import BookingDetailsForm from "@/app/booking/BookingDetailsForm";
-import {BookingFormOutput, BookingSchema} from "@/app/booking/FormTypes";
-import CustomerDetailsForm from "@/app/booking/CustomerDetailsForm";
+import BookingDetailsForm from "@/app/(main)/booking/BookingDetailsForm";
+import {BookingFormOutput, BookingSchema} from "@/app/(main)/booking/FormTypes";
+import CustomerDetailsForm from "@/app/(main)/booking/CustomerDetailsForm";
 import Container from "@/app/ui/Container";
 
 export default function Page () {
