@@ -1,4 +1,5 @@
 import {z} from "zod";
+import {maxNumberGuest} from "@/app/booking/BookingDetailsForm";
 
 const customTimeRegex = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/;
 
@@ -17,8 +18,19 @@ export const bookingSchema = z.object({
 
 export type BookingSchema = z.infer<typeof bookingSchema>
 
+export const bookingSchema2 = z.object({
+    numberGuest: z.number().min(1, "Minimum 1 guest").max(maxNumberGuest, `Maximum ${maxNumberGuest}`),
+    time: z.string(),
+    date: z.string(),
+    email: z.email(),
+    phoneNumber: z.string(),
+    comment: z.string().optional()
+})
+
+export type BookingSchema2 = z.infer<typeof bookingSchema2>
+
 export const bookingDetails = bookingSchema.pick({
-    numberOfGuest: true,
+    numberGuest: true,
     time: true,
     date: true,
 })

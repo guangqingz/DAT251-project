@@ -9,6 +9,10 @@ import clsx from "clsx";
 import {useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {useRouter} from "next/navigation";
+import GuestsDetailsForm from "@/app/booking/GuestsDetailsForm";
+import {BookingSchema2} from "@/app/booking/FormTypes";
+
+export const maxNumberGuest = 5;
 
 type TimeSlot = {
     time: string,
@@ -21,64 +25,9 @@ type TimeSlotExtended = {
     pastTime: boolean
 }
 
-const timeSlots: TimeSlot[] = [
-    {
-        time: "13:30",
-        available: false,
-    }, {
-        time: "14:00",
-        available: false,
-    }, {
-        time: "14:30",
-        available: false,
-    }, {
-        time: "15:00",
-        available: false,
-    }, {
-        time: "15:30",
-        available: false,
-    }, {
-        time: "16:00",
-        available: false,
-    }, {
-        time: "16:30",
-        available: false,
-    }, {
-        time: "17:00",
-        available: false,
-    }, {
-        time: "17:30",
-        available: true,
-    }, {
-        time: "18:00",
-        available: true,
-    }, {
-        time: "18:30",
-        available: true,
-    }, {
-        time: "19:00",
-        available: true,
-    }, {
-        time: "19:30",
-        available: true,
-    }, {
-        time: "20:00",
-        available: true,
-    }, {
-        time: "20:30",
-        available: false,
-    }, {
-        time: "21:00",
-        available: true,
-    }, {
-        time: "21:30",
-        available: false,
-    }
-]
-
 type TimeSlotRequestType = {
         date: string,
-        numGuest: number
+        numGuests: number
     }
 
 const days: string[] = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"]
@@ -87,9 +36,6 @@ let year: number = date.getFullYear();
 let month: string = date.toLocaleDateString("no-NO", {month: "long"})
 const maxFutureMonth = 2;
 let maxMonth = (date.getMonth() + maxFutureMonth + 1) % 12
-
-const maxNumberGuest = 5;
-const guestsList: number[] = Array.from({length: maxNumberGuest}, (_, index) => index + 1);
 
 const bookingSchema = z.object({
     numberGuest: z.number(),
@@ -102,11 +48,16 @@ const bookingSchema = z.object({
 
 type BookingSchemaType = z.infer<typeof bookingSchema>
 
-type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
+export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
 let timeSlotsExtended: TimeSlotExtended[] = []
 
-export default function BookingDetailsForm({setBookingDetails}:{setBookingDetails: any}){
+export default function BookingDetailsForm({setBookingDetails, formState, setFormStateAction}:
+    {
+        setBookingDetails: any,
+        formState:Partial<BookingSchema2>
+        setFormStateAction: React.Dispatch<React.SetStateAction<Partial<BookingSchema2>>>
+    }){
     const {
         register,
         handleSubmit,
@@ -122,7 +73,6 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
             time: "",
         }
     })
-    const [showErrorGuest, setShowErrorGuest] = useState(false);
     const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
     const [currYear, setCurrYear] = useState(year);
     const [currMonthString, setCurrMonthString] = useState(month); // used for calendar header
@@ -153,16 +103,7 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
         mutate(data);
     }
 
-    const handleWrongGuests = () => {
-        setShowErrorGuest(true);
-        setValue("numberGuest", maxNumberGuest, {shouldValidate: true});
-    }
 
-    const handleCorrectGuests = (value: number) => {
-        setValue("numberGuest", value, {shouldValidate: true});
-        setShowErrorGuest(false);
-        setSchemaSection("DATE")
-    }
 
     const handleNextBtn = () => {
         setNextMonth(false)
@@ -211,14 +152,16 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     }
 
     const handleSelectDate = (dateValue: number) => {
-        let month = date.getMonth() + 1
+        let month = date.getMonth() + 1;
+        let monthString: string = "";
         if (month < 10) {
-            month = "0" + month.toString()
-            }
-        const dateString = `${currYear}-${month}-${dateValue}`;
+            monthString = "0" + month.toString()
+        } else {
+            monthString = month.toString();
+        }
+        const dateString = `${currYear}-${monthString}-${dateValue}`;
         setValue("date", dateString, {shouldValidate: true})
         setSchemaSection("TIME");
-        handlePastTimeSlots();
     }
 
     const handleTime = (time: string) => {
@@ -263,9 +206,9 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
         return false;
     }
 
-    const handlePastTimeSlots = (timeslotList) => {
+    const handlePastTimeSlots = (timeslotList: TimeSlot) => {
         console.log(timeslotList);
-        timeSlotsExtended = timeslotList.map((prev) => ({
+        timeSlotsExtended = timeslotList.map((prev: TimeSlot) => ({
             ...prev, pastTime: isPastTime(prev.time)
         }));
         return false;
@@ -274,11 +217,11 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     useEffect(()=> {
         handlePrevBtn();
         handleNextBtn();
-                const body = {
-                            date: "2026-03-24",
-                            numGuests: 2,
-                       }
-                mutation.mutate(body);
+        const body: TimeSlotRequestType = {
+                    date: "2026-03-24",
+                    numGuests: 2,
+               }
+        mutation.mutate(body);
     }, [])
 
 
@@ -286,42 +229,11 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
             {schemaSection === "GUESTS" &&
-                <section className={"flex flex-col gap-5"}>
-                    <h2 className={"text-xl text-custom-gray text-center"}>Velkommen</h2>
-                    <h3 className={"text-2xl text-center"}>Hvor mange gjester er dere?</h3>
-                    <Controller
-                        control={control}
-                        name={"numberGuest"}
-                        render={({field}) =>
-                            <input type={"number"}
-                                   aria-label={"choose number of guests"}
-                                   aria-controls={"number-of-guests"}
-                                   aria-describedby={"number-of-guests-error"}
-                                   className={"sr-only"}
-                                   {...field}
-                                   onChange={e => field.onChange(Number(e.target.value))}/>}
-                    />
-                    <div role={"group"} id="number-of-guests" aria-label={"number of guests buttons"} className={"grid grid-cols-4 gap-3"}>
-                        {guestsList.map((numb: number, index:number) => {
-                            const buttonText: string = numb !== maxNumberGuest ? numb.toString() : numb.toString() + "+"
-                            const lastbtn: boolean = numb === maxNumberGuest
-
-                            return <button type="button" key={index}
-                                    onClick={ lastbtn ? handleWrongGuests : () => handleCorrectGuests(numb) }
-                                    aria-pressed={selectedNumberOfGuest === numb}
-                                    className={clsx(
-                                       "border-2 border-gray-300 py-2 rounded-md text-xl hover:bg-gray-300 transition-colors",
-                                       {"bg-custom-gray text-white border-custom-gray": selectedNumberOfGuest === numb},
-                                        {"col-span-full": lastbtn})}>{buttonText}</button>
-                        })}
-                    </div>
-                    {errors.numberGuest && <span id={"number-of-guests-error"}>{errors.numberGuest.message}</span>}
-                    {showErrorGuest &&
-                        <div className={"flex items-center bg-custom-eggwhite-dark p-2 rounded-md"}>
-                            <InformationCircleIcon className={"w-9 h-9 mr-2"}/>
-                            <p>Er dere over {maxNumberGuest} personer, ta kontakt med oss på tlf: <a href={"tel:+47-553-136-90"}>+47 553 136 90</a></p>
-                        </div>}
-                </section>
+                <GuestsDetailsForm control={control}
+                                   errors={errors}
+                                   formState={formState}
+                                   setFormStateAction={setFormStateAction}
+                                   setSchemaSelection={setSchemaSection}/>
             }
             {schemaSection === "DATE" &&
                 <section className={"flex flex-col gap-5"}>
