@@ -8,6 +8,7 @@ import {useState} from "react";
 import clsx from "clsx";
 import {usePathname} from "next/navigation";
 import NavLink from "@/app/ui/navbar/NavLink";
+import { refresh } from 'next/cache'
 
 export type NavLinkProps = {
     href: string,
@@ -41,10 +42,15 @@ export default function Navbar(){
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
 
+    const handleNavLinkClick = () => {
+        setIsOpen(false);
+    }
+
     return <header className={"relative bg-background z-20"}>
         <Container>
             <nav className={clsx("flex justify-between items-center border-custom-eggwhite px-5 md:p-0",
-                {"md:border-b" : pathname === "/"})}>
+                {"md:border-b" : pathname === "/"},
+                {"md:border-b" : pathname === "/contact"})}>
                 <Link href={"/"}>
                     <Image src={"/logo.png"} alt={"Logo of the restaurant"} priority width={200} height={200} className={"w-40 md:w-60 h-auto"}/>
                 </Link>
@@ -69,7 +75,7 @@ export default function Navbar(){
                 )}>
                     {navLinks.map((link, index) =>
                         <li key={index}>
-                            <NavLink navLink={link} pathname={pathname}/>
+                            <NavLink navLink={link} pathname={pathname} handleClick={handleNavLinkClick}/>
                         </li>
                     )}
                 </ul>

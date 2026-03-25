@@ -11,6 +11,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-custom-green: #8fbc8f;
+  --color-light-custom-green: #e9fde9;
   --color-custom-red: #7A3018;
    --color-custom-eggwhite: #F4F3EE;
    --color-custom-eggwhite-dark: #E7E6DE;
