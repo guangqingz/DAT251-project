@@ -12,24 +12,9 @@ import {useRouter} from "next/navigation";
 import GuestsDetailsForm from "@/app/booking/GuestsDetailsForm";
 import {BookingSchema2} from "@/app/booking/FormTypes";
 import DateDetailsForm from "@/app/booking/DateDetailsForm";
+import TimeDetailsForm from "@/app/booking/TimeDetailsForm";
 
 export const maxNumberGuest = 5;
-
-type TimeSlot = {
-    time: string,
-    available: boolean,
-}
-
-type TimeSlotExtended = {
-    time: string,
-    available: boolean,
-    pastTime: boolean
-}
-
-type TimeSlotRequestType = {
-        date: string,
-        numGuests: number
-    }
 
 const bookingSchema = z.object({
     numberGuest: z.number(),
@@ -44,8 +29,6 @@ type BookingSchemaType = z.infer<typeof bookingSchema>
 
 export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
-let timeSlotsExtended: TimeSlotExtended[] = []
-
 export default function BookingDetailsForm({setBookingDetails, formState, setFormStateAction}:
     {
         setBookingDetails: any,
@@ -55,8 +38,6 @@ export default function BookingDetailsForm({setBookingDetails, formState, setFor
     const {
         register,
         handleSubmit,
-        watch,
-        setValue,
         control,
         formState: { errors },
     } = useForm<BookingSchemaType>({
@@ -69,8 +50,6 @@ export default function BookingDetailsForm({setBookingDetails, formState, setFor
     })
     const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
 
-    const selectedTime = watch("time");
-
     const router = useRouter();
 
     const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
@@ -78,11 +57,6 @@ export default function BookingDetailsForm({setBookingDetails, formState, setFor
         console.log(data)
         setBookingDetails(data)
         mutate(data);
-    }
-
-    const handleTime = (time: string) => {
-        setValue("time", time, {shouldValidate: true})
-        setSchemaSection("CONTACT")
     }
     
     const queryClient = useQueryClient();
@@ -98,45 +72,6 @@ export default function BookingDetailsForm({setBookingDetails, formState, setFor
             router.push(`/booking/${data.data.id}`);
         },
     })
-
-    const mutation = useMutation({
-        mutationFn: (timeSlotRequestData: TimeSlotRequestType) => {
-            console.log(timeSlotRequestData)
-            return axios.post(`http://localhost:8080/booking/timeslot`, timeSlotRequestData);
-        },
-        onSuccess: (data) => {
-            console.log(data);
-            handlePastTimeSlots(data.data);
-            }
-    })
-
-    function isPastTime(time: string): boolean {
-        const todaysDate = new Date();
-        const hour = Number(time.split(":")[0])
-
-        // users must minimum book 2 hours before the booking time
-        if ((todaysDate.getHours() + 3) > hour){
-            return true;
-        }
-
-        return false;
-    }
-
-    const handlePastTimeSlots = (timeslotList: TimeSlot) => {
-        console.log(timeslotList);
-        timeSlotsExtended = timeslotList.map((prev: TimeSlot) => ({
-            ...prev, pastTime: isPastTime(prev.time)
-        }));
-        return false;
-    }
-
-    useEffect(()=> {
-        const body: TimeSlotRequestType = {
-                    date: "2026-03-24",
-                    numGuests: 2,
-               }
-        mutation.mutate(body);
-    }, [])
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
@@ -154,49 +89,13 @@ export default function BookingDetailsForm({setBookingDetails, formState, setFor
                                  setFormStateAction={setFormStateAction}
                                  setSchemaSelection={setSchemaSection}/>
             }
-            {/*{schemaSection === "TIME" &&*/}
-            {/*    <section className={"flex flex-col gap-5"}>*/}
-            {/*        <h2 className={"text-xl text-custom-gray text-center"}>{selectedNumberOfGuest} personer</h2>*/}
-            {/*        <h2 className={"text-xl text-custom-gray text-center"}>{selectedDate}</h2>*/}
-            {/*        <label htmlFor="time" className={"text-2xl text-center font-title"}>Velg tid</label>*/}
-            {/*        <Controller*/}
-            {/*            control={control}*/}
-            {/*            name={"time"}*/}
-            {/*            render={({field}) =>*/}
-            {/*                <input type={"text"}*/}
-            {/*                       aria-label={"choose time of booking"}*/}
-            {/*                       aria-controls={"time-group"}*/}
-            {/*                       aria-describedby={"time-error"}*/}
-            {/*                       className={"sr-only"}*/}
-            {/*                       {...field}*/}
-            {/*                       onChange={e => field.onChange(e.target.value)}/>}*/}
-            {/*        />*/}
-            {/*        {errors.time && <span id={"time-error"}>{errors.time.message}</span>}*/}
-            {/*        <div role={"group"} id="time-group" aria-label={"time slots buttons"} className={"grid grid-cols-4 gap-3"}>*/}
-            {/*            {timeSlotsExtended.map((timeSlot: TimeSlotExtended)=>(*/}
-            {/*                    <button key={timeSlot.time} type={"button"}*/}
-            {/*                            onClick={()=> handleTime(timeSlot.time)}*/}
-            {/*                            disabled={!timeSlot.available || timeSlot.pastTime}*/}
-            {/*                            aria-pressed={selectedTime === timeSlot.time}*/}
-            {/*                            aria-disabled={timeSlot.available}*/}
-            {/*                            className={clsx(*/}
-            {/*                                "relative border-2 border-gray-300 py-2 rounded-md text-xl",*/}
-            {/*                                { "text-custom-green hover:bg-gray-300 transition-colors": timeSlot.available},*/}
-            {/*                                {"text-gray-400": timeSlot.pastTime}*/}
-            {/*                            )}>*/}
-            {/*                        <p>{timeSlot.time}</p>*/}
-            {/*                        {(!timeSlot.available && !timeSlot.pastTime) &&*/}
-            {/*                            <div className={"bg-red-400 w-2 h-2 absolute right-1 top-1 rounded-full"}></div>}*/}
-            {/*                    </button>)*/}
-            {/*            )}*/}
-            {/*        </div>*/}
-            {/*        <button*/}
-            {/*            onClick={() => setSchemaSection("DATE")}*/}
-            {/*            className={"p-2 border-2 rounded-full w-fit scale-90 hover:scale-100 transition-all"}>*/}
-            {/*            <ArrowLeftIcon className={"w-8 h-8"}/>*/}
-            {/*        </button>*/}
-            {/*    </section>*/}
-            {/*}*/}
+            {schemaSection === "TIME" &&
+                <TimeDetailsForm control={control}
+                                 errors={errors}
+                                 formState={formState}
+                                 setFormStateAction={setFormStateAction}
+                                 setSchemaSelection={setSchemaSection}/>
+            }
             {/*{schemaSection === "CONTACT" &&*/}
             {/*    <section className={"flex flex-col gap-5"}>*/}
             {/*        <h2 className={"text-xl text-custom-gray text-center"}>{selectedNumberOfGuest} personer</h2>*/}
