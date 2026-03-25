@@ -2,18 +2,18 @@ import {Controller} from "react-hook-form";
 import clsx from "clsx";
 import {InformationCircleIcon} from "@heroicons/react/24/outline";
 import React, {useState} from "react";
-import {BookingSchema2} from "@/app/booking/FormTypes";
-import {SchemaSections} from  "@/app/booking/BookingDetailsForm";
+import {BookingSchemaType} from "@/app/booking/FormTypes";
+import {SchemaSections} from  "@/app/booking/page";
 
-const maxNumberGuest = 5;
+export const maxNumberGuest = 5;
 const guestsList: number[] = Array.from({length: maxNumberGuest}, (_, index) => index + 1);
 
 export default function GuestsDetailsForm({control, errors, formState, setFormStateAction, setSchemaSelection}:
     {
         control:any,
         errors:any,
-        formState:Partial<BookingSchema2>
-        setFormStateAction: React.Dispatch<React.SetStateAction<Partial<BookingSchema2>>>
+        formState:Partial<BookingSchemaType>
+        setFormStateAction: React.Dispatch<React.SetStateAction<Partial<BookingSchemaType>>>
         setSchemaSelection: React.Dispatch<React.SetStateAction<SchemaSections>>
     }) {
     const [showErrorGuest, setShowErrorGuest] = useState(false);

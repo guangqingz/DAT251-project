@@ -1,6 +1,6 @@
-import {BookingSchema2} from "@/app/booking/FormTypes";
+import {BookingSchemaType} from "@/app/booking/FormTypes";
 import React, {useEffect, useState} from "react";
-import {SchemaSections} from "@/app/booking/BookingDetailsForm";
+import {SchemaSections} from "@/app/booking/page";
 import {Controller} from "react-hook-form";
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -14,8 +14,8 @@ export default function DateDetailsForm({control, errors, formState, setFormStat
     {
         control:any,
         errors:any,
-        formState:Partial<BookingSchema2>
-        setFormStateAction: React.Dispatch<React.SetStateAction<Partial<BookingSchema2>>>
+        formState:Partial<BookingSchemaType>
+        setFormStateAction: React.Dispatch<React.SetStateAction<Partial<BookingSchemaType>>>
         setSchemaSelection: React.Dispatch<React.SetStateAction<SchemaSections>>
     }){
     // used to deactivate/activate calendar buttons

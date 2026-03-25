@@ -1,6 +1,6 @@
-import {BookingSchema2} from "@/app/booking/FormTypes";
+import {BookingSchemaType} from "@/app/booking/FormTypes";
 import React, {useEffect} from "react";
-import {SchemaSections} from "@/app/booking/BookingDetailsForm";
+import {SchemaSections} from "@/app/booking/page";
 import {Controller} from "react-hook-form";
 import clsx from "clsx";
 import {ArrowLeftIcon} from "@heroicons/react/24/outline";
@@ -27,8 +27,8 @@ export default function TimeDetailsForm({control, errors, formState, setFormStat
     {
         control:any,
         errors:any,
-        formState:Partial<BookingSchema2>
-        setFormStateAction: React.Dispatch<React.SetStateAction<Partial<BookingSchema2>>>
+        formState:Partial<BookingSchemaType>
+        setFormStateAction: React.Dispatch<React.SetStateAction<Partial<BookingSchemaType>>>
         setSchemaSelection: React.Dispatch<React.SetStateAction<SchemaSections>>
     }){
     const mutation = useMutation({
@@ -39,6 +39,7 @@ export default function TimeDetailsForm({control, errors, formState, setFormStat
 
     const timeSlotsExtended: TimeSlotExtendedType[] = mutation.data?.data.map((prev: TimeSlotType)=> ({
         ...prev,
+        time: prev.time.slice(0, -3),
         pastTime: isPastTime(prev.time)
     })) ?? [];
 
@@ -109,7 +110,7 @@ export default function TimeDetailsForm({control, errors, formState, setFormStat
                                 { "text-custom-green hover:bg-gray-300 transition-colors": timeSlot.available && !timeSlot.pastTime},
                                 {"text-gray-400": timeSlot.pastTime}
                             )}>
-                        <p>{timeSlot.time.slice(0, -3)}</p>
+                        <p>{timeSlot.time}</p>
                         {(!timeSlot.available && !timeSlot.pastTime) &&
                             <div className={"bg-red-400 w-2 h-2 absolute right-1 top-1 rounded-full"}></div>}
                     </button>)
