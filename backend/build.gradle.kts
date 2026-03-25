@@ -54,3 +54,7 @@ tasks.test {
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
 }
+
+tasks.withType<Test>().configureEach {
+    failOnNoDiscoveredTests = false
+}

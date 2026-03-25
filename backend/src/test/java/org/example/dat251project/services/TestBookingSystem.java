@@ -1,5 +1,6 @@
 package org.example.dat251project.services;
 
+import org.example.dat251project.dtos.TimeSlotDTO;
 import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
 import org.example.dat251project.models.Tables;
@@ -111,8 +112,8 @@ public class TestBookingSystem {
             Mockito.when(bookingService.findByDateAndTime(date, timeslot))
                     .thenReturn(new ArrayList<>()); // No bookings yet, all tables free
         }
-        Map<LocalTime, Boolean> availableTime = bookingSystem.getAvailabilityForDate(date, numGuests);
-        assertTrue(availableTime.get(time));
+        List<TimeSlotDTO> availableTime = bookingSystem.getAvailabilityForDate(date, numGuests);
+        assertTrue(availableTime.getFirst().getAvailable());
     }
 
 

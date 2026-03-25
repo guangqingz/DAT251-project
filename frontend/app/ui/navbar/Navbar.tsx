@@ -6,7 +6,7 @@ import {Bars3Icon, XMarkIcon} from "@heroicons/react/24/outline";
 import Container from "@/app/ui/Container";
 import {useState} from "react";
 import clsx from "clsx";
-import {usePathname, useRouter} from "next/navigation";
+import {usePathname} from "next/navigation";
 import NavLink from "@/app/ui/navbar/NavLink";
 import { refresh } from 'next/cache'
 
@@ -41,15 +41,9 @@ const navLinks: NavLinkProps[] = [
 export default function Navbar(){
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
-    const router = useRouter();
 
     const handleNavLinkClick = () => {
         setIsOpen(false);
-        if (pathname === "/booking"){
-            router.push("/booking");
-            router.refresh();
-            refresh()
-        }
     }
 
     return <header className={"relative bg-background z-20"}>

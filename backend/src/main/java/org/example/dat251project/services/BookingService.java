@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class BookingService {
@@ -26,11 +27,14 @@ public class BookingService {
                 bookingDTO.getComment(),
                 tables
         );
-        bookingRepo.save(booking);
-        return booking;
+        return bookingRepo.save(booking);
     }
 
     public List<Booking> findByDateAndTime(LocalDate date, LocalTime time) {
         return bookingRepo.findByDateAndTime(date, time);
+    }
+
+    public Booking getBookingById(UUID id) {
+        return bookingRepo.findById(id).orElse(null);
     }
 }

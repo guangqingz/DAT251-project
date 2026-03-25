@@ -26,7 +26,7 @@ export default function Page(){
                     <div className={"flex flex-col items-center gap-5 text-lg"}>
                         <p>Booking bekreftelse ble sendt til <span className={"font-bold"}>{data.email}</span></p>
                         <p>Antall gjester: <span className={"font-bold"}>{data.numberGuest}</span></p>
-                        <p>Dato: <span className={"font-bold"}>{data.date}</span></p>
+                        <p>Dato: <span className={"font-bold"}>{data.date.split("T")[0]}</span></p>
                         <p>Tid: <span className={"font-bold"}>{data.time}</span></p>
                         <p>Telefonnummer: <span className={"font-bold"}>{data.phoneNumber}</span></p>
                         <p>Kommentar: <span>{data.comment}</span></p>

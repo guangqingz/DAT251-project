@@ -4,7 +4,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -20,6 +19,4 @@ public class BookingResponseDTO {
     private LocalTime time;
     private LocalDate date;
     private String comment;
-    // remove tablenames TODO
-    private List<String> tableNames;
 }

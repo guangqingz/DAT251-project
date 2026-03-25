@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.dat251project.dtos.BookingDTO;
+import org.example.dat251project.dtos.TimeSlotDTO;
 import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
 import org.example.dat251project.models.Tables;
@@ -81,12 +82,16 @@ public class BookingSystem {
 
     }
 
-    public Map<LocalTime, Boolean> getAvailabilityForDate(LocalDate date, int numGuests) {
-        Map<LocalTime, Boolean> availabilityMap = new HashMap<>();
+    public List<TimeSlotDTO> getAvailabilityForDate(LocalDate date, int numGuests) {
+        List<TimeSlotDTO> availabilityList = new ArrayList<>();
         for (LocalTime timeslot : restaurant.getTimeSlots()) {
-            availabilityMap.put(timeslot, checkAvailability(date, timeslot, numGuests));
+            availabilityList.add(TimeSlotDTO.builder()
+                            .time(timeslot)
+                            .available(checkAvailability(date, timeslot, numGuests))
+                            .build());
+
         }
-        return availabilityMap;
+        return availabilityList;
     }
 
     public Booking createBooking(BookingDTO bookingDTO, List<Tables> tables) {
@@ -136,5 +141,13 @@ public class BookingSystem {
             tableNames.add(t.getName());
         }
         return tableNames;
+    }
+
+    public Booking getBookingById(UUID id) {
+        Booking booking = bookingService.getBookingById(id);
+        if (booking == null) {
+            throw new IllegalArgumentException("Cannot find booking with id: " + id.toString());
+        }
+        return booking;
     }
 }

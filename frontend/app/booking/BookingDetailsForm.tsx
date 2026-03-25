@@ -6,7 +6,7 @@ import {z} from "zod";
 import {useEffect, useState} from "react";
 import {InformationCircleIcon, ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
@@ -75,6 +75,11 @@ const timeSlots: TimeSlot[] = [
         available: false,
     }
 ]
+
+type TimeSlotRequestType = {
+        date: string,
+        numGuest: number
+    }
 
 const days: string[] = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"]
 let date: Date = new Date();
@@ -206,7 +211,11 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     }
 
     const handleSelectDate = (dateValue: number) => {
-        const dateString = `${currYear}-${date.getMonth() + 1}-${dateValue}`;
+        let month = date.getMonth() + 1
+        if (month < 10) {
+            month = "0" + month.toString()
+            }
+        const dateString = `${currYear}-${month}-${dateValue}`;
         setValue("date", dateString, {shouldValidate: true})
         setSchemaSection("TIME");
         handlePastTimeSlots();
@@ -219,15 +228,27 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     
     const queryClient = useQueryClient();
 
-    const {data, mutate} = useMutation({
+    const {mutate} = useMutation({
         mutationFn: (formData: BookingSchemaType) => {
             return axios.post("http://localhost:8080/booking", formData)
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({queryKey: ['booking']})
             console.log("Booking successful, query invalidated.")
             console.log(data);
+            router.push(`/booking/${data.data.id}`);
         },
+    })
+
+    const mutation = useMutation({
+        mutationFn: (timeSlotRequestData: TimeSlotRequestType) => {
+            console.log(timeSlotRequestData)
+            return axios.post(`http://localhost:8080/booking/timeslot`, timeSlotRequestData);
+        },
+        onSuccess: (data) => {
+            console.log(data);
+            handlePastTimeSlots(data.data);
+            }
     })
 
     function isPastTime(time: string): boolean {
@@ -242,8 +263,9 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
         return false;
     }
 
-    const handlePastTimeSlots = () => {
-        timeSlotsExtended = timeSlots.map((prev) => ({
+    const handlePastTimeSlots = (timeslotList) => {
+        console.log(timeslotList);
+        timeSlotsExtended = timeslotList.map((prev) => ({
             ...prev, pastTime: isPastTime(prev.time)
         }));
         return false;
@@ -252,8 +274,14 @@ export default function BookingDetailsForm({setBookingDetails}:{setBookingDetail
     useEffect(()=> {
         handlePrevBtn();
         handleNextBtn();
-        handlePastTimeSlots();
+                const body = {
+                            date: "2026-03-24",
+                            numGuests: 2,
+                       }
+                mutation.mutate(body);
     }, [])
+
+
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
