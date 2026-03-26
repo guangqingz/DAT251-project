@@ -5,10 +5,10 @@ import {bookingSchema, BookingSchemaType} from "@/app/booking/FormTypes";
 import Container from "@/app/ui/Container";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {SubmitHandler, useForm} from "react-hook-form";
-import GuestsDetailsForm from "@/app/booking/GuestsDetailsForm";
-import DateDetailsForm from "@/app/booking/DateDetailsForm";
-import TimeDetailsForm from "@/app/booking/TimeDetailsForm";
-import ContactDetailsForm from "@/app/booking/ContactDetailsForm";
+import GuestsDetailsForm from "@/app/booking/(formParts)/GuestsDetailsForm";
+import DateDetailsForm from "@/app/booking/(formParts)/DateDetailsForm";
+import TimeDetailsForm from "@/app/booking/(formParts)/TimeDetailsForm";
+import ContactDetailsForm from "@/app/booking/(formParts)/ContactDetailsForm";
 import useBookingSubmit from "@/app/hooks/useBookingSubmit";
 
 export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"

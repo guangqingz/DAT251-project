@@ -2,7 +2,7 @@ import {useController, Control, FieldErrors, UseFormWatch} from "react-hook-form
 import clsx from "clsx";
 import {InformationCircleIcon} from "@heroicons/react/24/outline";
 import React, {useState} from "react";
-import {SchemaSections} from  "@/app/booking/page";
+import {SchemaSections} from "@/app/booking/page";
 import {BookingSchemaType} from "@/app/booking/FormTypes";
 
 export const maxNumberGuest = 5;

@@ -17,7 +17,7 @@ import {z} from "zod";
 //
 // export type BookingSchema = z.infer<typeof bookingSchema>
 
-import {maxNumberGuest} from "@/app/booking/GuestsDetailsForm";
+import {maxNumberGuest} from "@/app/booking/(formParts)/GuestsDetailsForm";
 
 export const bookingSchema = z.object({
     numberGuest: z.number().min(1, "Minimum 1 guest").max(maxNumberGuest, `Maximum ${maxNumberGuest}`),
