@@ -6,6 +6,7 @@ import {ArrowLeftIcon} from "@heroicons/react/24/outline";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
 import {BookingSchemaType} from "@/app/booking/FormTypes";
+import {isPastTime} from "@/app/utils/utils";
 
 type TimeSlotType = {
     time: string,
@@ -44,32 +45,12 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
     const timeSlotsExtended: TimeSlotExtendedType[] = mutation.data?.data.map((prev: TimeSlotType)=> ({
         ...prev,
         time: prev.time.slice(0, -3),
-        pastTime: isPastTime(prev.time)
+        pastTime: isPastTime(prev.time, chosenFullDate)
     })) ?? [];
 
     const handleTime = (timeSlot: string) => {
         field.onChange(timeSlot);
         setSchemaSelection("CONTACT")
-    }
-
-    function isPastTime(time: string): boolean {
-        const todaysDate = new Date();
-
-        let month = todaysDate.getMonth() + 1;
-        let monthString: string = "";
-        if (month < 10) {
-            monthString = "0" + month.toString()
-        } else {
-            monthString = month.toString();
-        }
-        const dateString = `${todaysDate.getFullYear()}-${monthString}-${todaysDate.getDate()}`;
-        const hour = Number(time.split(":")[0])
-
-        // users must minimum book 2 hours before the booking time
-        if ((todaysDate.getHours() + 3) > hour && chosenFullDate === dateString){
-            return true;
-        }
-        return false;
     }
 
     useEffect(()=> {

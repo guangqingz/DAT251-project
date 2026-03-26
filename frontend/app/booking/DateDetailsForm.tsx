@@ -4,6 +4,7 @@ import {Control, FieldErrors, useController, UseFormWatch} from "react-hook-form
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import {BookingSchemaType} from "@/app/booking/FormTypes";
+import {getMonthToString} from "@/app/utils/utils";
 
 const days: string[] = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"]
 let date: Date = new Date();
@@ -74,10 +75,6 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
         setSchemaSelection("TIME");
     }
 
-    function getMonthToString(){
-        return date.toLocaleDateString("no-NO", {month: "long"});
-    }
-
     function getStateOfDay(dateItem: number):boolean[] {
         let selectedDay: boolean = false;
         let validDay: boolean = true;
@@ -116,7 +113,7 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
             <div role={"group"} id={"calendar"}>
                 {/*calendar header*/}
                 <div className={"flex justify-between px-1"}>
-                    <h4 className={"text-2xl capitalize"}>{getMonthToString()} {date.getFullYear()}</h4>
+                    <h4 className={"text-2xl capitalize"}>{getMonthToString(date)} {date.getFullYear()}</h4>
                     <div className={"flex gap-2"}>
                         <button aria-disabled={!prevMonth} disabled={!prevMonth}
                                 onClick={() => handleBtnClick("PREV")}>
