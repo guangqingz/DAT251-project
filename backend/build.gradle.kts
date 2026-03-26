@@ -41,6 +41,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     testImplementation("org.springframework.boot:spring-boot-starter-mail-test")
 
+    // Source: https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
+
 }
 
 tasks.withType<Test> {

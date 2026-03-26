@@ -1,5 +1,6 @@
 package org.example.dat251project.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.dat251project.models.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users/")
+@Tag(name = "User controller")
 public class UserController {
     @PostMapping("login")
     public ResponseEntity<User> login(User user) {
