@@ -1,12 +1,14 @@
 import React from "react";
 import {SchemaSections} from "@/app/booking/page";
 import {ArrowLeftIcon} from "@heroicons/react/24/outline";
+import {FieldErrors, UseFormWatch, UseFormRegister} from "react-hook-form";
+import {BookingSchemaType} from "@/app/booking/FormTypes";
 
 export default function ContactDetailsForm({register, errors, watch, setSchemaSelection}:
    {
-       register:any,
-       errors:any,
-       watch:any,
+       register:UseFormRegister<BookingSchemaType>,
+       errors:FieldErrors<BookingSchemaType>,
+       watch:UseFormWatch<BookingSchemaType>,
        setSchemaSelection: React.Dispatch<React.SetStateAction<SchemaSections>>
    }){
     const chosenNumberGuest = watch("numberGuest");

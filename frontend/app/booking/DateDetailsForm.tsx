@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {SchemaSections} from "@/app/booking/page";
-import {useController} from "react-hook-form";
+import {Control, FieldErrors, useController, UseFormWatch} from "react-hook-form";
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import {BookingSchemaType} from "@/app/booking/FormTypes";
 
 const days: string[] = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"]
 let date: Date = new Date();
@@ -11,9 +12,9 @@ let maxMonth:number = (date.getMonth() + maxFutureMonth + 1) % 12
 
 export default function DateDetailsForm({control, errors, watch, setSchemaSelection}:
     {
-        control:any,
-        errors:any,
-        watch:any,
+        control:Control<BookingSchemaType>,
+        errors:FieldErrors<BookingSchemaType>,
+        watch:UseFormWatch<BookingSchemaType>,
         setSchemaSelection: React.Dispatch<React.SetStateAction<SchemaSections>>
     }){
     const {field} = useController({name: "date", control})

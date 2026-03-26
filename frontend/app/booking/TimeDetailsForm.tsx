@@ -1,10 +1,11 @@
 import React, {useEffect} from "react";
 import {SchemaSections} from "@/app/booking/page";
-import {useController} from "react-hook-form";
+import {Control, FieldErrors, useController, UseFormWatch} from "react-hook-form";
 import clsx from "clsx";
 import {ArrowLeftIcon} from "@heroicons/react/24/outline";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
+import {BookingSchemaType} from "@/app/booking/FormTypes";
 
 type TimeSlotType = {
     time: string,
@@ -24,9 +25,9 @@ type TimeSlotRequestType = {
 
 export default function TimeDetailsForm({control, errors, watch, setSchemaSelection}:
     {
-        control:any,
-        errors:any,
-        watch:any,
+        control:Control<BookingSchemaType>,
+        errors:FieldErrors<BookingSchemaType>,
+        watch:UseFormWatch<BookingSchemaType>,
         setSchemaSelection: React.Dispatch<React.SetStateAction<SchemaSections>>
     }){
     const {field} = useController({name: "time", control})
