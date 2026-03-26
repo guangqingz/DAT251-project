@@ -29,3 +29,18 @@ export const bookingSchema = z.object({
 })
 
 export type BookingSchemaType = z.infer<typeof bookingSchema>
+
+export type TimeSlotType = {
+    time: string,
+    available: boolean,
+}
+
+export type TimeSlotExtendedType = TimeSlotType & {
+    pastTime: boolean
+}
+
+export type TimeSlotRequestType = {
+    date: string,
+    numGuests: number
+}
+

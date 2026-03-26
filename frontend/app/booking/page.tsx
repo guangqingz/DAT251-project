@@ -4,24 +4,18 @@ import {useState} from "react";
 import {bookingSchema, BookingSchemaType} from "@/app/booking/FormTypes";
 import Container from "@/app/ui/Container";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useRouter} from "next/navigation";
 import {SubmitHandler, useForm} from "react-hook-form";
 import GuestsDetailsForm from "@/app/booking/GuestsDetailsForm";
 import DateDetailsForm from "@/app/booking/DateDetailsForm";
 import TimeDetailsForm from "@/app/booking/TimeDetailsForm";
 import ContactDetailsForm from "@/app/booking/ContactDetailsForm";
-import axios from "axios";
-import {useMutation} from "@tanstack/react-query";
+import useBookingSubmit from "@/app/hooks/useBookingSubmit";
 
 export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
 export default function Page () {
     const {
-        register,
-        handleSubmit,
-        watch,
-        control,
-        formState: { errors },
+        register, handleSubmit, watch, control, formState: { errors },
     } = useForm<BookingSchemaType>({
         resolver: zodResolver(bookingSchema),
         shouldUnregister: false,
@@ -32,25 +26,13 @@ export default function Page () {
         }
     })
     const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
-
-    const router = useRouter();
+    const mutate = useBookingSubmit();
 
     const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
         console.log("FORM BOOKING DETAILS SUBMITTED")
         console.log(data)
         mutate(data);
     }
-
-    const {mutate} = useMutation({
-        mutationFn: (formData: BookingSchemaType) => {
-            return axios.post("http://localhost:8080/booking", formData)
-        },
-        onSuccess: (data) => {
-            console.log("Booking successful, query invalidated.")
-            console.log(data);
-            router.push(`/booking/${data.data.id}`);
-        },
-    })
 
     return (<section className={"bg-custom-eggwhite h-full"}>
        <Container style={"flex flex-col items-center px-5 py-20 2xl:py-30 gap-9"}>

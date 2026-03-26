@@ -1,28 +1,10 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {SchemaSections} from "@/app/booking/page";
 import {Control, FieldErrors, useController, UseFormWatch} from "react-hook-form";
 import clsx from "clsx";
 import {ArrowLeftIcon} from "@heroicons/react/24/outline";
-import {useMutation} from "@tanstack/react-query";
-import axios from "axios";
-import {BookingSchemaType} from "@/app/booking/FormTypes";
-import {isPastTime} from "@/app/utils/utils";
-
-type TimeSlotType = {
-    time: string,
-    available: boolean,
-}
-
-type TimeSlotExtendedType = {
-    time: string,
-    available: boolean,
-    pastTime: boolean
-}
-
-type TimeSlotRequestType = {
-    date: string,
-    numGuests: number
-}
+import {BookingSchemaType, TimeSlotExtendedType} from "@/app/booking/FormTypes";
+import {useTimeSlots} from "@/app/hooks/useTimeSlots";
 
 export default function TimeDetailsForm({control, errors, watch, setSchemaSelection}:
     {
@@ -36,30 +18,12 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
     const chosenFullDate = watch("date");
     const chosenTime = watch("time");
 
-    const mutation = useMutation({
-        mutationFn: (timeSlotRequestData: TimeSlotRequestType) => {
-            return axios.post(`http://localhost:8080/booking/timeslot`, timeSlotRequestData);
-        }
-    })
-
-    const timeSlotsExtended: TimeSlotExtendedType[] = mutation.data?.data.map((prev: TimeSlotType)=> ({
-        ...prev,
-        time: prev.time.slice(0, -3),
-        pastTime: isPastTime(prev.time, chosenFullDate)
-    })) ?? [];
+    const timeSlotsExtended = useTimeSlots(chosenNumberGuest, chosenFullDate);
 
     const handleTime = (timeSlot: string) => {
         field.onChange(timeSlot);
         setSchemaSelection("CONTACT")
     }
-
-    useEffect(()=> {
-        const request: TimeSlotRequestType = {
-            date: chosenFullDate || "",
-            numGuests: chosenNumberGuest || 0,
-        }
-        mutation.mutate(request);
-    }, [])
 
     return (
         <section className={"flex flex-col gap-5"}>
