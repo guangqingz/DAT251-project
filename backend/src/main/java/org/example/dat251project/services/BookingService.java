@@ -34,6 +34,10 @@ public class BookingService {
         return bookingRepo.findByDateAndTime(date, time);
     }
 
+    public List<Booking> findAllByDateAndTime(LocalDate date, LocalTime time) {
+        return bookingRepo.findAllByDateAndTime(date, time);
+    }
+
     public Booking getBookingById(UUID id) {
         return bookingRepo.findById(id).orElse(null);
     }

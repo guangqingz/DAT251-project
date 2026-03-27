@@ -156,4 +156,32 @@ public class BookingSystem {
         }
         return booking;
     }
+
+    public List<BookingDTO> getBookingByDataAndTime(LocalDate date, LocalTime time) {
+        ArrayList<Booking> list = new ArrayList<>(bookingService.findAllByDateAndTime(date, time));
+        list.sort(Comparator.comparing(Booking::getTime));
+        return convertBookingToDTO(list);
+    }
+
+    /**
+     * Convert Booking to BookingDTO
+     *
+     * @param list List with Booking
+     * @return List with BookingDTO
+     */
+    private List<BookingDTO> convertBookingToDTO(List<Booking> list) {
+        List<BookingDTO> result = new ArrayList<>();
+        for (Booking b : list) {
+            BookingDTO dto = BookingDTO.builder()
+                    .email(b.getEmail())
+                    .phoneNumber(b.getPhoneNumber())
+                    .numberGuest(b.getNumberGuest())
+                    .time(b.getTime())
+                    .date(b.getDate())
+                    .comment(b.getComment())
+                    .build();
+            result.add(dto);
+        }
+        return result;
+    }
 }
