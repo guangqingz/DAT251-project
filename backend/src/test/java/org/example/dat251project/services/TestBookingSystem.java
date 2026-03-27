@@ -1,5 +1,6 @@
 package org.example.dat251project.services;
 
+import org.example.dat251project.dtos.BookingDTO;
 import org.example.dat251project.dtos.TimeSlotDTO;
 import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
@@ -202,6 +203,44 @@ public class TestBookingSystem {
         assertEquals(2, booking2.size());
         // Mock that there has been a booking created in the db
         mockBooking(date, time, numGuests, booking2);
+
+    }
+
+    @Test
+    public void testBookingByDateAndTime() {
+        // Set up timeslots and opening hours
+        List<LocalTime> timeSlots = List.of(LocalTime.of(10, 0), LocalTime.of(20, 0));
+        OpeningHours openingHours = new OpeningHours(LocalTime.of(9, 0), LocalTime.of(23, 0));
+        restaurant.setNormalOpeningHours(openingHours);
+        restaurant.setRestaurantCapacity(20);
+        restaurant.setTimeSlots(timeSlots);
+
+        bookingSystem.initializeRestaurant(restaurant);
+        bookingSystem.setBookingService(bookingService);
+
+        LocalTime time1 = timeSlots.getFirst();
+        LocalTime time2 = timeSlots.getLast();
+        LocalDate date = LocalDate.of(2026, 3, 10);
+        int numGuests = 3;
+
+        List<Tables> tables1 = bookingSystem.findAvailableTables(date, time1, numGuests);
+        List<Tables> tables2 = bookingSystem.findAvailableTables(date, time2, numGuests);
+
+        Booking booking1 = new Booking("alice@gmail.com", 123,
+                numGuests, time1, date, "Hello", tables1);
+        Booking booking2 = new Booking("bob@gmail.com", 321,
+                numGuests, time2, date, "Hello 2", tables2);
+
+        List<Booking> bookings = new ArrayList<>();
+        bookings.add(booking1);
+        bookings.add(booking2);
+
+        Mockito.when(bookingService.findAllByDateAndTime(date, time1))
+                .thenReturn(bookings);
+
+        List<BookingDTO> result = bookingSystem.getBookingByDataAndTime(date, time1);
+        assertEquals(2, result.size());
+        assertEquals("alice@gmail.com", result.getFirst().getEmail());
 
     }
 }
