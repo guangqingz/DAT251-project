@@ -1,6 +1,9 @@
 name: Main
 
 on:
+  push:
+    branches:
+      - fix_workflow
   pull_request:
     branches:
       - dev
@@ -10,5 +13,5 @@ jobs:
     name: Backend
     uses: ./.github/workflows/backend.yml
   frontend:
-    name: Backend
+    name: Frontend
     uses: ./.github/workflows/frontend.yml
