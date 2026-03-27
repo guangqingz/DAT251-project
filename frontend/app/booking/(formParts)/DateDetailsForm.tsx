@@ -90,6 +90,7 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
             <h2 className={"text-xl text-custom-gray text-center"}>{chosenNumberGuest} personer</h2>
             <h3 className={"text-2xl text-center"}>Velg dato</h3>
             <input
+                id={"date"}
                 aria-label={"choose date of booking"}
                 aria-controls={"calendar"}
                 aria-describedby={"calendar-error"}
@@ -116,7 +117,7 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
                 {/*calendar days*/}
                 <FormCalendar date={date} chosenFullDate={chosenFullDate} handleSelectDate={handleSelectDate} />
             </div>
-            {errors.date && <span id={"calendar-error"}>{errors.date.message}</span>}
+            {errors.date && <span id={"calendar-error"} className={"text-red-800"}>{errors.date.message}</span>}
             <button
                 onClick={() => setSchemaSelection("GUESTS")}
                 className={"mt-5 p-2 border-2 rounded-full w-fit scale-90 hover:scale-100 transition-all"}>

@@ -32,19 +32,17 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
         setSchemaSelection("CONTACT")
     }
 
-    console.log(timeSlotsExtended);
-
     return (
         <section className={"flex flex-col gap-5"}>
             <h2 className={"text-xl text-custom-gray text-center"}>{chosenNumberGuest} personer</h2>
             <h2 className={"text-xl text-custom-gray text-center"}>{chosenFullDate}</h2>
-            <label htmlFor="time" className={"text-2xl text-center font-title"}>Velg tid</label>
+            <label htmlFor="timeSlot" className={"text-2xl text-center font-title"}>Velg tid</label>
                     <input type={"text"}
+                           id={"timeSlot"}
                            aria-label={"choose time of booking"}
                            aria-controls={"time-group"}
                            aria-describedby={"time-error"}
                            className={"sr-only"}/>
-            {errors.time && <span id={"time-error"}>{errors.time.message}</span>}
             <div role={"group"} id="time-group" aria-label={"time slots buttons"} className={"grid grid-cols-4 gap-3"}>
                 {timeSlotsExtended.map((timeSlot: TimeSlotExtendedType)=>(
                     <button key={timeSlot.time} type={"button"}
@@ -63,6 +61,7 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
                     </button>)
                 )}
             </div>
+            {errors.time && <span id={"time-error"} className={"text-red-800"}>{errors.time.message}</span>}
             <button
                 onClick={() => setSchemaSelection("DATE")}
                 className={"p-2 border-2 rounded-full w-fit scale-90 hover:scale-100 transition-all"}>

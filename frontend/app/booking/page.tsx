@@ -15,7 +15,7 @@ export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
 export default function Page () {
     const {
-        register, handleSubmit, watch, control, formState: { errors },
+        register, handleSubmit, watch, control, getValues, setError, formState: { errors },
     } = useForm<BookingSchemaType>({
         resolver: zodResolver(bookingSchema),
         defaultValues:{
@@ -23,15 +23,16 @@ export default function Page () {
             numberGuest: 0,
             date: "",
             time: "",
+            countryCode: "NO"
         }
     })
     const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
     const mutate = useBookingSubmit();
 
     const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
-        console.log("FORM BOOKING DETAILS SUBMITTED")
-        console.log(data)
-        mutate(data);
+        // remove country code field because it's not part of Booking model
+        const {countryCode, ...validRequestData} = data;
+        mutate(validRequestData);
     }
 
     // Multistep form, renders one section at a time based on schemaSection

@@ -45,6 +45,7 @@ export default function GuestsDetailsForm({control, errors, watch, setSchemaSele
             <h2 className={"text-xl text-custom-gray text-center"}>Velkommen</h2>
             <h3 className={"text-2xl text-center"}>Hvor mange gjester er dere?</h3>
             <input type={"number"}
+                   id={"phoneNumber"}
                    aria-label={"choose number of guests"}
                    aria-controls={"number-of-guests"}
                    aria-describedby={"number-of-guests-error"}
@@ -64,7 +65,7 @@ export default function GuestsDetailsForm({control, errors, watch, setSchemaSele
                                        {"col-span-full": lastbtn})}>{buttonText}</button>
                 })}
             </div>
-            {errors.numberGuest && <span id={"number-of-guests-error"}>{errors.numberGuest.message}</span>}
+            {errors.numberGuest && <span id={"number-of-guests-error"} className={"text-red-800"}>{errors.numberGuest.message}</span>}
             {showErrorGuest &&
                 <div className={"flex items-center bg-custom-eggwhite-dark p-2 rounded-md"}>
                     <InformationCircleIcon className={"w-9 h-9 mr-2"}/>

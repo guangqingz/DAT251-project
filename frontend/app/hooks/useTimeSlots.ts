@@ -14,7 +14,6 @@ export function useTimeSlots(chosenNumberGuest: number, chosenFullDate: string){
     const mutation = useMutation({
         mutationFn: async (timeSlotRequestData: TimeSlotRequestType) => {
             const response = await axios.post(`http://localhost:8080/booking/timeslot`, timeSlotRequestData);
-            console.log(response.data);
             return response.data;
         }
     })
