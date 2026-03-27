@@ -15,16 +15,13 @@ export const metadata: Metadata = {
     }
 };
 
-export default function RootLayout({
+export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={`antialiased min-h-dvh grid grid-rows-[auto_1fr_auto]`}
-      >
+      <div className={`antialiased min-h-dvh grid grid-rows-[auto_1fr_auto]`}>
       <Providers>
         <Navbar/>
           <main>
@@ -60,7 +57,6 @@ export default function RootLayout({
             </Container>
           </footer>
         </Providers>
-      </body>
-    </html>
+      </div>
   );
 }
