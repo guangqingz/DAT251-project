@@ -4,6 +4,10 @@ import jakarta.mail.MessagingException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.dat251project.algorithms.BigTableAlgorithm;
+import org.example.dat251project.algorithms.ComboTableAlgorithm;
+import org.example.dat251project.algorithms.SmallTableAlgorithm;
+import org.example.dat251project.algorithms.TableSelectionAlgorithm;
 import org.example.dat251project.dtos.BookingDTO;
 import org.example.dat251project.dtos.TimeSlotDTO;
 import org.example.dat251project.models.Booking;
@@ -86,9 +90,9 @@ public class BookingSystem {
         List<TimeSlotDTO> availabilityList = new ArrayList<>();
         for (LocalTime timeslot : restaurant.getTimeSlots()) {
             availabilityList.add(TimeSlotDTO.builder()
-                            .time(timeslot)
-                            .available(checkAvailability(date, timeslot, numGuests))
-                            .build());
+                    .time(timeslot)
+                    .available(checkAvailability(date, timeslot, numGuests))
+                    .build());
 
         }
         return availabilityList;
@@ -119,20 +123,22 @@ public class BookingSystem {
 
     //algorithm part
     public List<Tables> findAvailableTables(LocalDate date, LocalTime time, int numGuests) {
-        List<Tables> bestTables = new ArrayList<>();
+        List<Tables> nonAvailable = new ArrayList<>();
         Set<Tables> occupiedTables = getOccupiedTables(date, time);
-
-        if (numGuests > restaurant.MAXGROUPSIZE) return bestTables;
-        if (numGuests <= restaurant.SMALLTABLEMAX) {
-            bestTables = restaurant.findBestSmallTables(occupiedTables, numGuests);
+        List<TableSelectionAlgorithm> strategies = List.of(
+                new SmallTableAlgorithm(),
+                new BigTableAlgorithm(),
+                new ComboTableAlgorithm()
+        );
+        if (numGuests > restaurant.MAXGROUPSIZE) return nonAvailable;
+        for (TableSelectionAlgorithm algorithm : strategies) {
+            List<Tables> bestTables = algorithm.findTables(restaurant, occupiedTables, numGuests);
+            if (!bestTables.isEmpty()) {
+                return bestTables;
+            }
         }
-        if (numGuests <= restaurant.BIGTABLEMAX && bestTables.isEmpty()) {
-            bestTables = restaurant.findBestBigTables(occupiedTables, numGuests);
-        }
-        if (bestTables.isEmpty()) {
-            bestTables = restaurant.findBestComboTables(occupiedTables, numGuests);
-        }
-        return bestTables;
+        // Will only return if there are no tables available
+        return nonAvailable;
     }
 
     public List<String> getTableNames(List<Tables> tables) {
