@@ -69,14 +69,13 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
     // Stores date in correct format (YYYY-MM-DD) and advances to next step
     const handleSelectDate = (dateValue: number) => {
         let month = date.getMonth() + 1;
-        let monthString: string = "";
-        if (month < 10) {
-            monthString = "0" + month.toString()
-        } else {
-            monthString = month.toString();
-        }
+        let monthString: string = month.toString()
+        if (month < 10) monthString = "0" + month.toString()
 
-        const dateString = `${date.getFullYear()}-${monthString}-${dateValue}`;
+        let day:string = dateValue.toString();
+        if (dateValue < 10) day = "0" + dateValue
+
+        const dateString = `${date.getFullYear()}-${monthString}-${day}`;
         field.onChange(dateString);
         setSchemaSelection("TIME");
     }

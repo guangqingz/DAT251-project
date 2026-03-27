@@ -6,7 +6,7 @@ import {SchemaSections} from "@/app/booking/page";
 import {BookingSchemaType} from "@/app/booking/FormTypes";
 
 // Max number of guests in bookings
-export const maxNumberGuest = 6;
+export const maxNumberGuest = 8;
 // Generates a list from 1 to max number, used to display all options
 const guestsList: number[] = Array.from({length: maxNumberGuest}, (_, index) => index + 1);
 
@@ -50,7 +50,7 @@ export default function GuestsDetailsForm({control, errors, watch, setSchemaSele
                    aria-controls={"number-of-guests"}
                    aria-describedby={"number-of-guests-error"}
                    className={"sr-only"}/>
-            <div role={"group"} id="number-of-guests" aria-label={"number of guests buttons"} className={"grid grid-cols-5 gap-3"}>
+            <div role={"group"} id="number-of-guests" aria-label={"number of guests buttons"} className={"grid grid-cols-4 gap-3"}>
                 {guestsList.map((numb: number, index:number) => {
                     // Last button have '+' to indicate max guests or more
                     const buttonText: string = numb !== maxNumberGuest ? numb.toString() : numb.toString() + "+"
@@ -61,8 +61,7 @@ export default function GuestsDetailsForm({control, errors, watch, setSchemaSele
                                    aria-pressed={chosenNumberGuest === numb}
                                    className={clsx(
                                        "border-2 border-gray-300 py-2 rounded-md text-xl hover:bg-gray-300 transition-colors",
-                                       {"bg-custom-gray text-white border-custom-gray": chosenNumberGuest === numb},
-                                       {"col-span-full": lastbtn})}>{buttonText}</button>
+                                       {"bg-custom-gray text-white border-custom-gray": chosenNumberGuest === numb})}>{buttonText}</button>
                 })}
             </div>
             {errors.numberGuest && <span id={"number-of-guests-error"} className={"text-red-800"}>{errors.numberGuest.message}</span>}
