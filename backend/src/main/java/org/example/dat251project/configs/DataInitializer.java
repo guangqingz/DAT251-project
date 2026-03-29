@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Configuration
 public class DataInitializer {
@@ -43,10 +45,11 @@ public class DataInitializer {
                 HashSet<DayOfWeek> closedDays = new HashSet<>();
                 closedDays.add(DayOfWeek.MONDAY);
                 List<Tables> tables = createTables();
-                restaurantService.createRestaurant(
+                Restaurant res = restaurantService.createRestaurant(
                         "Sze Chuan House", "Nedre Korskirkeallmenningen 9",
                         55313690, 20, opHours, 30, closedDays,
-                        tables, createCombo(tables), 2);
+                        tables, null, 2);
+                res.createCombo(tables);
                 initializer.initialize();
             }
             if (userRepo.count() == 0) {
@@ -72,16 +75,6 @@ public class DataInitializer {
         return restTables;
     }
 
-    private HashMap<Tables, List<Tables>> createCombo(List<Tables> tables) {
-        HashMap<Tables, List<Tables>> combo = new HashMap<>();
-        Tables t1 = tables.get(0);
-        Tables t2 = tables.get(1);
-        Tables t3 = tables.get(2);
-        Tables t4 = tables.get(3);
-        combo.put(t2, new ArrayList<>(Arrays.asList(t1, t3)));
-        combo.put(t3, new ArrayList<>(List.of(t4)));
-        return combo;
-    }
 
     @Service
     public class BookingSystemInitializer {

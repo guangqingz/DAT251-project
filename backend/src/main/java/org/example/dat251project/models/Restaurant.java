@@ -92,7 +92,7 @@ public class Restaurant {
         if (tables != null) {
             this.smallTables = divideTableSize(tables, 1, 2);
             this.bigTables = divideTableSize(tables, 3, 4);
-            this.combination = createCombo(tables);
+            createCombo(tables);
         } else {
             this.smallTables = new ArrayList<>();
             this.bigTables = new ArrayList<>();
@@ -106,7 +106,7 @@ public class Restaurant {
      * @param tables
      * @return
      */
-    private HashMap<Tables, List<Tables>> createCombo(List<Tables> tables) {
+    public void createCombo(List<Tables> tables) {
         HashMap<Tables, List<Tables>> combo = new HashMap<>();
         Tables t1 = tables.get(0);
         Tables t2 = tables.get(1);
@@ -114,7 +114,7 @@ public class Restaurant {
         Tables t4 = tables.get(3);
         combo.put(t2, new ArrayList<>(Arrays.asList(t1, t3)));
         combo.put(t3, new ArrayList<>(List.of(t4)));
-        return combo;
+        this.combination = combo;
     }
 
     /**
