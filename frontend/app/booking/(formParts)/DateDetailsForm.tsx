@@ -106,7 +106,7 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
                                 onClick={() => handleBtnClick("PREV")}>
                             <ArrowLeftIcon aria-hidden={true}
                                 className={clsx("w-6",
-                                    {"text-gray-500": !prevMonth})}/>
+                                    {"text-gray-600": !prevMonth})}/>
                         </button>
                         <button type={"button"}
                                 aria-label={"Go to next month"}
@@ -115,7 +115,7 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
                                 onClick={() => handleBtnClick("NEXT")}>
                             <ArrowRightIcon aria-hidden={true}
                                 className={clsx("w-6",
-                                    {"text-gray-500": !nextMonth})}/>
+                                    {"text-gray-600": !nextMonth})}/>
                         </button>
                     </div>
                 </div>

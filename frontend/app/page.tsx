@@ -12,13 +12,13 @@ export default function Home() {
                     <h1 className={"text-white text-3xl font-bold text-wrap text-center px-5 sm:px-0 sm:text-left"}>Velkommen til Sze Chuan House</h1>
                     <div className={"flex gap-2"}>
                         <Link href="/booking"
-                              className={"default-btn bg-custom-gold border-custom-gold hover:bg-background hover:text-custom-gold"}>Reserver bord</Link>
+                              className={"default-btn bg-custom-orange border-custom-orange hover:bg-background hover:text-custom-orange"}>Reserver bord</Link>
                         <Link href="/menu"
-                              className={"default-btn border-custom-gold text-custom-gold hover:bg-custom-gold hover:text-black"}>Se meny</Link>
+                              className={"default-btn border-custom-orange text-custom-orange hover:bg-custom-orange hover:text-black"}>Se meny</Link>
                     </div>
                 </section>
                 {/*Hero image*/}
-                <div className={"w-full h-96 overflow-hidden flex justify-center"}>
+                <div className={"overflow-hidden flex justify-center"}>
                     <Image src={"/hero.jpg"} width={800} height={600}
                            priority
                            className={"object-cover md:rounded-2xl"}

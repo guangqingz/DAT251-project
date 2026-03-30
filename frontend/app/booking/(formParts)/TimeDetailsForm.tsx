@@ -50,9 +50,9 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
                             aria-pressed={chosenTime === timeSlot.time}
                             aria-disabled={!timeSlot.available}
                             className={clsx(
-                                "relative border-2 border-gray-300 py-2 rounded-md text-xl",
-                                { "text-custom-green hover:bg-gray-300 transition-colors": timeSlot.available && !timeSlot.pastTime},
-                                {"text-gray-400": timeSlot.pastTime}
+                                "relative border-2 py-2 rounded-md text-xl",
+                                { "text-custom-green hover:bg-gray-300 transition-colors border-custom-green cursor-pointer": timeSlot.available && !timeSlot.pastTime},
+                                {"text-custom-gray border-gray-400": timeSlot.pastTime}
                             )}>
                         <span>{timeSlot.time}</span>
                         {timeSlot.pastTime && <span className={"sr-only"}>Ikke tilgjenglig fordi tiden er passert eller det er mindre enn 2 timer før</span>}

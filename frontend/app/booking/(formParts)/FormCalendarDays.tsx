@@ -67,7 +67,7 @@ export default function FormCalendarDays({date, chosenFullDate, handleSelectDate
                                aria-pressed={isSelectedDay}
                                className={clsx("text-xl p-2 rounded-md",
                                    {"text-custom-red": dateItem === todaysDate.getDate() && date.getMonth() === todaysDate.getMonth()},
-                                   {"text-gray-400": !isValidDay},
+                                   {"text-gray-600 line-through": !isValidDay},
                                    {"hover:bg-gray-300 transition-colors": isValidDay},
                                    {"bg-gray-300": isSelectedDay})}>{dateItem}</button>
             })}

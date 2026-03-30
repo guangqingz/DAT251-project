@@ -15,7 +15,7 @@ export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
 export default function Page () {
     const {
-        register, handleSubmit, watch, control, getValues, setError, formState: { errors },
+        register, handleSubmit, watch, control, formState: { errors },
     } = useForm<BookingSchemaType>({
         resolver: zodResolver(bookingSchema),
         defaultValues:{
@@ -24,7 +24,8 @@ export default function Page () {
             date: "",
             time: "",
             countryCode: "NO"
-        }
+        },
+        mode: "onSubmit"
     })
     const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
     const mutate = useBookingSubmit();
