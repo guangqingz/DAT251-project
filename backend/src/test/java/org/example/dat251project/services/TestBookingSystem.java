@@ -245,7 +245,7 @@ public class TestBookingSystem {
         Mockito.when(bookingService.findAllByDateAndTime(date, time1))
                 .thenReturn(bookings);
 
-        List<BookingDTO> result = bookingSystem.getBookingByDataAndTime(date, time1);
+        List<BookingDTO> result = bookingSystem.getBookingByDateAndTime(date, time1);
         assertEquals(2, result.size());
         assertEquals("alice@gmail.com", result.getFirst().getEmail());
 

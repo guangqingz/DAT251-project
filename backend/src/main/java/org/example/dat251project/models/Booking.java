@@ -51,16 +51,4 @@ public class Booking {
         this.comment = comment;
         this.tables = tables;
     }
-
-    /**
-     * Testing below on bruno:
-     {
-     "comment": "efwefs",
-     "date": "2026-02-18",
-     "email": "hello@email.com",
-     "numberGuest": 2,
-     "phoneNumber": "78709870",
-     "time": "20:00"
-     }
-     */
 }

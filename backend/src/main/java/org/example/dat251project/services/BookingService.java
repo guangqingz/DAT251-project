@@ -30,10 +30,24 @@ public class BookingService {
         return bookingRepo.save(booking);
     }
 
+    /**
+     * Find all {@link Booking bookings} that are between the {@link LocalTime start} and {@link LocalTime end}
+     * for a specific {@link LocalDate date}
+     * @param date
+     * @param start
+     * @param end
+     * @return list of {@link Booking bookings}
+     */
     public List<Booking> findByDateAndTimeBetween(LocalDate date, LocalTime start, LocalTime end) {
         return bookingRepo.findByDateAndTimeBetween(date, start, end);
     }
 
+    /**
+     * Find all {@link Booking bookings} that are at the {@link LocalDate date} and all past {@link LocalTime time}
+     * @param date
+     * @param time
+     * @return list of {@link Booking bookings}
+     */
     public List<Booking> findAllByDateAndTime(LocalDate date, LocalTime time) {
         return bookingRepo.findAllByDateAndTime(date, time);
     }

@@ -86,6 +86,13 @@ public class BookingSystem {
 
     }
 
+    /**
+     * Get all timeslots that are available to serve the {@link Integer numGuests} at the {@link LocalDate date}
+     *
+     * @param date
+     * @param numGuests
+     * @return list of all timeslots as a list of {@link TimeSlotDTO timeslotDTOs}
+     */
     public List<TimeSlotDTO> getAvailabilityForDate(LocalDate date, int numGuests) {
         List<TimeSlotDTO> availabilityList = new ArrayList<>();
         for (LocalTime timeslot : restaurant.getTimeSlots()) {
@@ -117,7 +124,7 @@ public class BookingSystem {
      *
      * @param date
      * @param time
-     * @return
+     * @return Set of all tables that are occupied during that date and time
      */
     private Set<Table> getOccupiedTables(LocalDate date, LocalTime time) {
         HashSet<Table> occupiedTables = new HashSet<>();
@@ -136,7 +143,17 @@ public class BookingSystem {
     }
 
 
-    //algorithm part
+    /**
+     * Find available an available {@link Table table}/{@link Table tables} that can seat
+     * the amount of {@link Integer numGuests} given the {@link LocalDate date} and {@link LocalTime time} of the
+     * booking they want to have. Finding available tables is dependent on the different {@link TableSelectionAlgorithm algorithms}
+     * which will find the most optimal one.
+     *
+     * @param date
+     * @param time
+     * @param numGuests
+     * @return List of Table/Tables. If there are none available, it will return an empty list. Will also return empty list if {@link Integer numGuest} exceeds max group size
+     */
     public List<Table> findAvailableTables(LocalDate date, LocalTime time, int numGuests) {
         List<Table> nonAvailable = new ArrayList<>();
         Set<Table> occupiedTables = getOccupiedTables(date, time);
@@ -164,7 +181,15 @@ public class BookingSystem {
         return booking;
     }
 
-    public List<BookingDTO> getBookingByDataAndTime(LocalDate date, LocalTime time) {
+    /**
+     * Get all {@link Booking booking} that are in that date and past {@link LocalTime time}
+     * This also includes booking taking place at {@link LocalTime time}
+     *
+     * @param date
+     * @param time
+     * @return List of {@link BookingDTO bookingDTOs} sorted by their time ascending
+     */
+    public List<BookingDTO> getBookingByDateAndTime(LocalDate date, LocalTime time) {
         ArrayList<Booking> list = new ArrayList<>(bookingService.findAllByDateAndTime(date, time));
         list.sort(Comparator.comparing(Booking::getTime));
         return convertBookingToDTO(list);
