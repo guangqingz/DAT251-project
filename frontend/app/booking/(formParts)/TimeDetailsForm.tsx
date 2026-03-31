@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {SchemaSections} from "@/app/booking/page";
 import {Control, FieldErrors, useController, UseFormWatch} from "react-hook-form";
 import clsx from "clsx";
@@ -32,6 +32,14 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
         setSchemaSelection("CONTACT")
     }
 
+    useEffect(() => {
+        // make sure the chosen time slot is updated if the date or time slot list changes
+        const selectedTimeSlot = timeSlotsExtended.find(slot => slot.time === chosenTime)
+        if (selectedTimeSlot && (!selectedTimeSlot.available || selectedTimeSlot?.pastTime)){
+            field.onChange("")
+        }
+    }, [chosenFullDate, timeSlotsExtended])
+
     return (
         <section className={"flex flex-col gap-5"}>
             <h2 className={"text-xl text-custom-gray text-center"}>{chosenNumberGuest} personer</h2>
@@ -52,7 +60,8 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
                             className={clsx(
                                 "relative border-2 py-2 rounded-md text-xl",
                                 { "text-custom-green hover:bg-gray-300 transition-colors border-custom-green cursor-pointer": timeSlot.available && !timeSlot.pastTime},
-                                {"text-custom-gray border-gray-400": timeSlot.pastTime}
+                                {"text-custom-gray border-gray-400": timeSlot.pastTime},
+                                {"bg-gray-300": chosenTime === timeSlot.time}
                             )}>
                         <span>{timeSlot.time}</span>
                         {timeSlot.pastTime && <span className={"sr-only"}>Ikke tilgjenglig fordi tiden er passert eller det er mindre enn 2 timer før</span>}

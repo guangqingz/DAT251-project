@@ -9,10 +9,10 @@ export const bookingSchema = z.object({
     id: z.string(),
     numberGuest: z.number().min(1, "Minimum 1 gjest").max(MAX_NUMBER_GUEST, `Maximum ${MAX_NUMBER_GUEST} gjester`),
     time: z.string().refine(
-        (val:string) => customTimeRegex.test(val), {message: "Ugyldig tidsformat, forventet HH:MM eller HH:MM:SS"}
+        (val:string) => customTimeRegex.test(val), {message: "Ugyldig tidsformat, velg en tid"}
     ),
     date: z.string().refine(
-        (val:string) => customDateRegex.test(val), {message: "Ugyldig dato format, forventet YYYY-MM-DD"}
+        (val:string) => customDateRegex.test(val), {message: "Ugyldig dato format, velg en dato"}
     ),
     email: z.email({message: "Ugyldig email"}),
     countryCode: z.string(),
