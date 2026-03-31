@@ -11,6 +11,7 @@ import TimeDetailsForm from "@/app/booking/(formParts)/TimeDetailsForm";
 import ContactDetailsForm from "@/app/booking/(formParts)/ContactDetailsForm";
 import useBookingSubmit from "@/app/hooks/useBookingSubmit";
 import {ExclamationTriangleIcon} from "@heroicons/react/16/solid";
+import Image from "next/image";
 
 export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
@@ -29,7 +30,7 @@ export default function Page () {
         mode: "onSubmit"
     })
     const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
-    const {mutate, isError} = useBookingSubmit();
+    const {mutate, isError, isPending} = useBookingSubmit();
 
     const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
         // remove country code field because it's not part of Booking model
@@ -40,6 +41,13 @@ export default function Page () {
     // Multistep form, renders one section at a time based on schemaSection
     return (<section className={"bg-custom-eggwhite h-full"}>
        <Container style={"flex flex-col items-center px-5 py-20 2xl:py-30 gap-5"}>
+           {/*Loading animation shown while submitting form*/}
+           <div aria-live={"polite"}>
+               {isPending && <Image src={"/loading.gif"}
+                                    alt={"loading animation while waiting for submission verification"}
+                                    width={500} height={240}
+                                    unoptimized={true}/>}
+           </div>
            {/*Error message if submission fails*/}
            <div aria-live={"polite"}>
                {isError &&
@@ -49,7 +57,8 @@ export default function Page () {
                    </div>
                }
            </div>
-           <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
+           {!isPending &&
+               <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
                {schemaSection === "GUESTS" &&
                    <GuestsDetailsForm control={control}
                                       errors={errors}
@@ -84,6 +93,7 @@ export default function Page () {
                    </>
                }
            </form>
+           }
         </Container>
     </section>
     );
