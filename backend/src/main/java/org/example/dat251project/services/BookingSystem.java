@@ -54,9 +54,11 @@ public class BookingSystem {
         }
     }
 
-
+    public Boolean checkValidBookingHour(LocalTime bookingTime){
+        return restaurant.getNormalOpeningHours().withinOpeningHours(bookingTime);
+    }
     /**
-     * helper method for checking if the timeslots given are within the {@link OpeningHours openingHours}
+     * Helper method for checking if the timeslots given are within the {@link OpeningHours openingHours}
      *
      * @param timeSlots
      * @param openingHours

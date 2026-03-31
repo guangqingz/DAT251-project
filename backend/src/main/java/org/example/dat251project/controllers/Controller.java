@@ -39,6 +39,10 @@ public class Controller {
     @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     @PostMapping("booking")
     public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingDTO bookingDTO) {
+        // Check whether the booking is within the opening hour
+        if (!bookingSystem.checkValidBookingHour(bookingDTO.getTime())) {
+            return ResponseEntity.badRequest().build();
+        }
         List<Table> bookedTables = bookingSystem.findAvailableTables(bookingDTO.getDate(), bookingDTO.getTime(), bookingDTO.getNumberGuest());
         if (!bookedTables.isEmpty()) {
             Booking booking = bookingSystem.createBooking(bookingDTO, bookedTables);
