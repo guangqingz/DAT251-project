@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -54,9 +55,19 @@ public class BookingSystem {
         }
     }
 
-    public Boolean checkValidBookingHour(LocalTime bookingTime){
-        return restaurant.getNormalOpeningHours().withinOpeningHours(bookingTime);
+    /**
+     * Check that the time for booking is within the opening hour, and also not a passed time
+     * In addition, also check that the date is present or future. Not a past
+     *
+     * @param bookingTime
+     * @param bookingDate
+     * @return
+     */
+    public Boolean checkValidBookingTimeAndDate(LocalTime bookingTime, LocalDate bookingDate) {
+        LocalDateTime dt = LocalDateTime.of(bookingDate, bookingTime);
+        return dt.isAfter(LocalDateTime.now()) && restaurant.getNormalOpeningHours().withinOpeningHours(bookingTime);
     }
+
     /**
      * Helper method for checking if the timeslots given are within the {@link OpeningHours openingHours}
      *

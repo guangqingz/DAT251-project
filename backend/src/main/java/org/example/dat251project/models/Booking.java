@@ -4,6 +4,8 @@ package org.example.dat251project.models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,12 +30,17 @@ public class Booking {
     private String email;
     @NotNull
     private Integer phoneNumber;
+    @NotNull
+    @Min(1)
     private int numberGuest;
 
     @JsonFormat(pattern = "HH:mm")
+    @NotNull
     private LocalTime time;
 
     @JsonFormat(pattern = "uuuu-MM-dd")
+    @NotNull
+    @FutureOrPresent
     private LocalDate date;
 
     private String comment;

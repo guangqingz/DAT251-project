@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.example.dat251project.dtos.BookingDTO;
 import org.example.dat251project.dtos.BookingResponseDTO;
 import org.example.dat251project.dtos.TimeSlotDTO;
@@ -38,9 +39,9 @@ public class Controller {
     @Operation(summary = "Create a new Booking")
     @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     @PostMapping("booking")
-    public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingDTO bookingDTO) {
-        // Check whether the booking is within the opening hour
-        if (!bookingSystem.checkValidBookingHour(bookingDTO.getTime())) {
+    public ResponseEntity<BookingResponseDTO> createBooking(@Valid @RequestBody BookingDTO bookingDTO) {
+        // Check whether the time and date are valid inputs
+        if (!bookingSystem.checkValidBookingTimeAndDate(bookingDTO.getTime(), bookingDTO.getDate())) {
             return ResponseEntity.badRequest().build();
         }
         List<Table> bookedTables = bookingSystem.findAvailableTables(bookingDTO.getDate(), bookingDTO.getTime(), bookingDTO.getNumberGuest());
@@ -60,7 +61,8 @@ public class Controller {
                 return ResponseEntity.created(location).body(bookingResponseDTO);
             }
         }
-        return ResponseEntity.badRequest().build();
+        // Will only trigger if it is not possible to create that booking
+        return ResponseEntity.unprocessableContent().build();
 
     }
 
@@ -93,7 +95,7 @@ public class Controller {
     @Schema(description = "Get all timeslots that are able to seat the number of guests at a specific date")
     @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     @PostMapping("booking/timeslot")
-    public ResponseEntity<List<TimeSlotDTO>> getAvailableTimeSlot(@RequestBody TimeSlotRequestDTO timeSlotRequestDTO) {
+    public ResponseEntity<List<TimeSlotDTO>> getAvailableTimeSlot(@Valid @RequestBody TimeSlotRequestDTO timeSlotRequestDTO) {
         List<TimeSlotDTO> timeSlotDTO = bookingSystem.getAvailabilityForDate(timeSlotRequestDTO.getDate(),
                 timeSlotRequestDTO.getNumGuests());
         return ResponseEntity.ok().body(timeSlotDTO);
