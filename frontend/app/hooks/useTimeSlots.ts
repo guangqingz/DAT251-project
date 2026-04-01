@@ -1,7 +1,6 @@
 import {useEffect} from "react";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
-import {isPastTime} from "@/app/utils/utils";
 import {TimeSlotExtendedType, TimeSlotRequestType, TimeSlotType} from "@/app/booking/FormTypes";
 
 /**
@@ -18,11 +17,7 @@ export function useTimeSlots(chosenNumberGuest: number, chosenFullDate: string){
         }
     })
 
-    const timeSlotsExtended: TimeSlotExtendedType[] = mutation.data?.map((prev: TimeSlotType)=> ({
-        ...prev,
-        time: prev.time.slice(0, -3),
-        pastTime: isPastTime(prev.time, chosenFullDate)
-    })) ?? [];
+    const timeSlotsExtended: TimeSlotExtendedType[] = mutation.data || [];
 
     useEffect(()=> {
         const request: TimeSlotRequestType = {

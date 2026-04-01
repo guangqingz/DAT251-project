@@ -110,7 +110,7 @@ public class BookingSystem {
         List<TimeSlotDTO> availabilityList = new ArrayList<>();
         // If current date, then have to ensure that all timeslots passed the current time is true
         if (Objects.equals(date, LocalDate.now())) {
-            LocalTime currTime = LocalTime.now().plusHours(restaurant.BOOKINGDURATION);
+            LocalTime currTime = LocalTime.now().plusHours(restaurant.BOOKING_DURATION);
             for (LocalTime timeslot : restaurant.getTimeSlots()) {
                 if (timeslot.isAfter(currTime)) {
                     availabilityList.add(TimeSlotDTO.builder()
@@ -164,12 +164,12 @@ public class BookingSystem {
      */
     private Set<Table> getOccupiedTables(LocalDate date, LocalTime time) {
         HashSet<Table> occupiedTables = new HashSet<>();
-        LocalTime startWindow = time.minusHours(restaurant.BOOKINGDURATION);
-        LocalTime endWindow = time.plusHours(restaurant.BOOKINGDURATION);
+        LocalTime startWindow = time.minusHours(restaurant.BOOKING_DURATION);
+        LocalTime endWindow = time.plusHours(restaurant.BOOKING_DURATION);
         List<Booking> bookings = bookingService.findByDateAndTimeBetween(date, startWindow, endWindow);
         for (Booking b : bookings) {
             LocalTime startTime = b.getTime();
-            LocalTime endTime = startTime.plusHours(restaurant.BOOKINGDURATION);
+            LocalTime endTime = startTime.plusHours(restaurant.BOOKING_DURATION);
             // Starting time before the ending window and also doesn't end after the starting window
             if (startTime.isBefore(endWindow) && endTime.isAfter(startWindow)) {
                 occupiedTables.addAll(b.getTables());

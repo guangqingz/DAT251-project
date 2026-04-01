@@ -21,7 +21,7 @@ public class Restaurant {
     public static final int SMALL_TABLE_MAX = 2;
     public static final int BIG_TABLE_MAX = 4;
     // A bookings duration in hours
-    public static final int BOOKINGDURATION = 2;
+    public static final int BOOKING_DURATION = 2;
     @Id
     @NotNull
     private String name;

@@ -51,19 +51,19 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
                            aria-describedby={"time-error"}
                            className={"sr-only"}/>
             <div role={"group"} id="time-group" aria-label={"time slots buttons"} className={"grid grid-cols-4 gap-3"}>
-                {timeSlotsExtended.map((timeSlot: TimeSlotExtendedType)=>(
+                {timeSlotsExtended.map((timeSlot: TimeSlotExtendedType)=>
                     <button key={timeSlot.time} type={"button"}
-                            onClick={()=> handleTime(timeSlot.time)}
-                            disabled={!timeSlot.available || timeSlot.pastTime}
-                            aria-pressed={chosenTime === timeSlot.time}
-                            aria-disabled={!timeSlot.available}
-                            className={clsx(
-                                "relative border-2 py-2 rounded-md text-xl",
-                                { "text-custom-green hover:bg-gray-300 transition-colors border-custom-green cursor-pointer": timeSlot.available && !timeSlot.pastTime},
-                                {"text-custom-gray border-gray-400": timeSlot.pastTime},
-                                {"bg-gray-300": chosenTime === timeSlot.time}
-                            )}>
-                        <span>{timeSlot.time}</span>
+                                   onClick={()=> handleTime(timeSlot.time)}
+                                   disabled={!timeSlot.available || timeSlot.pastTime}
+                                   aria-pressed={chosenTime === timeSlot.time}
+                                   aria-disabled={!timeSlot.available}
+                                   className={clsx(
+                                       "relative border-2 py-2 rounded-md text-xl",
+                                       { "text-custom-green hover:bg-gray-300 transition-colors border-custom-green cursor-pointer": timeSlot.available && !timeSlot.pastTime},
+                                       {"text-custom-gray border-gray-400": timeSlot.pastTime},
+                                       {"bg-gray-300": chosenTime === timeSlot.time}
+                                   )}>
+                        <span>{timeSlot.time.slice(0,5)}</span>
                         {timeSlot.pastTime && <span className={"sr-only"}>Ikke tilgjenglig fordi tiden er passert eller det er mindre enn 2 timer før</span>}
                         {(!timeSlot.available && !timeSlot.pastTime) &&
                             <>
@@ -71,7 +71,7 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
                                 <span className={"sr-only"}>Ikke tilgjengelig fordi booking er fullt</span>
                             </>
                         }
-                    </button>)
+                    </button>
                 )}
             </div>
             {errors.time && <span id={"time-error"} className={"text-red-800"}>{errors.time.message}</span>}
