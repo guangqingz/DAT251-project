@@ -4,6 +4,8 @@ package org.example.dat251project.models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +20,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table
+@jakarta.persistence.Table
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,21 +30,26 @@ public class Booking {
     private String email;
     @NotNull
     private Integer phoneNumber;
+    @NotNull
+    @Min(1)
     private int numberGuest;
 
     @JsonFormat(pattern = "HH:mm")
+    @NotNull
     private LocalTime time;
 
     @JsonFormat(pattern = "uuuu-MM-dd")
+    @NotNull
+    @FutureOrPresent
     private LocalDate date;
 
     private String comment;
 
     @ManyToMany
     @JoinTable(name = "booking_tables")
-    private List<Tables> tables;
+    private List<Table> tables;
 
-    public Booking(String email, Integer phoneNumber, int numberGuest, LocalTime time, LocalDate date, String comment, List<Tables> tables) {
+    public Booking(String email, Integer phoneNumber, int numberGuest, LocalTime time, LocalDate date, String comment, List<Table> tables) {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.numberGuest = numberGuest;
@@ -51,16 +58,4 @@ public class Booking {
         this.comment = comment;
         this.tables = tables;
     }
-
-    /**
-     * Testing below on bruno:
-     {
-     "comment": "efwefs",
-     "date": "2026-02-18",
-     "email": "hello@email.com",
-     "numberGuest": 2,
-     "phoneNumber": "78709870",
-     "time": "20:00"
-     }
-     */
 }
