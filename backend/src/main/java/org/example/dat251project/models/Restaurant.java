@@ -119,13 +119,13 @@ public class Restaurant {
 
     /**
      * Find the best {@link Table table} that is availalbe to serve {@link Integer numGuests}.
-     * It will filter away tables that are occupied {@link Set< Table > OccupiedTables}
-     * and only consider tables within the {@link List< Table > Tables}
+     * It will filter away tables that are occupied {@link Set<Table> OccupiedTables}
+     * and only consider tables within the {@link List<Table> Tables}
      *
      * @param tables
      * @param occupiedTables
      * @param numGuests
-     * @return list of {@link List< Table > tables} able to seat the {@link Integer numGuests}, otherwise an empty list
+     * @return list of {@link List<Table> tables} able to seat the {@link Integer numGuests}, otherwise an empty list
      */
     private List<Table> findBestTables(List<Table> tables, Set<Table> occupiedTables, int numGuests) {
         int bestWaste = restaurantCapacity + 1;
