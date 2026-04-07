@@ -1,45 +1,99 @@
 'use client';
 
-import {useState} from "react";
-import BookingDetailsForm from "@/app/(main)/booking/BookingDetailsForm";
-import {BookingFormOutput, BookingSchema} from "@/app/(main)/booking/FormTypes";
-import CustomerDetailsForm from "@/app/(main)/booking/CustomerDetailsForm";
+import React, {useState} from "react";
+import {bookingSchema, BookingSchemaType} from "@/app/(main)/booking/FormTypes";
 import Container from "@/app/ui/Container";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {SubmitHandler, useForm} from "react-hook-form";
+import GuestsDetailsForm from "@/app/(main)/booking/(formParts)/GuestsDetailsForm";
+import DateDetailsForm from "@/app/(main)/booking/(formParts)/DateDetailsForm";
+import TimeDetailsForm from "@/app/(main)/booking/(formParts)/TimeDetailsForm";
+import ContactDetailsForm from "@/app/(main)/booking/(formParts)/ContactDetailsForm";
+import useBookingSubmit from "@/app/hooks/useBookingSubmit";
+import {ExclamationTriangleIcon} from "@heroicons/react/16/solid";
+import Image from "next/image";
+
+export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
 export default function Page () {
-    const [formState, setFormState] = useState<Partial<BookingSchema>>({});
-    const [showBookingForm, setShowBookingForm] = useState(true);
-    const [bookingConfirmed, setBookingConfirmed] = useState(false);
+    const {
+        register, handleSubmit, watch, control, formState: { errors },
+    } = useForm<BookingSchemaType>({
+        resolver: zodResolver(bookingSchema),
+        defaultValues:{
+            id: "",
+            numberGuest: 0,
+            date: "",
+            time: "",
+            countryCode: "NO"
+        },
+        mode: "onSubmit"
+    })
+    const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
+    const {mutate, isError, isPending} = useBookingSubmit();
 
-    const handleBookingState = (data: BookingFormOutput) => {
-        setFormState(prevState => ({
-            ...prevState,
-            ...data,
-        }));
-        setShowBookingForm(false);
+    const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
+        // remove country code field because it's not part of Booking model
+        const {countryCode, ...validRequestData} = data;
+        mutate(validRequestData);
     }
 
-    console.log(formState);
-
+    // Multistep form, renders one section at a time based on schemaSection
     return (<section className={"bg-custom-eggwhite h-full"}>
-       <Container style={"flex flex-col items-center px-5 py-20 2xl:py-30 gap-9"}>
-           {!bookingConfirmed &&
-               <BookingDetailsForm setBookingDetails={handleBookingState} setBookingConfirmed={setBookingConfirmed}/>}
-            {/*{showBookingForm ?*/}
-            {/*    <BookingDetailsForm setBookingDetails={handleBookingState}/> :*/}
-            {/*    <CustomerDetailsForm setCustomerDetails={handleBookingState}/>*/}
-            {/*}*/}
-            {bookingConfirmed && <>
-                <h1 className={"text-2xl uppercase"}>Booking bekreftet</h1>
-                <div className={"flex flex-col items-center gap-5 text-lg"}>
-                    <p>Booking bekreftelse ble sendt til <span className={"font-bold"}>{formState.email}</span></p>
-                    <p>Antall gjester: <span className={"font-bold"}>{formState.numberGuest}</span></p>
-                    <p>Dato: <span className={"font-bold"}>{formState.date}</span></p>
-                    <p>Tid: <span className={"font-bold"}>{formState.time}</span></p>
-                    <p>Telefonnummer: <span className={"font-bold"}>{formState.phoneNumber}</span></p>
-                    <p>Kommentar: <span>{formState.comment}</span></p>
-                </div>
-            </>}
+       <Container style={"flex flex-col items-center px-5 py-20 2xl:py-30 gap-5"}>
+           {/*Loading animation shown while submitting form*/}
+           <div aria-live={"polite"}>
+               {isPending && <Image src={"/loading.gif"}
+                                    alt={"loading animation while waiting for submission verification"}
+                                    width={500} height={240}
+                                    unoptimized={true}/>}
+           </div>
+           {/*Error message if submission fails*/}
+           <div aria-live={"polite"}>
+               {isError &&
+                   <div className={"flex flex-col md:flex-row items-center gap-2 text-center md:text-left bg-red-200 border-2 border-red-600 p-3"}>
+                       <ExclamationTriangleIcon aria-hidden={true} className={"size-13 sm:size-10"}/>
+                       <p>Det oppstod en feil ved innsending av skjemaet. Vennligst prÃ¸v igjen senere eller ring oss pÃ¥ telefon.</p>
+                   </div>
+               }
+           </div>
+           {!isPending &&
+               <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
+               {schemaSection === "GUESTS" &&
+                   <GuestsDetailsForm control={control}
+                                      errors={errors}
+                                      watch={watch}
+                                      setSchemaSelection={setSchemaSection}/>
+               }
+               {schemaSection === "DATE" &&
+                   <DateDetailsForm control={control}
+                                    errors={errors}
+                                    watch={watch}
+                                    setSchemaSelection={setSchemaSection}/>
+               }
+               {schemaSection === "TIME" &&
+                   <TimeDetailsForm control={control}
+                                    errors={errors}
+                                    watch={watch}
+                                    setSchemaSelection={setSchemaSection}/>
+               }
+               {schemaSection === "CONTACT" &&
+                   <>
+                       <ContactDetailsForm register={register}
+                                           errors={errors}
+                                           watch={watch}
+                                           setSchemaSelection={setSchemaSection}/>
+                       {/*Submit button only visible in final step*/}
+                       <div className={"flex justify-center"}>
+                           <button type="submit"
+                                   className={"bg-black text-lg text-white w-fit py-2 px-8 rounded-3xl border-2 hover:bg-inherit hover:text-black"}>
+                               Reserver
+                           </button>
+                       </div>
+                   </>
+               }
+           </form>
+           }
         </Container>
     </section>
     );

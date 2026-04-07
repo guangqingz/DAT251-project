@@ -1,5 +1,8 @@
 import {useEffect, useState} from "react";
 
+/**
+ * Custom hook to dynamically determine size of browser window
+ */
 export default function useWindowWidth(): number {
     const [width, setWidth] = useState<number>(0);
 

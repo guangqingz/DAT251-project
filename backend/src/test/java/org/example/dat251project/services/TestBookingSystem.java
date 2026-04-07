@@ -1,40 +1,84 @@
 package org.example.dat251project.services;
 
+import org.example.dat251project.dtos.BookingDTO;
+import org.example.dat251project.dtos.TimeSlotDTO;
+import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
+import org.example.dat251project.models.Table;
 import org.example.dat251project.repositories.BookingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@ExtendWith(SpringExtension.class)
 public class TestBookingSystem {
+    private final String email = "email@email.com";
+    private final Integer phoneNumber = 1234;
     private Restaurant restaurant;
+    private BookingSystem bookingSystem;
     @Mock
     private BookingRepository bookingRepo;
-
+    @Mock
+    private BookingService bookingService;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
         restaurant = new Restaurant();
+        List<Table> restTables = new ArrayList<>();
 
+        Table t1 = new Table("T1", 4);
+        Table t2 = new Table("T2", 2);
+        Table t3 = new Table("T3", 4);
+        Table t4 = new Table("T4", 2);
+        Table t5 = new Table("T5", 4);
+        Table t6 = new Table("T6", 4);
+        restTables.add(t1);
+        restTables.add(t2);
+        restTables.add(t3);
+        restTables.add(t4);
+        restTables.add(t5);
+        restTables.add(t6);
+        restaurant.setTables(restTables);
+        HashMap<Table, List<Table>> combo = new HashMap<>();
+        combo.put(t2, new ArrayList<>(Arrays.asList(t1, t3)));
+        combo.put(t3, new ArrayList<>(List.of(t4)));
+        restaurant.setCombination(combo);
+        bookingService = Mockito.mock(BookingService.class);
+        bookingSystem = new BookingSystem();
+    }
+
+    private void mockBooking(LocalDate date, LocalTime time, int numGuests, List<Table> bookedTables) {
+        LocalTime startTime = time.minusHours(2);
+        LocalTime endTime = time.plusHours(2);
+        Mockito.when(bookingService.findByDateAndTimeBetween(date, startTime, endTime))
+                .thenReturn(List.of(
+                        new Booking(email, phoneNumber, numGuests, time, date, "", bookedTables)
+                ));
     }
 
     @Test
     public void remainingSeatsNonNegative() {
         Integer negativeSeat = -5;
-        restaurant.setTableCapacity(negativeSeat);
+        restaurant.setRestaurantCapacity(negativeSeat);
+
         assertThrows(IllegalArgumentException.class, () ->
-                new BookingSystem(bookingRepo, restaurant));
+                bookingSystem.initializeRestaurant(restaurant));
     }
 
     @Test
@@ -46,10 +90,11 @@ public class TestBookingSystem {
                 LocalTime.of(9, 0, 0),
                 LocalTime.of(22, 0, 0));
         restaurant.setTimeSlots(timeSlots);
-        restaurant.setTableCapacity(5);
+        restaurant.setRestaurantCapacity(5);
         restaurant.setNormalOpeningHours(openingHours);
+
         assertThrows(IllegalArgumentException.class, () ->
-                new BookingSystem(bookingRepo, restaurant));
+                bookingSystem.initializeRestaurant(restaurant));
 
     }
 
@@ -59,18 +104,150 @@ public class TestBookingSystem {
         List<LocalTime> timeSlots = List.of(LocalTime.of(18, 0), LocalTime.of(20, 30));
         OpeningHours openingHours = new OpeningHours(LocalTime.of(9, 0), LocalTime.of(23, 0));
         restaurant.setNormalOpeningHours(openingHours);
-        restaurant.setTableCapacity(5);
+        restaurant.setRestaurantCapacity(5);
         restaurant.setTimeSlots(timeSlots);
-        BookingSystem bookingSystem = new BookingSystem(bookingRepo, restaurant);
 
+        bookingSystem.initializeRestaurant(restaurant);
+        bookingSystem.setBookingService(bookingService);
         // If refactor to using DTO, remember to change it here as well
         LocalDate date = LocalDate.of(2026, 3, 10);
         LocalTime time = LocalTime.of(18, 0);
         int numGuests = 2;
+        // Mock the availability
+        for (LocalTime timeslot : restaurant.getTimeSlots()) {
+            LocalTime startWindow = timeslot.minusHours(2);
+            LocalTime endWindow = timeslot.plusHours(2);
+            Mockito.when(bookingService.findByDateAndTimeBetween(date, startWindow, endWindow))
+                    .thenReturn(new ArrayList<>()); // No bookings yet, all tables free
+        }
+        List<TimeSlotDTO> availableTime = bookingSystem.getAvailabilityForDate(date, numGuests);
+        assertTrue(availableTime.getFirst().getAvailable());
+    }
 
-        // Mock the repository to return 0 guests that are in the restaurant at that time
-        Mockito.when(bookingRepo.sumGuestsByDateAndTime(date, time)).thenReturn(0);
 
-        assertTrue(bookingSystem.createBooking(date, time, numGuests));
+    @Test
+    public void testSmallBooking() {
+        // Set up timeslots and opening hours
+        List<LocalTime> timeSlots = List.of(LocalTime.of(18, 0), LocalTime.of(20, 30));
+        OpeningHours openingHours = new OpeningHours(LocalTime.of(9, 0), LocalTime.of(23, 0));
+        restaurant.setNormalOpeningHours(openingHours);
+        restaurant.setRestaurantCapacity(20);
+        restaurant.setTimeSlots(timeSlots);
+
+
+        bookingSystem.initializeRestaurant(restaurant);
+        bookingSystem.setBookingService(bookingService);
+
+        LocalDate date = LocalDate.of(2026, 3, 10);
+        LocalTime time = LocalTime.of(18, 0);
+        int numGuests = 2;
+        List<Table> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
+        assertEquals(1, booking1.size());
+        assertTrue(restaurant.getSmallTables().contains(booking1.getFirst()));
+
+        // Mock that there has been a booking created in the db
+        mockBooking(date, time, numGuests, booking1);
+        List<Table> booking2 = bookingSystem.findAvailableTables(date, time, 1);
+        assertEquals(1, booking2.size());
+        assertNotEquals(booking1.getFirst(), booking2.getFirst());
+        assertTrue(restaurant.getSmallTables().contains(booking2.getFirst()));
+
+    }
+
+    @Test
+    public void testBigBooking() {
+        // Set up timeslots and opening hours
+        List<LocalTime> timeSlots = List.of(LocalTime.of(18, 0), LocalTime.of(20, 30));
+        OpeningHours openingHours = new OpeningHours(LocalTime.of(9, 0), LocalTime.of(23, 0));
+        restaurant.setNormalOpeningHours(openingHours);
+        restaurant.setRestaurantCapacity(20);
+        restaurant.setTimeSlots(timeSlots);
+
+
+        bookingSystem.initializeRestaurant(restaurant);
+        bookingSystem.setBookingService(bookingService);
+
+        LocalDate date = LocalDate.of(2026, 3, 10);
+        LocalTime time = LocalTime.of(18, 0);
+        int numGuests = 3;
+
+        List<Table> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
+        assertEquals(1, booking1.size());
+        assertTrue(restaurant.getBigTables().contains(booking1.getFirst()));
+
+        // Mock that there has been a booking created in the db
+        mockBooking(date, time, numGuests, booking1);
+        List<Table> booking2 = bookingSystem.findAvailableTables(date, time, 4);
+        assertEquals(1, booking2.size());
+        assertNotEquals(booking1.getFirst(), booking2.getFirst());
+        assertTrue(restaurant.getBigTables().contains(booking2.getFirst()));
+
+    }
+
+    @Test
+    public void testComboBooking() {
+        // Set up timeslots and opening hours
+        List<LocalTime> timeSlots = List.of(LocalTime.of(18, 0), LocalTime.of(20, 30));
+        OpeningHours openingHours = new OpeningHours(LocalTime.of(9, 0), LocalTime.of(23, 0));
+        restaurant.setNormalOpeningHours(openingHours);
+        restaurant.setRestaurantCapacity(20);
+        restaurant.setTimeSlots(timeSlots);
+
+        bookingSystem.initializeRestaurant(restaurant);
+        bookingSystem.setBookingService(bookingService);
+
+        LocalDate date = LocalDate.of(2026, 3, 10);
+        LocalTime time = LocalTime.of(18, 0);
+        int numGuests = 5;
+
+
+        List<Table> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
+        assertEquals(2, booking1.size());
+        // Mock that there has been a booking created in the db
+        mockBooking(date, time, numGuests, booking1);
+        // TODO don't know how to test which combination was used, but since the second assertEquals passed, we can guarantee we didn't get (t2,t3)
+        List<Table> booking2 = bookingSystem.findAvailableTables(date, time, numGuests);
+        assertEquals(2, booking2.size());
+        // Mock that there has been a booking created in the db
+        mockBooking(date, time, numGuests, booking2);
+
+    }
+
+    @Test
+    public void testBookingByDateAndTime() {
+        // Set up timeslots and opening hours
+        List<LocalTime> timeSlots = List.of(LocalTime.of(10, 0), LocalTime.of(20, 0));
+        OpeningHours openingHours = new OpeningHours(LocalTime.of(9, 0), LocalTime.of(23, 0));
+        restaurant.setNormalOpeningHours(openingHours);
+        restaurant.setRestaurantCapacity(20);
+        restaurant.setTimeSlots(timeSlots);
+
+        bookingSystem.initializeRestaurant(restaurant);
+        bookingSystem.setBookingService(bookingService);
+
+        LocalTime time1 = timeSlots.getFirst();
+        LocalTime time2 = timeSlots.getLast();
+        LocalDate date = LocalDate.of(2026, 3, 10);
+        int numGuests = 3;
+
+        List<Table> tables1 = bookingSystem.findAvailableTables(date, time1, numGuests);
+        List<Table> tables2 = bookingSystem.findAvailableTables(date, time2, numGuests);
+
+        Booking booking1 = new Booking("alice@gmail.com", 123,
+                numGuests, time1, date, "Hello", tables1);
+        Booking booking2 = new Booking("bob@gmail.com", 321,
+                numGuests, time2, date, "Hello 2", tables2);
+
+        List<Booking> bookings = new ArrayList<>();
+        bookings.add(booking1);
+        bookings.add(booking2);
+
+        Mockito.when(bookingService.findAllByDateAndTime(date, time1))
+                .thenReturn(bookings);
+
+        List<BookingDTO> result = bookingSystem.getBookingByDateAndTime(date, time1);
+        assertEquals(2, result.size());
+        assertEquals("alice@gmail.com", result.getFirst().getEmail());
+
     }
 }

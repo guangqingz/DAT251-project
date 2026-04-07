@@ -11,14 +11,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-custom-green: #8fbc8f;
   --color-light-custom-green: #e9fde9;
   --color-custom-red: #7A3018;
    --color-custom-eggwhite: #F4F3EE;
    --color-custom-eggwhite-dark: #E7E6DE;
-   --color-custom-gold: #C9AB81;
+   --color-custom-orange: #FCE7D3;
    --color-custom-gray: #585857;
-   --color-custom-green: #63A439;
+   --color-custom-green: #36571E;
 }
 
 @layer base {

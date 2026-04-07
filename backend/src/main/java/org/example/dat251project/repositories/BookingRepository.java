@@ -7,11 +7,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface BookingRepository extends JpaRepository<Booking, UUID> {
-    @Query(value = """
-            SELECT SUM(b.numberGuest) FROM Booking b WHERE b.date = :date AND b.time = :time
-            """)
-    Integer sumGuestsByDateAndTime(@Param("date") LocalDate date, @Param("time") LocalTime time);
+    List<Booking> findByDateAndTimeBetween(LocalDate date, LocalTime start, LocalTime end);
+
+    @Query("SELECT b from Booking b WHERE b.time >= :t AND b.date = :d")
+    List<Booking> findAllByDateAndTime(@Param("d") LocalDate date, @Param("t") LocalTime time);
 }

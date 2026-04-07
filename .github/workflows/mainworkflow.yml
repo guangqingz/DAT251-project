@@ -3,18 +3,12 @@ name: Main
 on:
   pull_request:
     branches:
-      - main
       - dev
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v4
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-      - name: Build with Gradle
-        run: ./gradlew build
-      - name: Run tests
-        run: ./gradlew test
+  backend:
+    name: Backend
+    uses: ./.github/workflows/backend.yml
+  frontend:
+    name: Frontend
+    uses: ./.github/workflows/frontend.yml
