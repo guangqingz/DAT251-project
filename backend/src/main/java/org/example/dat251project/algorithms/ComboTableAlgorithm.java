@@ -1,7 +1,7 @@
 package org.example.dat251project.algorithms;
 
 import org.example.dat251project.models.Restaurant;
-import org.example.dat251project.models.Tables;
+import org.example.dat251project.models.Table;
 
 import java.util.List;
 import java.util.Set;
@@ -16,7 +16,7 @@ public class ComboTableAlgorithm implements TableSelectionAlgorithm {
      * @return a list of tables
      */
     @Override
-    public List<Tables> findTables(Restaurant restaurant, Set<Tables> occupiedTables, int numGuests) {
+    public List<Table> findTables(Restaurant restaurant, Set<Table> occupiedTables, int numGuests) {
         return restaurant.findBestComboTables(occupiedTables, numGuests);
     }
 

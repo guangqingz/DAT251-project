@@ -12,8 +12,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "tables")
-public class Tables {
+@jakarta.persistence.Table(name = "tables")
+public class Table {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -22,7 +22,7 @@ public class Tables {
     @ManyToOne
     private Restaurant restaurant;
 
-    public Tables(String name, Integer numOfSeats) {
+    public Table(String name, Integer numOfSeats) {
         this.name = name;
         this.numOfSeats = numOfSeats;
     }
@@ -30,7 +30,7 @@ public class Tables {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Tables table)) return false;
+        if (!(o instanceof Table table)) return false;
         return id != null && id.equals(table.id);
     }
 

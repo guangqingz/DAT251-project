@@ -1,7 +1,7 @@
 package org.example.dat251project.algorithms;
 
 import org.example.dat251project.models.Restaurant;
-import org.example.dat251project.models.Tables;
+import org.example.dat251project.models.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,9 @@ public class BigTableAlgorithm implements TableSelectionAlgorithm {
      * @return a list of tables
      */
     @Override
-    public List<Tables> findTables(Restaurant restaurant, Set<Tables> occupiedTables, int numGuests) {
-        List<Tables> bestTables = new ArrayList<>();
-        if (numGuests <= restaurant.BIGTABLEMAX) {
+    public List<Table> findTables(Restaurant restaurant, Set<Table> occupiedTables, int numGuests) {
+        List<Table> bestTables = new ArrayList<>();
+        if (numGuests <= restaurant.BIG_TABLE_MAX) {
             bestTables = restaurant.findBestBigTables(occupiedTables, numGuests);
         }
         return bestTables;

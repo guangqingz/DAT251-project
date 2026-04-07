@@ -2,7 +2,7 @@ package org.example.dat251project.configs;
 
 import jakarta.transaction.Transactional;
 import org.example.dat251project.models.Restaurant;
-import org.example.dat251project.models.Tables;
+import org.example.dat251project.models.Table;
 import org.example.dat251project.repositories.RestaurantRepository;
 import org.example.dat251project.repositories.UserRepository;
 import org.example.dat251project.services.BookingSystem;
@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Configuration
 public class DataInitializer {
@@ -42,11 +44,12 @@ public class DataInitializer {
                 );
                 HashSet<DayOfWeek> closedDays = new HashSet<>();
                 closedDays.add(DayOfWeek.MONDAY);
-                List<Tables> tables = createTables();
-                restaurantService.createRestaurant(
+                List<Table> tables = createTables();
+                Restaurant res = restaurantService.createRestaurant(
                         "Sze Chuan House", "Nedre Korskirkeallmenningen 9",
                         55313690, 20, opHours, 30, closedDays,
-                        tables, createCombo(tables), 2);
+                        tables, null, 2);
+                res.createCombo(tables);
                 initializer.initialize();
             }
             if (userRepo.count() == 0) {
@@ -55,14 +58,14 @@ public class DataInitializer {
         };
     }
 
-    private List<Tables> createTables() {
-        List<Tables> restTables = new ArrayList<>();
-        Tables t1 = new Tables("T1", 4);
-        Tables t2 = new Tables("T2", 2);
-        Tables t3 = new Tables("T3", 4);
-        Tables t4 = new Tables("T4", 2);
-        Tables t5 = new Tables("T5", 4);
-        Tables t6 = new Tables("T6", 4);
+    private List<Table> createTables() {
+        List<Table> restTables = new ArrayList<>();
+        Table t1 = new Table("T1", 4);
+        Table t2 = new Table("T2", 2);
+        Table t3 = new Table("T3", 4);
+        Table t4 = new Table("T4", 2);
+        Table t5 = new Table("T5", 4);
+        Table t6 = new Table("T6", 4);
         restTables.add(t1);
         restTables.add(t2);
         restTables.add(t3);
@@ -72,16 +75,6 @@ public class DataInitializer {
         return restTables;
     }
 
-    private HashMap<Tables, List<Tables>> createCombo(List<Tables> tables) {
-        HashMap<Tables, List<Tables>> combo = new HashMap<>();
-        Tables t1 = tables.get(0);
-        Tables t2 = tables.get(1);
-        Tables t3 = tables.get(2);
-        Tables t4 = tables.get(3);
-        combo.put(t2, new ArrayList<>(Arrays.asList(t1, t3)));
-        combo.put(t3, new ArrayList<>(List.of(t4)));
-        return combo;
-    }
 
     @Service
     public class BookingSystemInitializer {

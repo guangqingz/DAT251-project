@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 
-const days: string[] = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"]
+const DAYS: string[] = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"]
 
 /**
  * Renders a calendar grid for a given month and allows users to select a date
@@ -13,10 +13,10 @@ export default function FormCalendarDays({date, chosenFullDate, handleSelectDate
     date: Date, chosenFullDate: string, handleSelectDate:(value: number) => void
 }){
     // Used to decide the days in the calendar
-    let firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-    let lastDateOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-    let gridSpace = (firstDayOfMonth + 6) % 7; // Used to place the date numbers under correct day
-    const dateInMonth: number[] = Array.from({length: lastDateOfMonth}, (_, index) => index + 1);
+    const FIRST_DAY_OF_MONTH = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    const LAST_DAT_OF_MONTH = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    const GRID_SPACE = (FIRST_DAY_OF_MONTH + 6) % 7; // Used to place the date numbers under correct day
+    const DATE_IN_MONTH: number[] = Array.from({length: LAST_DAT_OF_MONTH}, (_, index) => index + 1);
 
     const todaysDate = new Date();
 
@@ -49,25 +49,25 @@ export default function FormCalendarDays({date, chosenFullDate, handleSelectDate
     return (
         <div className={"grid grid-cols-7 mt-5 text-center gap-5"}>
             {/*Displays days of the week*/}
-            {days.map((day: string) =>
+            {DAYS.map((day: string) =>
                 <h4 key={day} className={"text-xl"}>{day}</h4>
             )}
             {/*Add empty spaces in the grid to align the date under correct day*/}
-            {Array.from({length: gridSpace}).map((_, i) => (
+            {Array.from({length: GRID_SPACE}).map((_, i) => (
                 <div key={i}></div>
             ))}
             {/*Displays all dates in the current month*/}
-            {dateInMonth.map((dateItem: number) => {
+            {DATE_IN_MONTH.map((dateItem: number) => {
                 const [isSelectedDay, isValidDay] = getStateOfDay(dateItem);
 
-                return <button key={dateItem}
+                return <button key={dateItem} type={"button"}
                                disabled={!isValidDay}
                                onClick={() => handleSelectDate(Number(dateItem))}
-                               aria-disabled={isValidDay}
+                               aria-disabled={!isValidDay}
                                aria-pressed={isSelectedDay}
                                className={clsx("text-xl p-2 rounded-md",
                                    {"text-custom-red": dateItem === todaysDate.getDate() && date.getMonth() === todaysDate.getMonth()},
-                                   {"text-gray-400": !isValidDay},
+                                   {"text-gray-600 line-through": !isValidDay},
                                    {"hover:bg-gray-300 transition-colors": isValidDay},
                                    {"bg-gray-300": isSelectedDay})}>{dateItem}</button>
             })}

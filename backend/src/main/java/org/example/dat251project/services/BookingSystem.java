@@ -12,11 +12,12 @@ import org.example.dat251project.dtos.BookingDTO;
 import org.example.dat251project.dtos.TimeSlotDTO;
 import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
-import org.example.dat251project.models.Tables;
+import org.example.dat251project.models.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -54,9 +55,21 @@ public class BookingSystem {
         }
     }
 
+    /**
+     * Check that the time for booking is within the opening hour, and also not a passed time
+     * In addition, also check that the date is present or future. Not a past
+     *
+     * @param bookingTime
+     * @param bookingDate
+     * @return
+     */
+    public Boolean checkValidBookingTimeAndDate(LocalTime bookingTime, LocalDate bookingDate) {
+        LocalDateTime dt = LocalDateTime.of(bookingDate, bookingTime);
+        return dt.isAfter(LocalDateTime.now()) && restaurant.getNormalOpeningHours().withinOpeningHours(bookingTime);
+    }
 
     /**
-     * helper method for checking if the timeslots given are within the {@link OpeningHours openingHours}
+     * Helper method for checking if the timeslots given are within the {@link OpeningHours openingHours}
      *
      * @param timeSlots
      * @param openingHours
@@ -81,24 +94,54 @@ public class BookingSystem {
      * @return true if there is a table available, false otherwise
      */
     private boolean checkAvailability(LocalDate date, LocalTime time, int numGuests) {
-        List<Tables> possibleTables = findAvailableTables(date, time, numGuests);
+        List<Table> possibleTables = findAvailableTables(date, time, numGuests);
         return !possibleTables.isEmpty();
 
     }
 
+    /**
+     * Get all timeslots that are available to serve the {@link Integer numGuests} at the {@link LocalDate date}
+     *
+     * @param date
+     * @param numGuests
+     * @return list of all timeslots as a list of {@link TimeSlotDTO timeslotDTOs}
+     */
     public List<TimeSlotDTO> getAvailabilityForDate(LocalDate date, int numGuests) {
         List<TimeSlotDTO> availabilityList = new ArrayList<>();
-        for (LocalTime timeslot : restaurant.getTimeSlots()) {
-            availabilityList.add(TimeSlotDTO.builder()
-                    .time(timeslot)
-                    .available(checkAvailability(date, timeslot, numGuests))
-                    .build());
-
+        // If current date, then have to ensure that all timeslots passed the current time is true
+        if (Objects.equals(date, LocalDate.now())) {
+            LocalTime currTime = LocalTime.now().plusHours(restaurant.BOOKING_DURATION);
+            for (LocalTime timeslot : restaurant.getTimeSlots()) {
+                if (timeslot.isAfter(currTime)) {
+                    availabilityList.add(TimeSlotDTO.builder()
+                            .time(timeslot)
+                            .available(checkAvailability(date, timeslot, numGuests))
+                            .pastTime(false)
+                            .build());
+                } else {
+                    // all past timeslots will not be available thus pastTime is true
+                    availabilityList.add(TimeSlotDTO.builder()
+                            .time(timeslot)
+                            .available(false)
+                            .pastTime(true)
+                            .build());
+                }
+            }
+        } else {
+            // If the booking is in a future date, then don't need to worry about the current time of booking
+            for (LocalTime timeslot : restaurant.getTimeSlots()) {
+                availabilityList.add(TimeSlotDTO.builder()
+                        .time(timeslot)
+                        .available(checkAvailability(date, timeslot, numGuests))
+                        .pastTime(false)
+                        .build());
+            }
         }
+
         return availabilityList;
     }
 
-    public Booking createBooking(BookingDTO bookingDTO, List<Tables> tables) {
+    public Booking createBooking(BookingDTO bookingDTO, List<Table> tables) {
         Booking booking = bookingService.createBooking(bookingDTO, tables);
         if (booking != null) {
             try {
@@ -117,16 +160,16 @@ public class BookingSystem {
      *
      * @param date
      * @param time
-     * @return
+     * @return Set of all tables that are occupied during that date and time
      */
-    private Set<Tables> getOccupiedTables(LocalDate date, LocalTime time) {
-        HashSet<Tables> occupiedTables = new HashSet<>();
-        LocalTime startWindow = time.minusHours(restaurant.BOOKINGDURATION);
-        LocalTime endWindow = time.plusHours(restaurant.BOOKINGDURATION);
+    private Set<Table> getOccupiedTables(LocalDate date, LocalTime time) {
+        HashSet<Table> occupiedTables = new HashSet<>();
+        LocalTime startWindow = time.minusHours(restaurant.BOOKING_DURATION);
+        LocalTime endWindow = time.plusHours(restaurant.BOOKING_DURATION);
         List<Booking> bookings = bookingService.findByDateAndTimeBetween(date, startWindow, endWindow);
         for (Booking b : bookings) {
             LocalTime startTime = b.getTime();
-            LocalTime endTime = startTime.plusHours(restaurant.BOOKINGDURATION);
+            LocalTime endTime = startTime.plusHours(restaurant.BOOKING_DURATION);
             // Starting time before the ending window and also doesn't end after the starting window
             if (startTime.isBefore(endWindow) && endTime.isAfter(startWindow)) {
                 occupiedTables.addAll(b.getTables());
@@ -136,32 +179,34 @@ public class BookingSystem {
     }
 
 
-    //algorithm part
-    public List<Tables> findAvailableTables(LocalDate date, LocalTime time, int numGuests) {
-        List<Tables> nonAvailable = new ArrayList<>();
-        Set<Tables> occupiedTables = getOccupiedTables(date, time);
+    /**
+     * Find available an available {@link Table table}/{@link Table tables} that can seat
+     * the amount of {@link Integer numGuests} given the {@link LocalDate date} and {@link LocalTime time} of the
+     * booking they want to have. Finding available tables is dependent on the different {@link TableSelectionAlgorithm algorithms}
+     * which will find the most optimal one.
+     *
+     * @param date
+     * @param time
+     * @param numGuests
+     * @return List of Table/Tables. If there are none available, it will return an empty list. Will also return empty list if {@link Integer numGuest} exceeds max group size
+     */
+    public List<Table> findAvailableTables(LocalDate date, LocalTime time, int numGuests) {
+        List<Table> nonAvailable = new ArrayList<>();
+        Set<Table> occupiedTables = getOccupiedTables(date, time);
         List<TableSelectionAlgorithm> strategies = List.of(
                 new SmallTableAlgorithm(),
                 new BigTableAlgorithm(),
                 new ComboTableAlgorithm()
         );
-        if (numGuests > restaurant.MAXGROUPSIZE) return nonAvailable;
+        if (numGuests > restaurant.MAX_GROUP_SIZE) return nonAvailable;
         for (TableSelectionAlgorithm algorithm : strategies) {
-            List<Tables> bestTables = algorithm.findTables(restaurant, occupiedTables, numGuests);
+            List<Table> bestTables = algorithm.findTables(restaurant, occupiedTables, numGuests);
             if (!bestTables.isEmpty()) {
                 return bestTables;
             }
         }
         // Will only return if there are no tables available
         return nonAvailable;
-    }
-
-    public List<String> getTableNames(List<Tables> tables) {
-        ArrayList<String> tableNames = new ArrayList<>();
-        for (Tables t : tables) {
-            tableNames.add(t.getName());
-        }
-        return tableNames;
     }
 
     public Booking getBookingById(UUID id) {
@@ -172,7 +217,15 @@ public class BookingSystem {
         return booking;
     }
 
-    public List<BookingDTO> getBookingByDataAndTime(LocalDate date, LocalTime time) {
+    /**
+     * Get all {@link Booking booking} that are in that date and past {@link LocalTime time}
+     * This also includes booking taking place at {@link LocalTime time}
+     *
+     * @param date
+     * @param time
+     * @return List of {@link BookingDTO bookingDTOs} sorted by their time ascending
+     */
+    public List<BookingDTO> getBookingByDateAndTime(LocalDate date, LocalTime time) {
         ArrayList<Booking> list = new ArrayList<>(bookingService.findAllByDateAndTime(date, time));
         list.sort(Comparator.comparing(Booking::getTime));
         return convertBookingToDTO(list);

@@ -20,6 +20,12 @@ public class OpeningHours {
         this.close = close;
     }
 
+    /**
+     * Check whether the given {@link LocalTime time} is within opening and closing hours
+     *
+     * @param currentTime
+     * @return true if it is within the opening and closing hours, false otherwise
+     */
     public boolean withinOpeningHours(LocalTime currentTime) {
         return (!currentTime.isBefore(open) && currentTime.isBefore(close));
     }

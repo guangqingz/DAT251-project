@@ -12,7 +12,7 @@ public class UserService {
     UserRepository userRepo;
 
     public User createUser(String name, String email, String password, Role role) {
-        // Can't have two of the same restaurant name
+        // Can't have two of the same name
         if (userRepo.findByName(name).isEmpty()) {
             User user = new User(name, email, password, role);
             userRepo.save(user);

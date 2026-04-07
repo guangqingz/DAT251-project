@@ -4,7 +4,7 @@ import org.example.dat251project.dtos.BookingDTO;
 import org.example.dat251project.dtos.TimeSlotDTO;
 import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
-import org.example.dat251project.models.Tables;
+import org.example.dat251project.models.Table;
 import org.example.dat251project.repositories.BookingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,14 +40,14 @@ public class TestBookingSystem {
     void setup() {
         MockitoAnnotations.openMocks(this);
         restaurant = new Restaurant();
-        List<Tables> restTables = new ArrayList<>();
+        List<Table> restTables = new ArrayList<>();
 
-        Tables t1 = new Tables("T1", 4);
-        Tables t2 = new Tables("T2", 2);
-        Tables t3 = new Tables("T3", 4);
-        Tables t4 = new Tables("T4", 2);
-        Tables t5 = new Tables("T5", 4);
-        Tables t6 = new Tables("T6", 4);
+        Table t1 = new Table("T1", 4);
+        Table t2 = new Table("T2", 2);
+        Table t3 = new Table("T3", 4);
+        Table t4 = new Table("T4", 2);
+        Table t5 = new Table("T5", 4);
+        Table t6 = new Table("T6", 4);
         restTables.add(t1);
         restTables.add(t2);
         restTables.add(t3);
@@ -55,7 +55,7 @@ public class TestBookingSystem {
         restTables.add(t5);
         restTables.add(t6);
         restaurant.setTables(restTables);
-        HashMap<Tables, List<Tables>> combo = new HashMap<>();
+        HashMap<Table, List<Table>> combo = new HashMap<>();
         combo.put(t2, new ArrayList<>(Arrays.asList(t1, t3)));
         combo.put(t3, new ArrayList<>(List.of(t4)));
         restaurant.setCombination(combo);
@@ -63,7 +63,7 @@ public class TestBookingSystem {
         bookingSystem = new BookingSystem();
     }
 
-    private void mockBooking(LocalDate date, LocalTime time, int numGuests, List<Tables> bookedTables) {
+    private void mockBooking(LocalDate date, LocalTime time, int numGuests, List<Table> bookedTables) {
         LocalTime startTime = time.minusHours(2);
         LocalTime endTime = time.plusHours(2);
         Mockito.when(bookingService.findByDateAndTimeBetween(date, startTime, endTime))
@@ -141,13 +141,13 @@ public class TestBookingSystem {
         LocalDate date = LocalDate.of(2026, 3, 10);
         LocalTime time = LocalTime.of(18, 0);
         int numGuests = 2;
-        List<Tables> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
+        List<Table> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
         assertEquals(1, booking1.size());
         assertTrue(restaurant.getSmallTables().contains(booking1.getFirst()));
 
         // Mock that there has been a booking created in the db
         mockBooking(date, time, numGuests, booking1);
-        List<Tables> booking2 = bookingSystem.findAvailableTables(date, time, 1);
+        List<Table> booking2 = bookingSystem.findAvailableTables(date, time, 1);
         assertEquals(1, booking2.size());
         assertNotEquals(booking1.getFirst(), booking2.getFirst());
         assertTrue(restaurant.getSmallTables().contains(booking2.getFirst()));
@@ -171,13 +171,13 @@ public class TestBookingSystem {
         LocalTime time = LocalTime.of(18, 0);
         int numGuests = 3;
 
-        List<Tables> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
+        List<Table> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
         assertEquals(1, booking1.size());
         assertTrue(restaurant.getBigTables().contains(booking1.getFirst()));
 
         // Mock that there has been a booking created in the db
         mockBooking(date, time, numGuests, booking1);
-        List<Tables> booking2 = bookingSystem.findAvailableTables(date, time, 4);
+        List<Table> booking2 = bookingSystem.findAvailableTables(date, time, 4);
         assertEquals(1, booking2.size());
         assertNotEquals(booking1.getFirst(), booking2.getFirst());
         assertTrue(restaurant.getBigTables().contains(booking2.getFirst()));
@@ -201,12 +201,12 @@ public class TestBookingSystem {
         int numGuests = 5;
 
 
-        List<Tables> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
+        List<Table> booking1 = bookingSystem.findAvailableTables(date, time, numGuests);
         assertEquals(2, booking1.size());
         // Mock that there has been a booking created in the db
         mockBooking(date, time, numGuests, booking1);
         // TODO don't know how to test which combination was used, but since the second assertEquals passed, we can guarantee we didn't get (t2,t3)
-        List<Tables> booking2 = bookingSystem.findAvailableTables(date, time, numGuests);
+        List<Table> booking2 = bookingSystem.findAvailableTables(date, time, numGuests);
         assertEquals(2, booking2.size());
         // Mock that there has been a booking created in the db
         mockBooking(date, time, numGuests, booking2);
@@ -230,8 +230,8 @@ public class TestBookingSystem {
         LocalDate date = LocalDate.of(2026, 3, 10);
         int numGuests = 3;
 
-        List<Tables> tables1 = bookingSystem.findAvailableTables(date, time1, numGuests);
-        List<Tables> tables2 = bookingSystem.findAvailableTables(date, time2, numGuests);
+        List<Table> tables1 = bookingSystem.findAvailableTables(date, time1, numGuests);
+        List<Table> tables2 = bookingSystem.findAvailableTables(date, time2, numGuests);
 
         Booking booking1 = new Booking("alice@gmail.com", 123,
                 numGuests, time1, date, "Hello", tables1);
@@ -245,7 +245,7 @@ public class TestBookingSystem {
         Mockito.when(bookingService.findAllByDateAndTime(date, time1))
                 .thenReturn(bookings);
 
-        List<BookingDTO> result = bookingSystem.getBookingByDataAndTime(date, time1);
+        List<BookingDTO> result = bookingSystem.getBookingByDateAndTime(date, time1);
         assertEquals(2, result.size());
         assertEquals("alice@gmail.com", result.getFirst().getEmail());
 

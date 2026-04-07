@@ -9,8 +9,8 @@ import FormCalendar from "@/app/booking/(formParts)/FormCalendarDays";
 
 let date: Date = new Date();
 // Used to restrict how long time in advance one can create a booking
-const maxFutureMonth = 2;
-let maxMonth:number = (date.getMonth() + maxFutureMonth + 1) % 12
+const MAX_FUTURE_MONTH = 2;
+const MAX_MONTH:number = (date.getMonth() + MAX_FUTURE_MONTH + 1) % 12
 
 /**
  * Second step of the booking form where user choose the date of booking
@@ -45,7 +45,7 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
             setPrevMonth(false)
         }
         // Prevent going past max month
-        if (maxMonth !== (date.getMonth() + 1)){
+        if (MAX_MONTH !== (date.getMonth() + 1)){
             setNextMonth(true)
         } else {
             setNextMonth(false)
@@ -57,10 +57,12 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
     const handleBtnClick = (direction:string) => {
         // Prevent going back in time
         if (direction === "PREV" && todaysDate < date){
+            date.setDate(1); // to avoid overflow which skips a month
             date.setMonth(date.getMonth() - 1);
         }
         // Enforce maximum days ahead a customer can book table
-        if (direction === "NEXT" && maxMonth !== (date.getMonth() + 1)){
+        if (direction === "NEXT" && MAX_MONTH !== (date.getMonth() + 1)){
+            date.setDate(1);
             date.setMonth(date.getMonth() + 1);
         }
         updateCalendarBtn()
@@ -99,17 +101,23 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
                 <div className={"flex justify-between px-1"}>
                     <h4 className={"text-2xl capitalize"}>{getMonthToString(date)} {date.getFullYear()}</h4>
                     <div className={"flex gap-2"}>
-                        <button aria-disabled={!prevMonth} disabled={!prevMonth}
+                        <button type={"button"}
+                                aria-label={"Go to previous month"}
+                                aria-disabled={!prevMonth}
+                                disabled={!prevMonth}
                                 onClick={() => handleBtnClick("PREV")}>
-                            <ArrowLeftIcon
+                            <ArrowLeftIcon aria-hidden={true}
                                 className={clsx("w-6",
-                                    {"text-gray-500": !prevMonth})}/>
+                                    {"text-gray-600": !prevMonth})}/>
                         </button>
-                        <button aria-disabled={!nextMonth} disabled={!nextMonth}
+                        <button type={"button"}
+                                aria-label={"Go to next month"}
+                                aria-disabled={!nextMonth}
+                                disabled={!nextMonth}
                                 onClick={() => handleBtnClick("NEXT")}>
-                            <ArrowRightIcon
+                            <ArrowRightIcon aria-hidden={true}
                                 className={clsx("w-6",
-                                    {"text-gray-500": !nextMonth})}/>
+                                    {"text-gray-600": !nextMonth})}/>
                         </button>
                     </div>
                 </div>
@@ -117,10 +125,11 @@ export default function DateDetailsForm({control, errors, watch, setSchemaSelect
                 <FormCalendar date={date} chosenFullDate={chosenFullDate} handleSelectDate={handleSelectDate} />
             </div>
             {errors.date && <span id={"calendar-error"} className={"text-red-800"}>{errors.date.message}</span>}
-            <button
+            <button type={"button"}
+                aria-label={"Go back to choosing number of guests"}
                 onClick={() => setSchemaSelection("GUESTS")}
                 className={"mt-5 p-2 border-2 rounded-full w-fit scale-90 hover:scale-100 transition-all"}>
-                <ArrowLeftIcon className={"w-8 h-8"}/>
+                <ArrowLeftIcon className={"w-8 h-8"} aria-hidden={true}/>
             </button>
         </section>)
 }

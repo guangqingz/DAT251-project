@@ -65,7 +65,9 @@ export default function Carousel() {
     return (
             <div className={"flex items-center justify-center lg:gap-10 md:my-5"}>
                 {/* left button */}
-                <ChevronLeftIcon className={"size-6 cursor-pointer"} onClick={handlePrevDish}/>
+                <button type={"button"} className={"cursor-pointer"} onClick={handlePrevDish} aria-label={"move to previous dish"}>
+                    <ChevronLeftIcon className={"size-6"} aria-hidden={true}/>
+                </button>
                 {/* carousel content */}
                 <ul className={`flex justify-center items-center md:gap-10 py-10`}>
                     {visibleDishes.map((dish, i) => {
@@ -73,10 +75,10 @@ export default function Carousel() {
                             <li key={i} className={clsx(
                                 "flex flex-col items-center",
                                 "transition-transform duration-200 ease-in-out hover:scale-95 lg:hover:scale-105",
-                                i === 1 ? "scale-100 w-95 md:w-100 lg:w-70 xl:w-90 2xl:w-110" : "scale-90 w-95 md:w-100 lg:w-55 xl:w-60 2xl:w-90",
+                                i === 1 ? "scale-100 w-70 md:w-100 lg:w-70 xl:w-90 2xl:w-110" : "scale-90 w-70 md:w-100 lg:w-55 xl:w-60 2xl:w-90",
                             )}>
                                 <img src={dish.imageUrl}
-                                     alt={dish.name}
+                                     alt={""} // to reduce redundancy for screen readers
                                      className={"mb-4"}
                                 />
                                 <p>{dish.name}</p>
@@ -85,7 +87,9 @@ export default function Carousel() {
                     })}
                 </ul>
                 {/* right button */}
-                <ChevronRightIcon className={"size-6 cursor-pointer"} onClick={handleNextDish}/>
+                <button type={"button"} className={"cursor-pointer"} onClick={handleNextDish} aria-label={"move to next dish"}>
+                    <ChevronRightIcon className={"size-6"} aria-hidden={true}/>
+                </button>
             </div>
     );
 }

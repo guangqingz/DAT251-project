@@ -9,7 +9,7 @@ import {useRouter} from "next/navigation";
 export default function useBookingSubmit() {
     const router = useRouter();
 
-    const {mutate} = useMutation({
+    const {mutate, isError, isPending} = useMutation({
         mutationFn: (formData: BookingRequestType) => {
             return axios.post("http://localhost:8080/booking", formData)
         },
@@ -19,5 +19,5 @@ export default function useBookingSubmit() {
             router.push(`/booking/${data.data.id}`);
         },
     })
-    return mutate;
+    return {mutate, isError, isPending};
 }

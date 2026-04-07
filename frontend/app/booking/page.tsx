@@ -1,6 +1,6 @@
 'use client';
 
-import {useState} from "react";
+import React, {useState} from "react";
 import {bookingSchema, BookingSchemaType} from "@/app/booking/FormTypes";
 import Container from "@/app/ui/Container";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -10,12 +10,14 @@ import DateDetailsForm from "@/app/booking/(formParts)/DateDetailsForm";
 import TimeDetailsForm from "@/app/booking/(formParts)/TimeDetailsForm";
 import ContactDetailsForm from "@/app/booking/(formParts)/ContactDetailsForm";
 import useBookingSubmit from "@/app/hooks/useBookingSubmit";
+import {ExclamationTriangleIcon} from "@heroicons/react/16/solid";
+import Image from "next/image";
 
 export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
 export default function Page () {
     const {
-        register, handleSubmit, watch, control, getValues, setError, formState: { errors },
+        register, handleSubmit, watch, control, formState: { errors },
     } = useForm<BookingSchemaType>({
         resolver: zodResolver(bookingSchema),
         defaultValues:{
@@ -24,10 +26,11 @@ export default function Page () {
             date: "",
             time: "",
             countryCode: "NO"
-        }
+        },
+        mode: "onSubmit"
     })
     const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
-    const mutate = useBookingSubmit();
+    const {mutate, isError, isPending} = useBookingSubmit();
 
     const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
         // remove country code field because it's not part of Booking model
@@ -37,8 +40,25 @@ export default function Page () {
 
     // Multistep form, renders one section at a time based on schemaSection
     return (<section className={"bg-custom-eggwhite h-full"}>
-       <Container style={"flex flex-col items-center px-5 py-20 2xl:py-30 gap-9"}>
-           <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
+       <Container style={"flex flex-col items-center px-5 py-20 2xl:py-30 gap-5"}>
+           {/*Loading animation shown while submitting form*/}
+           <div aria-live={"polite"}>
+               {isPending && <Image src={"/loading.gif"}
+                                    alt={"loading animation while waiting for submission verification"}
+                                    width={500} height={240}
+                                    unoptimized={true}/>}
+           </div>
+           {/*Error message if submission fails*/}
+           <div aria-live={"polite"}>
+               {isError &&
+                   <div className={"flex flex-col md:flex-row items-center gap-2 text-center md:text-left bg-red-200 border-2 border-red-600 p-3"}>
+                       <ExclamationTriangleIcon aria-hidden={true} className={"size-13 sm:size-10"}/>
+                       <p>Det oppstod en feil ved innsending av skjemaet. Vennligst prøv igjen senere eller ring oss på telefon.</p>
+                   </div>
+               }
+           </div>
+           {!isPending &&
+               <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
                {schemaSection === "GUESTS" &&
                    <GuestsDetailsForm control={control}
                                       errors={errors}
@@ -73,6 +93,7 @@ export default function Page () {
                    </>
                }
            </form>
+           }
         </Container>
     </section>
     );

@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {maxNumberGuest} from "@/app/booking/(formParts)/GuestsDetailsForm";
+import {MAX_NUMBER_GUEST} from "@/app/booking/(formParts)/GuestsDetailsForm";
 import {CountryCode, isValidPhoneNumber} from "libphonenumber-js";
 
 const customTimeRegex = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/;
@@ -7,12 +7,12 @@ const customDateRegex = /^\d{4}-\d{2}-\d{2}$/
 
 export const bookingSchema = z.object({
     id: z.string(),
-    numberGuest: z.number().min(1, "Minimum 1 gjest").max(maxNumberGuest, `Maximum ${maxNumberGuest} gjester`),
+    numberGuest: z.number().min(1, "Minimum 1 gjest").max(MAX_NUMBER_GUEST, `Maximum ${MAX_NUMBER_GUEST} gjester`),
     time: z.string().refine(
-        (val:string) => customTimeRegex.test(val), {message: "Ugyldig tidsformat, forventet HH:MM eller HH:MM:SS"}
+        (val:string) => customTimeRegex.test(val), {message: "Ugyldig tidsformat, velg en tid"}
     ),
     date: z.string().refine(
-        (val:string) => customDateRegex.test(val), {message: "Ugyldig dato format, forventet YYYY-MM-DD"}
+        (val:string) => customDateRegex.test(val), {message: "Ugyldig dato format, velg en dato"}
     ),
     email: z.email({message: "Ugyldig email"}),
     countryCode: z.string(),

@@ -5,17 +5,19 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.example.dat251project.dtos.BookingDTO;
 import org.example.dat251project.dtos.BookingResponseDTO;
 import org.example.dat251project.dtos.TimeSlotDTO;
 import org.example.dat251project.dtos.TimeSlotRequestDTO;
 import org.example.dat251project.models.Booking;
-import org.example.dat251project.models.Tables;
+import org.example.dat251project.models.Table;
 import org.example.dat251project.services.BookingSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
@@ -35,10 +37,14 @@ public class Controller {
     }
 
     @Operation(summary = "Create a new Booking")
-    @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
+    @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     @PostMapping("booking")
-    public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingDTO bookingDTO) {
-        List<Tables> bookedTables = bookingSystem.findAvailableTables(bookingDTO.getDate(), bookingDTO.getTime(), bookingDTO.getNumberGuest());
+    public ResponseEntity<BookingResponseDTO> createBooking(@Valid @RequestBody BookingDTO bookingDTO) {
+        // Check whether the time and date are valid inputs
+        if (!bookingSystem.checkValidBookingTimeAndDate(bookingDTO.getTime(), bookingDTO.getDate())) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<Table> bookedTables = bookingSystem.findAvailableTables(bookingDTO.getDate(), bookingDTO.getTime(), bookingDTO.getNumberGuest());
         if (!bookedTables.isEmpty()) {
             Booking booking = bookingSystem.createBooking(bookingDTO, bookedTables);
             if (booking != null) {
@@ -51,10 +57,12 @@ public class Controller {
                         .date(booking.getDate())
                         .comment(booking.getComment())
                         .build();
-                return ResponseEntity.ok().body(bookingResponseDTO);
+                URI location = URI.create("/booking/" + booking.getId());
+                return ResponseEntity.created(location).body(bookingResponseDTO);
             }
         }
-        return ResponseEntity.badRequest().build();
+        // Will only trigger if it is not possible to create that booking
+        return ResponseEntity.unprocessableContent().build();
 
     }
 
@@ -87,7 +95,7 @@ public class Controller {
     @Schema(description = "Get all timeslots that are able to seat the number of guests at a specific date")
     @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     @PostMapping("booking/timeslot")
-    public ResponseEntity<List<TimeSlotDTO>> getAvailableTimeSlot(@RequestBody TimeSlotRequestDTO timeSlotRequestDTO) {
+    public ResponseEntity<List<TimeSlotDTO>> getAvailableTimeSlot(@Valid @RequestBody TimeSlotRequestDTO timeSlotRequestDTO) {
         List<TimeSlotDTO> timeSlotDTO = bookingSystem.getAvailabilityForDate(timeSlotRequestDTO.getDate(),
                 timeSlotRequestDTO.getNumGuests());
         return ResponseEntity.ok().body(timeSlotDTO);

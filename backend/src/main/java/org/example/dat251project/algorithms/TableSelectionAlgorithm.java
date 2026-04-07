@@ -1,7 +1,7 @@
 package org.example.dat251project.algorithms;
 
 import org.example.dat251project.models.Restaurant;
-import org.example.dat251project.models.Tables;
+import org.example.dat251project.models.Table;
 
 import java.util.List;
 import java.util.Set;
@@ -15,7 +15,7 @@ public interface TableSelectionAlgorithm {
      * @param numGuests
      * @return a list of tables
      */
-    List<Tables> findTables(Restaurant restaurant,
-                            Set<Tables> occupiedTables,
-                            int numGuests);
+    List<Table> findTables(Restaurant restaurant,
+                           Set<Table> occupiedTables,
+                           int numGuests);
 }

@@ -5,10 +5,10 @@ import React, {useState} from "react";
 import {SchemaSections} from "@/app/booking/page";
 import {BookingSchemaType} from "@/app/booking/FormTypes";
 
-// Max number of guests in bookings + 1 to display correct error button
-export const maxNumberGuest = 7;
+// Max number of guests in bookings
+export const MAX_NUMBER_GUEST = 6;
 // Generates a list from 1 to max number, used to display all options
-const guestsList: number[] = Array.from({length: maxNumberGuest}, (_, index) => index + 1);
+const GUESTS_LIST: number[] = Array.from({length: MAX_NUMBER_GUEST + 1}, (_, index) => index + 1);
 
 /**
  * First step of the booking form where user choose how many people will be in the booking
@@ -32,7 +32,7 @@ export default function GuestsDetailsForm({control, errors, watch, setSchemaSele
     // shows contact message if max guests is selected instead of advancing to next step
     const handleBtnClick = (value: number) => {
         field.onChange(value);
-        if (value === maxNumberGuest){
+        if (value === MAX_NUMBER_GUEST + 1){
             setShowErrorGuest(true);
         } else {
             setShowErrorGuest(false);
@@ -51,10 +51,10 @@ export default function GuestsDetailsForm({control, errors, watch, setSchemaSele
                    aria-describedby={"number-of-guests-error"}
                    className={"sr-only"}/>
             <div role={"group"} id="number-of-guests" aria-label={"number of guests buttons"} className={"grid grid-cols-3 gap-3"}>
-                {guestsList.map((numb: number, index:number) => {
+                {GUESTS_LIST.map((numb: number, index:number) => {
                     // Last button have '+' to indicate max guests or more
-                    const buttonText: string = numb !== maxNumberGuest ? numb.toString() : numb.toString() + "+"
-                    const lastbtn: boolean = numb === maxNumberGuest
+                    const buttonText: string = numb !== (MAX_NUMBER_GUEST + 1) ? numb.toString() : numb.toString() + "+"
+                    const lastbtn: boolean = numb === MAX_NUMBER_GUEST + 1
 
                     return <button type="button" key={index}
                                    onClick={() => handleBtnClick(numb)}
@@ -66,11 +66,13 @@ export default function GuestsDetailsForm({control, errors, watch, setSchemaSele
                 })}
             </div>
             {errors.numberGuest && <span id={"number-of-guests-error"} className={"text-red-800"}>{errors.numberGuest.message}</span>}
-            {showErrorGuest &&
-                <div className={"flex items-center bg-custom-eggwhite-dark p-2 rounded-md"}>
-                    <InformationCircleIcon className={"w-9 h-9 mr-2"}/>
-                    <p>Er dere over {maxNumberGuest} personer, ta kontakt med oss på tlf: <a href={"tel:+47-553-136-90"}>+47 553 136 90</a></p>
-                </div>}
+            <div aria-live={"polite"} aria-atomic={"true"} role={"alert"}>
+                {showErrorGuest &&
+                    <div className={"flex items-center bg-custom-eggwhite-dark p-2 rounded-md"}>
+                        <InformationCircleIcon className={"w-9 h-9 mr-2"} aria-hidden={"true"}/>
+                        <p>Er dere over {MAX_NUMBER_GUEST} personer, ta kontakt med oss på tlf: <a href={"tel:+47-553-136-90"}>+47 553 136 90</a></p>
+                    </div>}
+            </div>
         </section>
     )
 }
