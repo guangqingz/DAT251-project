@@ -267,7 +267,14 @@ public class BookingSystem {
                 bookingToUpdate.setNumberGuest(booking.getNumberGuest());
                 bookingToUpdate.setComment(booking.getComment());
                 bookingToUpdate.setTables(bookedTables);
-                return bookingService.bookingRepo.save(bookingToUpdate);
+
+                // send new confirmation email after successful update
+                try {
+                    emailService.createEmailBooking(bookingToUpdate);
+                    return bookingService.bookingRepo.save(bookingToUpdate);
+                } catch (MessagingException e) {
+                    return null;
+                }
             }
         }
         return null;
