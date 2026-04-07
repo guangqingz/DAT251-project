@@ -1,6 +1,7 @@
 package org.example.dat251project.services;
 
 import jakarta.mail.MessagingException;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,7 +33,8 @@ public class BookingSystem {
     private BookingService bookingService;
     @Autowired
     private EmailService emailService;
-
+    @Autowired
+    private UserService userService;
     public BookingSystem(Restaurant restaurant) {
         if (restaurant != null) {
             initializeRestaurant(restaurant);
@@ -251,5 +253,10 @@ public class BookingSystem {
             result.add(dto);
         }
         return result;
+    }
+
+    public String userLogin(@NotNull String name, @NotNull String password) {
+        return userService.userLogin(name,password);
+
     }
 }

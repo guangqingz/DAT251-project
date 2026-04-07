@@ -100,18 +100,18 @@ public class Controller {
                 timeSlotRequestDTO.getNumGuests());
         return ResponseEntity.ok().body(timeSlotDTO);
     }
-
-    @GetMapping("staff/test-protected")
+    // Debugging/demonstration purposes
+    @GetMapping("users/staff/test-protected")
     public String protectedEndpoint() {
         return "STAFF have access!";
     }
 
-    @GetMapping("admin/test")
+    @GetMapping("users/admin/test")
     public String adminEndpoint() {
         return "ADMIN can access this!";
     }
 
-    @GetMapping("/test-public")
+    @GetMapping("test-public")
     public String publicEndpoint() {
         return "Anyone can access this!";
     }
