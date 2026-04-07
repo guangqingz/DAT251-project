@@ -29,7 +29,7 @@ export default function ContactDetailsForm({register, errors, watch, setSchemaSe
         <section className={"flex flex-col gap-5"}>
             {/*Summary of chosen guests, date and time*/}
             <h2 className={"text-xl text-custom-gray text-center"}>{chosenNumberGuest} personer</h2>
-            <h2 className={"text-xl text-custom-gray text-center"}>{chosenFullDate}, kl. {chosenTime}</h2>
+            <h2 className={"text-xl text-custom-gray text-center"}>{chosenFullDate}, kl. {chosenTime.slice(0, 5)}</h2>
             <h3 className={"text-2xl text-center font-title"}>Fyll ut kontaktinformasjon</h3>
 
             <section className={"flex flex-col gap-9 mt-5"}>
