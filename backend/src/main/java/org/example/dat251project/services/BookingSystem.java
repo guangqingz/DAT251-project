@@ -9,11 +9,13 @@ import org.example.dat251project.algorithms.ComboTableAlgorithm;
 import org.example.dat251project.algorithms.SmallTableAlgorithm;
 import org.example.dat251project.algorithms.TableSelectionAlgorithm;
 import org.example.dat251project.dtos.BookingDTO;
+import org.example.dat251project.dtos.BookingResponseDTO;
 import org.example.dat251project.dtos.TimeSlotDTO;
 import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
 import org.example.dat251project.models.Table;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -236,6 +238,39 @@ public class BookingSystem {
             }
         }
         return false;
+    }
+
+    /**
+     * Updates an existing booking
+     * @param booking
+     * @return updated booking or null if not valid
+     */
+    public Booking updateExistingBooking(BookingResponseDTO booking, UUID id){
+        if (!booking.getId().equals(id)){
+            return null;
+        }
+        Optional<Booking> existingBooking = bookingService.bookingRepo.findById(booking.getId());
+        if (existingBooking.isPresent()){
+            Booking bookingToUpdate = existingBooking.get();
+
+            // Check whether the time and date are valid inputs
+            if (!this.checkValidBookingTimeAndDate(booking.getTime(), booking.getDate())) {
+                return null;
+            }
+            // Check if there are available table for this update
+            List<Table> bookedTables = this.findAvailableTables(booking.getDate(), booking.getTime(), booking.getNumberGuest());
+            if (!bookedTables.isEmpty()) {
+                bookingToUpdate.setEmail(booking.getEmail());
+                bookingToUpdate.setPhoneNumber(booking.getPhoneNumber());
+                bookingToUpdate.setDate(booking.getDate());
+                bookingToUpdate.setTime(booking.getTime());
+                bookingToUpdate.setNumberGuest(booking.getNumberGuest());
+                bookingToUpdate.setComment(booking.getComment());
+                bookingToUpdate.setTables(bookedTables);
+                return bookingService.bookingRepo.save(bookingToUpdate);
+            }
+        }
+        return null;
     }
 
     /**

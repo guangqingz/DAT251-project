@@ -110,6 +110,19 @@ public class Controller {
         return ResponseEntity.notFound().build();
     }
 
+    @Operation(summary = "Update existing booking")
+    @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
+    @ApiResponse(responseCode = "400")
+    @PutMapping("booking/{id}")
+    public ResponseEntity<String> updateBooking(@Valid @RequestBody BookingResponseDTO booking, @PathVariable UUID id){
+        Booking updatedBooking = bookingSystem.updateExistingBooking(booking, id);
+
+        if (updatedBooking != null){
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
     @Schema(description = "Get all timeslots that are able to seat the number of guests at a specific date")
     @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     @PostMapping("booking/timeslot")
