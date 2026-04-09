@@ -55,7 +55,7 @@ export default function Navbar(){
                 {"md:border-b" : pathname === "/"},
                 {"md:border-b" : pathname === "/contact"})}>
                 <Link href={"/"}>
-                    <Image src={"/logo.png"} alt={"Logo of the restaurant"} priority width={200} height={200} className={"w-40 md:w-60 h-auto"}/>
+                    <Image src={"/logo_white.png"} alt={"Logo of the restaurant"} priority width={200} height={200} className={"w-40 md:w-60 h-auto"}/>
                 </Link>
                 {/* Mobile menu button */}
                 <button type={"button"}

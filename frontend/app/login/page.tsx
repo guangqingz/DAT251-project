@@ -17,7 +17,7 @@ export default function Page() {
             <div style={styles.card}>
                 {/* Logo */}
                 <img
-                    src="/logo.png"
+                    src="/logo_black.png"
                     style={{
                         width: 120,
                         margin: "0 auto 10px",

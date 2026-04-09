@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "Sze Chuan House's official website",
     icons: {
       icon: [
-          {rel: "icon", url: "/logo.png"}
+          {rel: "icon", url: "/logo_black.png"}
       ]
     }
 };

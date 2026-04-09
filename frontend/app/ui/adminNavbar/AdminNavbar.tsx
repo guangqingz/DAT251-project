@@ -10,7 +10,7 @@ export default function AdminNavbar() {
     <aside className="w-60 bg-[#8B2E1A] rounded-r-2xl text-white flex flex-col justify-between py-6">
       <div>
         <img
-          src="/logo.png"
+          src="/logo_white.png"
           alt="Sze Chuan House logo"
           className="w-[170px] mx-auto mb-8 block"
         />
