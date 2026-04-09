@@ -142,6 +142,14 @@ export default function DashboardPage() {
                     </td>
                   </tr>
                 ))}
+
+                {bookings.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-10 text-center text-neutral-500">
+                      Ingen bookinger i dag
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

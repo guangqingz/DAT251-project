@@ -56,7 +56,11 @@ public class BookingService {
         return bookingRepo.findById(id).orElse(null);
     }
 
-    public List<Booking> findAllByDate(LocalDate date) {
+    public List<Booking> findAllBookingsByDate(LocalDate date) {
         return bookingRepo.findAllByDate(date);
+    }
+
+    public List<Booking> findAllBookings() {
+        return bookingRepo.findAll();
     }
 }

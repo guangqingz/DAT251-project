@@ -9,162 +9,200 @@ import {
 } from "@heroicons/react/24/outline";
 import AdminNavbar from "@/app/ui/adminNavbar/AdminNavbar";
 import SearchBar from "@/app/ui/searchBar";
+import { useEffect, useMemo, useState, useRef } from "react";
+
+type Booking = {
+  id: string;
+  email: string;
+  phoneNumber: number;
+  numberGuest: number;
+  comment: string;
+  date: string;
+  time: string;
+};
 
 export default function DashboardBookingsPage() {
-  const bookings = [
-    {
-      email: "hello@hotmail.com",
-      phone: "+47 11 22 33 444",
-      guests: 5,
-      comment:
-        "moren min fyller 80 år, og vi ønsker å ha en liten overraskelse",
-      date: "22.03.2026",
-      time: "14:00-16:00",
-      status: "Aktiv",
-    },
-    {
-      email: "hello@gmail.com",
-      phone: "+47 12 28 33 444",
-      guests: 2,
-      comment: "",
-      date: "22.03.2026",
-      time: "15:00-17:00",
-      status: "Aktiv",
-    },
-    {
-      email: "test@hotmail.com",
-      phone: "+47 10 22 33 444",
-      guests: 3,
-      comment: "har svert alvorlig nøtteallergi",
-      date: "22.03.2026",
-      time: "19:30-21:30",
-      status: "Kansellert",
-    },
-    {
-      email: "bobby@hotmail.com",
-      phone: "+47 10 22 33 444",
-      guests: 3,
-      comment: "",
-      date: "22.03.2026",
-      time: "19:30-21:30",
-      status: "Aktiv",
-    },
-    {
-      email: "bill@hotmail.com",
-      phone: "+47 10 22 33 484",
-      guests: 3,
-      comment: "",
-      date: "23.03.2026",
-      time: "13:30-15:30",
-      status: "Aktiv",
-    },
-    {
-      email: "bob@hotmail.com",
-      phone: "+47 10 22 99 444",
-      guests: 5,
-      comment: "",
-      date: "23.03.2026",
-      time: "14:00-16:00",
-      status: "Aktiv",
-    },
-  ];
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  
+  const dateInputReference = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    async function fetchBookings() {
+      try {
+        const url = selectedDate
+          ? `http://localhost:8080/booking/history/${selectedDate}`
+          : "http://localhost:8080/booking/history";
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch bookings");
+        }
+
+        const data: Booking[] = await response.json();
+        setBookings(data);
+      } catch (error) {
+        setErrorMessage("Failed to fetch bookings");
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    setIsLoading(true);
+    fetchBookings();
+  }, [selectedDate]);
+
+  function handleDateButtonClick() {
+    dateInputReference.current?.showPicker?.();
+    dateInputReference.current?.focus();
+  }
+
+  function formatDate(dateString: string) {
+    return new Date(dateString).toLocaleDateString("no-NO");
+  }
+
+  function formatTime(timeString: string) {
+    return timeString.slice(0, 5);
+  }
+
+  const sortedBookings = useMemo(() => {
+    return [...bookings].sort((firstBooking, secondBooking) => {
+      const firstDateTime = new Date(`${firstBooking.date}T${firstBooking.time}`);
+      const secondDateTime = new Date(`${secondBooking.date}T${secondBooking.time}`);
+      return secondDateTime.getTime() - firstDateTime.getTime();
+    });
+  }, [bookings]);
+
+  const dateButtonText = selectedDate ? formatDate(selectedDate) : "Dato";
 
   return (
     <div className="flex min-h-dvh bg-[#f5f3ef]">
       <AdminNavbar />
 
-      <main className="flex-1 p-10">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="tracking-wider font-title text-3xl ">Historikk</h1>
+      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-10">
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <h1 className="tracking-wider font-title text-2xl sm:text-3xl ">Historikk</h1>
 
-          <div className="flex items-center gap-4">
-            <button className="font-title flex items-center gap-3 rounded-2xl bg-[#c9a46d] px-5 py-3 text-sm font-medium text-black hover:opacity-90 transition">
-              <span>Dato</span>
-              <CalendarIcon className="h-5 w-5" />
-            </button>
-            
-            <SearchBar />
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end lg:w-auto">
+            <div className="relative w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={handleDateButtonClick}
+                className="font-title flex w-full items-center justify-center gap-3 rounded-2xl bg-[#c9a46d] px-4 py-3 text-sm font-medium text-black transition hover:opacity-90 sm:w-auto sm:min-w-[150px]">
+                <span>Dato</span>
+                <CalendarIcon className="h-5 w-5 shrink-0"/>
+              </button>
+
+              <input
+                ref={dateInputReference}
+                type="date"
+                value={selectedDate}
+                onChange={(event) => setSelectedDate(event.target.value)}
+                className="absolute right-0 top-full mt-2 h-0 w-0 opacity-0"
+                tabIndex={-1}
+              />
+            </div>
+
+            <div className="w-full sm:max-w-xs">
+              <SearchBar />
+            </div>
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
-          <table className="w-full text-left table-fixed">
-            <thead>
-              <tr className="border-b border-neutral-200 text-sm font-medium text-neutral-800">
-                <th className="px-6 py-5 w-[15%]">Email</th>
-                <th className="px-6 py-5 w-[18%]">Telefonnummer</th>
-                <th className="px-4 py-5 w-[8%]">Antall</th>
-                <th className="px-6 py-5 w-[20%]">Kommentar</th>
-                <th className="px-4 py-5 w-[10%]">Dato</th>
-                <th className="px-4 py-5 w-[12%]">Tid</th>
-                <th className="px-4 py-5 w-[10%]">Status</th>
-                <th className="w-[5%]"></th>
-              </tr>
-            </thead>
+        {selectedDate && (
+          <div className="mb-4 flex flex-wrap items-center gap-3 text-sm text-neutral-600">
+            <p>Viser bookinger for {formatDate(selectedDate)}</p>
+            <button
+              type="button"
+              onClick={() => setSelectedDate("")}
+              className="text-[#8B2E1A] hover:underline"
+            >
+              Fjern filter
+            </button>
+          </div>
+        )}
 
-            <tbody>
-              {bookings.map((booking, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-neutral-200 last:border-none text-sm"
-                >
-                  <td className="px-6 py-8">{booking.email}</td>
+        {isLoading && <p>Laster bookinghistorikk...</p>}
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
-                  <td className="px-6 py-8">
-                    <div className="flex items-center gap-3">
-                      <PhoneIcon className="h-5 w-5 shrink-0" />
-                      <span>{booking.phone}</span>
-                    </div>
-                  </td>
+        {!isLoading && !errorMessage && (
 
-                  <td className="px-4 py-8">{booking.guests}</td>
-
-                  <td className="px-6 py-8 max-w-xs">
-                    <p
-                      className="line-clamp-3 whitespace-normal break-words"
-                      title={booking.comment}
-                    >
-                      {booking.comment}
-                    </p>
-                  </td>
-
-                  <td className="px-4 py-8">{booking.date}</td>
-
-                  <td className="px-4 py-8">{booking.time}</td>
-
-                  <td className="px-4 py-8">
-                    <span
-                      className={`font-medium ${
-                        booking.status === "Aktiv"
-                          ? "text-[#76A84D]"
-                          : "text-[#C54B31]"
-                      }`}
-                    >
-                      {booking.status}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-8">
-                    <button className="text-neutral-400 hover:text-neutral-600 transition">
-                      <EllipsisVerticalIcon className="h-5 w-5" />
-                    </button>
-                  </td>
+          <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
+            <table className="min-w-[900px] w-full text-left">
+              <thead>
+                <tr className="border-b border-neutral-200 text-sm font-medium text-neutral-800">
+                  <th className="px-4 py-5 sm:px-6 w-[20%]">Email</th>
+                  <th className="px-4 py-5 sm:px-6 w-[18%]">Telefonnummer</th>
+                  <th className="px-4 py-5 w-[8%]">Antall</th>
+                  <th className="px-4 py-5 sm:px-6 w-[24%]">Kommentar</th>
+                  <th className="px-4 py-5 w-[12%]">Dato</th>
+                  <th className="px-4 py-5 w-[10%]">Tid</th>
+                  <th className="px-4 py-5 w-[8%]"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
 
-        <div className="mt-5 flex items-center justify-between text-sm text-neutral-700">
-          <p>Viser 6 - 20 resultater</p>
+              <tbody>
+                {sortedBookings.map((booking) => (
+                  <tr key={booking.id}
+                    className="border-b border-neutral-200 last:border-none text-sm">
+                    <td className="px-4 py-6 sm:px-6 break-words">{booking.email}</td>
 
-          <div className="flex items-center gap-3">
-            <button className="tracking-wider font-title flex items-center gap-2 rounded-full border border-neutral-500 px-5 py-2 text-neutral-500 hover:bg-neutral-100 transition">
+                    <td className="px-4 py-6 sm:px-6">
+                      <div className="flex items-center gap-3">
+                        <PhoneIcon className="h-5 w-5 shrink-0" />
+                        <span>{booking.phoneNumber}</span>
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-6">{booking.numberGuest}</td>
+
+                    <td className="px-4 py-6 sm:px-6 max-w-xs">
+                      <p
+                        className="line-clamp-3 whitespace-normal break-words"
+                        title={booking.comment}
+                      >
+                        {booking.comment || "-"}
+                      </p>
+                    </td>
+
+                    <td className="px-4 py-6 whitespace-nowrap">{formatDate(booking.date)}</td>
+
+                    <td className="px-4 py-6 whitespace-nowrap">{formatTime(booking.time)}</td>
+
+                    <td className="px-4 py-6">
+                      <button className="text-neutral-400 transition hover:text-neutral-600">
+                        <EllipsisVerticalIcon className="h-5 w-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+
+                {sortedBookings.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-10 text-center text-neutral-500">
+                      Ingen bookinger funnet
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="mt-5 flex flex-col gap-4 text-sm text-neutral-700 sm:flex-row sm:items-center sm:justify-between">
+          <p>Viser {sortedBookings.length} resultater</p>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button className="tracking-wider font-title flex items-center gap-2 rounded-full border border-neutral-500 px-5 py-2 text-neutral-500 transition hover:bg-neutral-100">
               <ChevronLeftIcon className="h-4 w-4" />
               <span>Forrige</span>
             </button>
 
-            <button className="tracking-wider font-title flex items-center gap-2 rounded-full border border-neutral-500 px-5 py-2 text-neutral-700 hover:bg-neutral-100 transition">
+            <button className="tracking-wider font-title flex items-center gap-2 rounded-full border border-neutral-500 px-5 py-2 text-neutral-700 transition hover:bg-neutral-100">
               <span>Neste</span>
               <ChevronRightIcon className="h-4 w-4" />
             </button>
