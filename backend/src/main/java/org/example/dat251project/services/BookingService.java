@@ -55,4 +55,8 @@ public class BookingService {
     public Booking getBookingById(UUID id) {
         return bookingRepo.findById(id).orElse(null);
     }
+
+    public List<Booking> findAllByDate(LocalDate date) {
+        return bookingRepo.findAllByDate(date);
+    }
 }

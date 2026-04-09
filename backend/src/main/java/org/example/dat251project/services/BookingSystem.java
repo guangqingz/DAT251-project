@@ -1,9 +1,16 @@
 package org.example.dat251project.services;
 
-import jakarta.mail.MessagingException;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
 import org.example.dat251project.algorithms.BigTableAlgorithm;
 import org.example.dat251project.algorithms.ComboTableAlgorithm;
 import org.example.dat251project.algorithms.SmallTableAlgorithm;
@@ -16,10 +23,10 @@ import org.example.dat251project.models.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
+import jakarta.mail.MessagingException;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -229,6 +236,17 @@ public class BookingSystem {
         ArrayList<Booking> list = new ArrayList<>(bookingService.findAllByDateAndTime(date, time));
         list.sort(Comparator.comparing(Booking::getTime));
         return convertBookingToDTO(list);
+    }
+
+    /**
+     * Get all {@link Booking bookings} in the given date
+     * @param date
+     * @return List of {@link Booking bookings} sorted by their time ascending
+     */
+    public List<Booking> findAllByDate(LocalDate date) {
+        ArrayList<Booking> bookings = new ArrayList<>(bookingService.findAllByDate(date));
+        bookings.sort(Comparator.comparing(Booking::getTime));
+        return bookings;
     }
 
     /**

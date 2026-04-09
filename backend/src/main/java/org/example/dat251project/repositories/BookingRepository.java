@@ -15,4 +15,6 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     @Query("SELECT b from Booking b WHERE b.time >= :t AND b.date = :d")
     List<Booking> findAllByDateAndTime(@Param("d") LocalDate date, @Param("t") LocalTime time);
+
+    List<Booking> findAllByDate(LocalDate date);
 }

@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
+import java.time.LocalDate;
 
 @CrossOrigin()
 @RestController
@@ -90,6 +91,26 @@ public class Controller {
                 .comment(booking.getComment())
                 .build();
         return ResponseEntity.ok().body(bookingResponseDTO);
+    }
+
+    @Operation(summary = "Get Today's Bookings")
+    @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
+    @GetMapping("booking/today")
+    public ResponseEntity<List<BookingResponseDTO>> getTodayBookings() {
+        List<Booking> bookings = bookingSystem.findAllByDate(LocalDate.now());
+
+        List<BookingResponseDTO> bookingResponseDTOs = bookings.stream()
+            .map(booking -> BookingResponseDTO.builder()
+                    .id(booking.getId())
+                    .email(booking.getEmail())
+                    .phoneNumber(booking.getPhoneNumber())
+                    .numberGuest(booking.getNumberGuest())
+                    .time(booking.getTime())
+                    .date(booking.getDate())
+                    .comment(booking.getComment())
+                    .build())
+            .toList();
+        return ResponseEntity.ok(bookingResponseDTOs);
     }
 
     @Schema(description = "Get all timeslots that are able to seat the number of guests at a specific date")
