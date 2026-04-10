@@ -22,12 +22,6 @@ public class UserController {
     @PostMapping("login")
     public ResponseEntity<String> login(@Valid @RequestBody UserDTO userDTO) {
         String sessionToken = bookingSystem.userLogin(userDTO.getName(), userDTO.getPassword());
-        System.out.println(sessionToken);
-        /*if(sessionToken!=null){
-            return ResponseEntity.ok(sessionToken);
-        }
-
-        return ResponseEntity.badRequest().build();*/
         ResponseCookie cookie = ResponseCookie.from("auth_token", sessionToken)
                 .httpOnly(true)       // Blocks JS access
                 .secure(true)         // Transmit only over HTTPS
@@ -37,7 +31,7 @@ public class UserController {
                 .build();
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(cookie.toString());
+                .build();
     }
 
     // logout frontend side? Since clear session token
