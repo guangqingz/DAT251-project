@@ -32,8 +32,8 @@ export default function MainLayout({
               <section>
                 <h3 className={"text-lg mb-3 uppercase font-bold"}>åpningstider</h3>
                 <ul className={"flex flex-col gap-2"}>
-                  <li>Tirsdag - søndag: 13:30 - 21:30</li>
                   <li>Mandag: stengt</li>
+                  <li>Tirsdag - søndag: 13:30 - 21:30</li>
                 </ul>
               </section>
               <section>
