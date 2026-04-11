@@ -1,5 +1,6 @@
-import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
+import type {NextRequest} from 'next/server'
+import {NextResponse} from 'next/server'
+import {jwtDecode} from 'jwt-decode'
 
 export default function proxy(request: NextRequest) {
     const token = request.cookies.get('auth_token')?.value;
@@ -8,11 +9,17 @@ export default function proxy(request: NextRequest) {
     if (path.startsWith("/login")) {
         return NextResponse.next();
     }
-    // Protect dashboard
-    if (!token) {
-        return NextResponse.redirect(new URL('/login', request.url));
+    // redirect to login page if user tries to access staff/admin protected site without being logged inn
+    if (token == null) {
+        return NextResponse.redirect(new URL("/login", request.url));
     }
-
+    // get the jwt decoded
+    const jwtDecoded: any = jwtDecode(token);
+    // Protect dashboard
+    if (path.startsWith("/dashboard") && (jwtDecoded.role !== "ADMIN" || jwtDecoded.role !== "STAFF")) {
+        // For now, return to main page
+        return NextResponse.redirect(new URL("/", request.url));
+    }
     return NextResponse.next();
 }
 

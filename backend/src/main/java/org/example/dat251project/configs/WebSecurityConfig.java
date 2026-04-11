@@ -36,7 +36,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/staff/**").hasAnyAuthority(Role.ADMIN.getAuthority(), Role.STAFF.getAuthority())
                         .requestMatchers("/users/admin/**").hasAnyAuthority(Role.ADMIN.getAuthority())
-                        .requestMatchers("/dashboard/**").authenticated()
+                        .requestMatchers("/dashboard/**").hasAnyAuthority(Role.ADMIN.getAuthority())
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

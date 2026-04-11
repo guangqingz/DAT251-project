@@ -3,6 +3,7 @@ package org.example.dat251project.configs;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +27,9 @@ public class JWTService {
         this.SECRETKEY = generateKey();
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, Role role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
         Instant now = Instant.now();
         Instant expiry = now.plus(Duration.ofMinutes(EXPIREYTIME));
         return Jwts.builder()
@@ -95,6 +97,20 @@ public class JWTService {
 
     }
 
-
+    /**
+     * Create a Cookie that matches the {@link String token}
+     *
+     * @param token
+     * @return
+     */
+    public ResponseCookie generateCookie(String token) {
+        return ResponseCookie.from("auth_token", token)
+                .httpOnly(true)       // Blocks JS access
+                .secure(true)         // Transmit only over HTTPS
+                .path("/")
+                .maxAge(EXPIREYTIME)
+                .sameSite("Lax")
+                .build();
+    }
 }
 

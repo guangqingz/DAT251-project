@@ -1,7 +1,6 @@
 package org.example.dat251project.services;
 
 import jakarta.mail.MessagingException;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +14,7 @@ import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
 import org.example.dat251project.models.Table;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,6 +35,7 @@ public class BookingSystem {
     private EmailService emailService;
     @Autowired
     private UserService userService;
+
     public BookingSystem(Restaurant restaurant) {
         if (restaurant != null) {
             initializeRestaurant(restaurant);
@@ -115,28 +116,16 @@ public class BookingSystem {
             LocalTime currTime = LocalTime.now().plusHours(restaurant.BOOKING_DURATION);
             for (LocalTime timeslot : restaurant.getTimeSlots()) {
                 if (timeslot.isAfter(currTime)) {
-                    availabilityList.add(TimeSlotDTO.builder()
-                            .time(timeslot)
-                            .available(checkAvailability(date, timeslot, numGuests))
-                            .pastTime(false)
-                            .build());
+                    availabilityList.add(TimeSlotDTO.builder().time(timeslot).available(checkAvailability(date, timeslot, numGuests)).pastTime(false).build());
                 } else {
                     // all past timeslots will not be available thus pastTime is true
-                    availabilityList.add(TimeSlotDTO.builder()
-                            .time(timeslot)
-                            .available(false)
-                            .pastTime(true)
-                            .build());
+                    availabilityList.add(TimeSlotDTO.builder().time(timeslot).available(false).pastTime(true).build());
                 }
             }
         } else {
             // If the booking is in a future date, then don't need to worry about the current time of booking
             for (LocalTime timeslot : restaurant.getTimeSlots()) {
-                availabilityList.add(TimeSlotDTO.builder()
-                        .time(timeslot)
-                        .available(checkAvailability(date, timeslot, numGuests))
-                        .pastTime(false)
-                        .build());
+                availabilityList.add(TimeSlotDTO.builder().time(timeslot).available(checkAvailability(date, timeslot, numGuests)).pastTime(false).build());
             }
         }
 
@@ -195,11 +184,7 @@ public class BookingSystem {
     public List<Table> findAvailableTables(LocalDate date, LocalTime time, int numGuests) {
         List<Table> nonAvailable = new ArrayList<>();
         Set<Table> occupiedTables = getOccupiedTables(date, time);
-        List<TableSelectionAlgorithm> strategies = List.of(
-                new SmallTableAlgorithm(),
-                new BigTableAlgorithm(),
-                new ComboTableAlgorithm()
-        );
+        List<TableSelectionAlgorithm> strategies = List.of(new SmallTableAlgorithm(), new BigTableAlgorithm(), new ComboTableAlgorithm());
         if (numGuests > restaurant.MAX_GROUP_SIZE) return nonAvailable;
         for (TableSelectionAlgorithm algorithm : strategies) {
             List<Table> bestTables = algorithm.findTables(restaurant, occupiedTables, numGuests);
@@ -265,21 +250,14 @@ public class BookingSystem {
     private List<BookingDTO> convertBookingToDTO(List<Booking> list) {
         List<BookingDTO> result = new ArrayList<>();
         for (Booking b : list) {
-            BookingDTO dto = BookingDTO.builder()
-                    .email(b.getEmail())
-                    .phoneNumber(b.getPhoneNumber())
-                    .numberGuest(b.getNumberGuest())
-                    .time(b.getTime())
-                    .date(b.getDate())
-                    .comment(b.getComment())
-                    .build();
+            BookingDTO dto = BookingDTO.builder().email(b.getEmail()).phoneNumber(b.getPhoneNumber()).numberGuest(b.getNumberGuest()).time(b.getTime()).date(b.getDate()).comment(b.getComment()).build();
             result.add(dto);
         }
         return result;
     }
 
-    public String userLogin(@NotNull String name, @NotNull String password) {
-        return userService.userLogin(name,password);
+    public ResponseCookie userLogin(String name, String password) {
+        return userService.userLogin(name, password);
 
     }
 }

@@ -5,6 +5,7 @@ import org.example.dat251project.configs.Role;
 import org.example.dat251project.models.User;
 import org.example.dat251project.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,18 +23,36 @@ public class UserService {
     @Autowired
     private JWTService jwtService;
 
-    public String userLogin(String name, String password) {
-        // Create token by name and password
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                name,
-                password
-        );
-        //Authentication Object
-        Authentication authentication = authManager.authenticate(token);
-        //Check that user and password matches
-        // Only generate session token if it matches
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(name);
+    public ResponseCookie userLogin(String name, String password) {
+        // Create the session token
+        String token = generateAuthToken(name, password);
+        // If session token was created successfully, then create a cookie for it and return it
+        if (token != null) {
+            return generateCookie(token);
+        }
+        return null;
+    }
+
+    private ResponseCookie generateCookie(String token) {
+        return jwtService.generateCookie(token);
+    }
+
+    private String generateAuthToken(String name, String password) {
+        User user = userRepo.findByName(name).orElse(null);
+        if (user != null) {
+
+            // Create token by name and password
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                    name,
+                    password
+            );
+            //Authentication Object
+            Authentication authentication = authManager.authenticate(token);
+            //Check that user and password matches
+            // Only generate session token if it matches
+            if (authentication.isAuthenticated()) {
+                return jwtService.generateToken(name, user.getRole());
+            }
         }
         return null;
     }

@@ -28,18 +28,18 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
-
-        //Extract the token from header
-        if (header != null && header.startsWith("Bearer ")) {
-            //the token starts at index 7
-            String token = header.substring(7);
-            String username = jwtService.getUsernameByToken(token);
-
+        String token = null;
+        // Check if there is cookie, if so, go through its fields and extract auth_token value
+        if (request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+                if ("auth_token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
 
             //Check if username is linked to the token, and whether it hasn't gone through filters
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
+            if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String username = jwtService.getUsernameByToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 //Check whether the token is connected to the UserDetails
                 if (jwtService.validateToken(token, userDetails)) {
