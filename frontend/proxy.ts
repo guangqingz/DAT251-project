@@ -16,7 +16,7 @@ export default function proxy(request: NextRequest) {
     // get the jwt decoded
     const jwtDecoded: any = jwtDecode(token);
     // Protect dashboard
-    if (path.startsWith("/dashboard") && (jwtDecoded.role !== "ADMIN" || jwtDecoded.role !== "STAFF")) {
+    if (path.startsWith("/dashboard") && (jwtDecoded.role !== "ADMIN" && jwtDecoded.role !== "STAFF")) {
         // For now, return to main page
         return NextResponse.redirect(new URL("/", request.url));
     }

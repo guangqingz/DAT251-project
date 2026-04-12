@@ -23,18 +23,26 @@ public class UserService {
     @Autowired
     private JWTService jwtService;
 
+    /**
+     * Create a valid Cookie used for authentication and authorization
+     *
+     * @param name
+     * @param password
+     * @return
+     */
     public ResponseCookie userLogin(String name, String password) {
         // Create the session token
         String token = generateAuthToken(name, password);
         // If session token was created successfully, then create a cookie for it and return it
         if (token != null) {
-            return generateCookie(token);
+            return jwtService.loginCookie(token);
         }
         return null;
     }
 
-    private ResponseCookie generateCookie(String token) {
-        return jwtService.generateCookie(token);
+    public ResponseCookie userLogOut() {
+        return jwtService.logOutCookie();
+
     }
 
     private String generateAuthToken(String name, String password) {

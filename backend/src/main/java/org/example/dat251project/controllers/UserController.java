@@ -30,10 +30,13 @@ public class UserController {
         return ResponseEntity.badRequest().build();
     }
 
-    // logout frontend side? Since clear session token
+
     @PostMapping("logout")
     public ResponseEntity<User> logout() {
-        return null;
+        ResponseCookie cookie = bookingSystem.userLogOut();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 
     @PostMapping("admin/createUser")

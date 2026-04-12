@@ -260,4 +260,8 @@ public class BookingSystem {
         return userService.userLogin(name, password);
 
     }
+
+    public ResponseCookie userLogOut() {
+        return userService.userLogOut();
+    }
 }

@@ -98,17 +98,30 @@ public class JWTService {
     }
 
     /**
-     * Create a Cookie that matches the {@link String token}
+     * Create a Cookie that matches the {@link String token} for login
      *
      * @param token
      * @return
      */
-    public ResponseCookie generateCookie(String token) {
+    public ResponseCookie loginCookie(String token) {
+        return generateCookie(token, EXPIREYTIME);
+    }
+
+    /**
+     * Create a Cookie for logging out
+     *
+     * @return
+     */
+    public ResponseCookie logOutCookie() {
+        return generateCookie("", 0);
+    }
+
+    private ResponseCookie generateCookie(String token, Integer time) {
         return ResponseCookie.from("auth_token", token)
                 .httpOnly(true)       // Blocks JS access
                 .secure(true)         // Transmit only over HTTPS
                 .path("/")
-                .maxAge(EXPIREYTIME)
+                .maxAge(time)
                 .sameSite("Lax")
                 .build();
     }
