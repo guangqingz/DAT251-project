@@ -33,6 +33,7 @@ public class BookingService {
     /**
      * Find all {@link Booking bookings} that are between the {@link LocalTime start} and {@link LocalTime end}
      * for a specific {@link LocalDate date}
+     *
      * @param date
      * @param start
      * @param end
@@ -44,6 +45,7 @@ public class BookingService {
 
     /**
      * Find all {@link Booking bookings} that are at the {@link LocalDate date} and all past {@link LocalTime time}
+     *
      * @param date
      * @param time
      * @return list of {@link Booking bookings}

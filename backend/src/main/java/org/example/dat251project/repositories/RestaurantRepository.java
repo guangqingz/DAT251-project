@@ -1,7 +1,6 @@
 package org.example.dat251project.repositories;
 
 import org.example.dat251project.models.Restaurant;
-import org.example.dat251project.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

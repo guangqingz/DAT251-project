@@ -11,8 +11,8 @@ export default function Footer(){
                 <section>
                     <p className={"text-lg mb-3 uppercase font-bold font-title"}>åpningstider</p>
                     <ul className={"flex flex-col gap-2"}>
-                        <li>Tirsdag - søndag: 13:30 - 21:30</li>
                         <li>Mandag: stengt</li>
+                        <li>Tirsdag - søndag: 13:30 - 21:30</li>
                     </ul>
                 </section>
                 <section>

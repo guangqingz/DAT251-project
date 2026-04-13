@@ -1,11 +1,11 @@
 package org.example.dat251project.controllers;
 
-import java.net.URI;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.example.dat251project.dtos.BookingDTO;
 import org.example.dat251project.dtos.BookingResponseDTO;
 import org.example.dat251project.dtos.TimeSlotDTO;
@@ -40,6 +40,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 @CrossOrigin()
 @RestController
@@ -49,11 +55,6 @@ public class Controller {
     @Autowired
     BookingSystem bookingSystem;
 
-
-    @GetMapping("menu")
-    public ResponseEntity<URL> menu() {
-        return null;
-    }
 
     @Operation(summary = "Create a new Booking")
     @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
@@ -118,16 +119,16 @@ public class Controller {
         List<Booking> bookings = bookingSystem.getAllBookingsByDate(LocalDate.now());
 
         List<BookingResponseDTO> bookingResponseDTOs = bookings.stream()
-            .map(booking -> BookingResponseDTO.builder()
-                    .id(booking.getId())
-                    .email(booking.getEmail())
-                    .phoneNumber(booking.getPhoneNumber())
-                    .numberGuest(booking.getNumberGuest())
-                    .time(booking.getTime())
-                    .date(booking.getDate())
-                    .comment(booking.getComment())
-                    .build())
-            .toList();
+                .map(booking -> BookingResponseDTO.builder()
+                        .id(booking.getId())
+                        .email(booking.getEmail())
+                        .phoneNumber(booking.getPhoneNumber())
+                        .numberGuest(booking.getNumberGuest())
+                        .time(booking.getTime())
+                        .date(booking.getDate())
+                        .comment(booking.getComment())
+                        .build())
+                .toList();
         return ResponseEntity.ok(bookingResponseDTOs);
     }
 
@@ -138,16 +139,16 @@ public class Controller {
         List<Booking> bookings = bookingSystem.getAllBookings();
 
         List<BookingResponseDTO> bookingResponseDTOs = bookings.stream()
-            .map(booking -> BookingResponseDTO.builder()
-                    .id(booking.getId())
-                    .email(booking.getEmail())
-                    .phoneNumber(booking.getPhoneNumber())
-                    .numberGuest(booking.getNumberGuest())
-                    .time(booking.getTime())
-                    .date(booking.getDate())
-                    .comment(booking.getComment())
-                    .build())
-            .toList();
+                .map(booking -> BookingResponseDTO.builder()
+                        .id(booking.getId())
+                        .email(booking.getEmail())
+                        .phoneNumber(booking.getPhoneNumber())
+                        .numberGuest(booking.getNumberGuest())
+                        .time(booking.getTime())
+                        .date(booking.getDate())
+                        .comment(booking.getComment())
+                        .build())
+                .toList();
         return ResponseEntity.ok(bookingResponseDTOs);
     }
 
@@ -158,16 +159,16 @@ public class Controller {
         List<Booking> bookings = bookingSystem.getAllBookingsByDate(date);
 
         List<BookingResponseDTO> bookingResponseDTOs = bookings.stream()
-            .map(booking -> BookingResponseDTO.builder()
-                    .id(booking.getId())
-                    .email(booking.getEmail())
-                    .phoneNumber(booking.getPhoneNumber())
-                    .numberGuest(booking.getNumberGuest())
-                    .time(booking.getTime())
-                    .date(booking.getDate())
-                    .comment(booking.getComment())
-                    .build())
-            .toList();
+                .map(booking -> BookingResponseDTO.builder()
+                        .id(booking.getId())
+                        .email(booking.getEmail())
+                        .phoneNumber(booking.getPhoneNumber())
+                        .numberGuest(booking.getNumberGuest())
+                        .time(booking.getTime())
+                        .date(booking.getDate())
+                        .comment(booking.getComment())
+                        .build())
+                .toList();
         return ResponseEntity.ok(bookingResponseDTOs);
     }
 

@@ -1,16 +1,9 @@
 package org.example.dat251project.services;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-
+import jakarta.mail.MessagingException;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.example.dat251project.algorithms.BigTableAlgorithm;
 import org.example.dat251project.algorithms.ComboTableAlgorithm;
 import org.example.dat251project.algorithms.SmallTableAlgorithm;
@@ -23,10 +16,10 @@ import org.example.dat251project.models.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jakarta.mail.MessagingException;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
 @Getter
 @Setter
@@ -239,7 +232,8 @@ public class BookingSystem {
     }
 
     /**
-     * Get all {@link Booking bookings} 
+     * Get all {@link Booking bookings}
+     *
      * @return List of {@link Booking bookings} sorted by their time descending
      */
     public List<Booking> getAllBookings() {
@@ -250,6 +244,7 @@ public class BookingSystem {
 
     /**
      * Get all {@link Booking bookings} on the given date
+     *
      * @param date
      * @return List of {@link Booking bookings} sorted by their time descending
      */
