@@ -13,81 +13,101 @@ export default function MenuUploadPage() {
   const [menuFile, setMenuFile] = useState<File | null>(null);
   const [takeawayFile, setTakeawayFile] = useState<File | null>(null);
 
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [menuUploading, setMenuUploading] = useState(false);
+  const [takeawayUploading, setTakeawayUploading] = useState(false);
+ 
+  const [menuMessage, setMenuMessage] = useState("");
+  const [takeawayMessage, setTakeawayMessage] = useState("");
 
   // handler now knows whether we are updating the normal menu or takeaway menu
-  const handleFileChange = (
-    type: "menu" | "takeaway",
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0] ?? null;
+const handleFileChange = (
+  type: "menu" | "takeaway",
+  e: ChangeEvent<HTMLInputElement>
+) => {
+  const file = e.target.files?.[0] ?? null;
 
-    if (file && file.type !== "application/pdf") {
-      setMessage("Kun PDF-filer er tillatt.");
-      return;
-    }
-
-    setMessage("");
-
-    // save file to correct state
+  if (file && file.type !== "application/pdf") {
     if (type === "menu") {
-      setMenuFile(file);
+      setMenuMessage("Kun PDF-filer er tillatt.");
     } else {
-      setTakeawayFile(file);
+      setTakeawayMessage("Kun PDF-filer er tillatt.");
     }
-  };
+    return;
+  }
+
+  // clear only the message for the relevant section
+  if (type === "menu") {
+    setMenuMessage("");
+    setMenuFile(file);
+  } else {
+    setTakeawayMessage("");
+    setTakeawayFile(file);
+  }
+};
 
   // upload function receives which PDF to upload
-  const handleUpload = async (type: "menu" | "takeaway") => {
-    const file = type === "menu" ? menuFile : takeawayFile;
+const handleUpload = async (type: "menu" | "takeaway") => {
+  const file = type === "menu" ? menuFile : takeawayFile;
 
-    if (!file) {
-      setMessage("Velg en PDF først.");
-      return;
+  if (!file) {
+    if (type === "menu") {
+      setMenuMessage("Velg en PDF først.");
+    } else {
+      setTakeawayMessage("Velg en PDF først.");
+    }
+    return;
+  }
+
+  if (type === "menu") {
+    setMenuUploading(true);
+    setMenuMessage("");
+  } else {
+    setTakeawayUploading(true);
+    setTakeawayMessage("");
+  }
+
+  try {
+    const endpoint =
+      type === "menu"
+        ? "http://localhost:8080/admin/menu/upload"
+        : "http://localhost:8080/admin/takeaway/upload";
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch(endpoint, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Kunne ikke oppdatere PDF.");
     }
 
-    try {
-      setUploading(true);
-      setMessage("");
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // choose correct backend endpoint
-      const endpoint =
-        type === "menu"
-          ? "http://localhost:8080/admin/menu/upload"
-          : "http://localhost:8080/admin/takeaway/upload";
-
-      const response = await fetch(endpoint, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Kunne ikke oppdatere PDF (${response.status}): ${errorText}`
-        );
-      }
-
-      // separate success messages and clear correct state for takeaway
-      if (type === "menu") {
-        setMessage("Restaurantmenyen ble oppdatert.");
-        setMenuFile(null);
-      } else {
-        setMessage("Takeaway-menyen ble oppdatert.");
-        setTakeawayFile(null);
-      }
-    } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : "Noe gikk galt."
-      );
-    } finally {
-      setUploading(false);
+    if (type === "menu") {
+      setMenuMessage("Restaurantmenyen ble oppdatert.");
+      setMenuFile(null);
+    } else {
+      setTakeawayMessage("Takeaway-menyen ble oppdatert.");
+      setTakeawayFile(null);
     }
-  };
+  } catch (error) {
+    const text =
+      error instanceof Error ? error.message : "Noe gikk galt.";
+
+    if (type === "menu") {
+      setMenuMessage(text);
+    } else {
+      setTakeawayMessage(text);
+    }
+  } finally {
+    if (type === "menu") {
+      setMenuUploading(false);
+    } else {
+      setTakeawayUploading(false);
+    }
+  }
+};
 
   return (
     <div className="flex min-h-dvh bg-[#f5f3ef]">
@@ -148,10 +168,10 @@ export default function MenuUploadPage() {
               {/* CHANGED: separate upload button for normal menu */}
               <button
                 onClick={() => handleUpload("menu")}
-                disabled={uploading}
+                disabled={menuUploading}
                 className="rounded-2xl bg-[#8B2E1A] px-6 py-3 font-medium text-white transition hover:bg-[#a33922] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {uploading ? "Laster opp..." : "Oppdater restaurantmeny"}
+                {menuUploading ? "Laster opp..." : "Oppdater restaurantmeny"}
               </button>
             </section>
 
@@ -199,17 +219,23 @@ export default function MenuUploadPage() {
               {/* CHANGED: separate upload button for takeaway menu */}
               <button
                 onClick={() => handleUpload("takeaway")}
-                disabled={uploading}
+                disabled={takeawayUploading}
                 className="rounded-2xl bg-[#c9a46d] px-6 py-3 font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {uploading ? "Laster opp..." : "Oppdater takeaway-meny"}
+                {takeawayUploading ? "Laster opp..." : "Oppdater takeaway-meny"}
               </button>
             </section>
           </div>
 
-          {message && (
+          {menuMessage && (
             <div className="mt-6 rounded-xl bg-neutral-100 px-4 py-3 text-sm text-neutral-700">
-              {message}
+              {menuMessage}
+            </div>
+          )}
+
+          {takeawayMessage && (
+            <div className="mt-3 rounded-xl bg-neutral-100 px-4 py-3 text-sm text-neutral-700">
+              {takeawayMessage}
             </div>
           )}
         </div>
