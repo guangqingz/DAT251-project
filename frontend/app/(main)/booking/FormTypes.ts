@@ -14,6 +14,12 @@ export const bookingSchema = z.object({
     ),
     date: z.string().refine(
         (val:string) => customDateRegex.test(val), {message: "Ugyldig dato format, velg en dato"}
+    ).refine(
+        (val:string) => {
+            const [year, month, day] = val.split("-").map(Number);
+            const date = new Date(year, month - 1, day);
+            return date.getDay() !== 1;
+        }, {message: "Mandager er ikke tilgjengelig"}
     ),
     email: z.email({message: "Ugyldig email"}),
     countryCode: z.string(),

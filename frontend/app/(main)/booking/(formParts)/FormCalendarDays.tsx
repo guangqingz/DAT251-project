@@ -21,7 +21,7 @@ export default function FormCalendarDays({date, chosenFullDate, handleSelectDate
     const todaysDate = new Date();
 
     /**
-     * Checks if given date is already selected by user, and if it's valid (not in the past)
+     * Checks if given date is already selected by user, and if it's valid (not in the past or monday)
      * @param dateItem - date to check
      * @return Boolean
      */
@@ -41,6 +41,12 @@ export default function FormCalendarDays({date, chosenFullDate, handleSelectDate
         }
 
         if (dateItem < todaysDate.getDate() && date.getMonth() === todaysDate.getMonth()) {
+            validDay = false;
+        }
+
+        // Closed on mondays
+        const weekday = new Date(date.getFullYear(), date.getMonth(), dateItem).getDay();
+        if (weekday === 1) {
             validDay = false;
         }
 
