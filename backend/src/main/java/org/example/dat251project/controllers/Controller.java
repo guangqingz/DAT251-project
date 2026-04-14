@@ -44,7 +44,6 @@ public class Controller {
     @Autowired
     BookingSystem bookingSystem;
 
-
     @Operation(summary = "Create a new Booking")
     @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     @PostMapping("booking")
@@ -93,6 +92,7 @@ public class Controller {
                 .id(booking.getId())
                 .email(booking.getEmail())
                 .phoneNumber(booking.getPhoneNumber())
+                .countryCode(booking.getCountryCode())
                 .numberGuest(booking.getNumberGuest())
                 .time(booking.getTime())
                 .date(booking.getDate())
@@ -191,6 +191,7 @@ public class Controller {
                     .id(updatedBooking.getId())
                     .email(updatedBooking.getEmail())
                     .phoneNumber(updatedBooking.getPhoneNumber())
+                    .countryCode(updatedBooking.getCountryCode())
                     .numberGuest(updatedBooking.getNumberGuest())
                     .time(updatedBooking.getTime())
                     .date(updatedBooking.getDate())

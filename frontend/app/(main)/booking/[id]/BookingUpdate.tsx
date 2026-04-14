@@ -1,6 +1,5 @@
 import {SubmitHandler, useForm} from "react-hook-form";
 import {
-    BookingRequestType,
     bookingSchema,
     BookingSchemaType,
     TimeSlotExtendedType
@@ -15,22 +14,19 @@ import {ArrowLeftIcon} from "@heroicons/react/24/outline";
 import {ConfirmationSections} from "@/app/(main)/booking/[id]/page";
 import {UseMutationResult} from "@tanstack/react-query";
 
-export default function BookingUpdate({data, updateHook, handleUpdate}: {data:BookingSchemaType | undefined, updateHook:UseMutationResult<any, Error, BookingRequestType>, handleUpdate: (value: ConfirmationSections) => void}){
+export default function BookingUpdate({data, updateHook, handleUpdate}: {data:BookingSchemaType | undefined, updateHook:UseMutationResult<any, Error, BookingSchemaType>, handleUpdate: (value: ConfirmationSections) => void}){
     const {
         register, handleSubmit, watch, setValue, formState: { errors },
     } = useForm<BookingSchemaType>({
         resolver: zodResolver(bookingSchema),
         defaultValues:{
             ...data,
-            countryCode: "NO"
         },
         mode: "onSubmit"
     })
     const onSubmit: SubmitHandler<BookingSchemaType> = async (data) => {
-        // remove country code field because it's not part of Booking model
-        const {countryCode, ...validRequestData} = data;
         try{
-            await updateHook.mutateAsync(validRequestData);
+            await updateHook.mutateAsync(data);
             handleUpdate("CONFIRM")
         } catch (error){
             console.log(error);
@@ -106,7 +102,7 @@ export default function BookingUpdate({data, updateHook, handleUpdate}: {data:Bo
                                 <option key={country}>{country}</option>
                             )}
                         </select>
-                        <input type={"tel"} id={"phoneNumber"} {...register("phoneNumber", {valueAsNumber: true})}
+                        <input type={"tel"} id={"phoneNumber"} {...register("phoneNumber")}
                                placeholder={"Ditt telefonnummer"}
                                className={"border-b pb-2 focus:p-2 placeholder-custom-gray col-span-5"}
                                aria-label={"telephone number"}

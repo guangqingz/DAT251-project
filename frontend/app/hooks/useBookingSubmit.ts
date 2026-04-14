@@ -1,5 +1,5 @@
 import {useMutation} from "@tanstack/react-query";
-import {BookingRequestType} from "@/app/(main)/booking/FormTypes";
+import {BookingSchemaType} from "@/app/(main)/booking/FormTypes";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 import {useState} from "react";
@@ -12,7 +12,7 @@ export default function useBookingSubmit() {
     const [isRedirecting, setIsRedirecting] = useState(false)
 
     const {mutate, isError, isPending} = useMutation({
-        mutationFn: async (formData: BookingRequestType) => {
+        mutationFn: async (formData: BookingSchemaType) => {
             const response = await axios.post("http://localhost:8080/booking", formData)
             return response.data;
         },

@@ -54,7 +54,7 @@ export default function ContactDetailsForm({register, errors, watch, setSchemaSe
                                 <option key={country}>{country}</option>
                             )}
                         </select>
-                        <input type={"tel"} id={"phoneNumber"} {...register("phoneNumber", {valueAsNumber: true})}
+                        <input type={"tel"} id={"phoneNumber"} {...register("phoneNumber")}
                                placeholder={"Ditt telefonnummer"}
                                className={"border-b pb-2 focus:p-2 placeholder-custom-gray col-span-5"}
                                aria-label={"telephone number"}

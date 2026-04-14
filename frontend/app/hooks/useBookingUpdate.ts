@@ -1,5 +1,5 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {BookingRequestType} from "@/app/(main)/booking/FormTypes";
+import {BookingSchemaType} from "@/app/(main)/booking/FormTypes";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
@@ -11,7 +11,7 @@ export default function useBookingUpdate() {
     const router = useRouter();
 
     return useMutation({
-        mutationFn: async (formData: BookingRequestType) => {
+        mutationFn: async (formData: BookingSchemaType) => {
             const response = await axios.put("http://localhost:8080/booking/" + formData.id, formData)
             return response.data
         },

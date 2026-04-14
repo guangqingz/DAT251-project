@@ -12,6 +12,7 @@ import ContactDetailsForm from "@/app/(main)/booking/(formParts)/ContactDetailsF
 import useBookingSubmit from "@/app/hooks/useBookingSubmit";
 import {ExclamationTriangleIcon} from "@heroicons/react/16/solid";
 import Image from "next/image";
+import {CountryCode, isValidPhoneNumber} from "libphonenumber-js";
 
 export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
@@ -33,9 +34,7 @@ export default function Page () {
     const {mutate, isError, isPending, isRedirecting} = useBookingSubmit();
 
     const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
-        // remove country code field because it's not part of Booking model
-        const {countryCode, ...validRequestData} = data;
-        mutate(validRequestData);
+        mutate(data);
     }
 
     // Multistep form, renders one section at a time based on schemaSection

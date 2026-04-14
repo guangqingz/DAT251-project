@@ -1,3 +1,5 @@
+import {CountryCallingCode, CountryCode, getCountryCallingCode, isValidPhoneNumber} from "libphonenumber-js";
+
 /**
  * Converts given date into month in full text
  * @param date - date to be used
@@ -19,4 +21,21 @@ export function dateToString(date: Date): string{
     const dateString: string = day < 10 ? "0" + day : day.toString()
 
     return `${date.getFullYear()}-${monthString}-${dateString}`
+}
+
+/**
+ * Checks if phone number and selected country code is valid
+ * @param phoneNumber to check
+ * @param co to check
+ * @return true if both phone number and country code is valid, false ohterwise
+ */
+export function checkPhoneNumberInput(phoneNumber: string, co: CountryCode ): Boolean{
+    const callingCode: CountryCallingCode = getCountryCallingCode(co);
+    // if applicable, check if prefix is the same as selected country code
+    if (phoneNumber.startsWith("+")){
+        if (!phoneNumber.startsWith("+" + callingCode)){
+            return false;
+        }
+    }
+    return isValidPhoneNumber(phoneNumber, co);
 }

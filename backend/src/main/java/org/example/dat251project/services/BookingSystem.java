@@ -295,6 +295,7 @@ public class BookingSystem {
             if (!bookedTables.isEmpty()) {
                 bookingToUpdate.setEmail(booking.getEmail());
                 bookingToUpdate.setPhoneNumber(booking.getPhoneNumber());
+                bookingToUpdate.setCountryCode(booking.getCountryCode());
                 bookingToUpdate.setNumberGuest(booking.getNumberGuest());
                 bookingToUpdate.setTime(booking.getTime());
                 bookingToUpdate.setDate(booking.getDate());
