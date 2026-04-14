@@ -44,6 +44,11 @@ export default function FormCalendarDays({date, chosenFullDate, handleSelectDate
             validDay = false;
         }
 
+        const weekday = new Date(date.getFullYear(), date.getMonth(), dateItem).getDay();
+        if (weekday === 1) {
+            validDay = false;
+        }
+
         return [selectedDay, validDay];
     }
     return (
