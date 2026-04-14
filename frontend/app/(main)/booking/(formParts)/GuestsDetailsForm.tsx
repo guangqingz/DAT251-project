@@ -2,13 +2,13 @@ import {useController, Control, FieldErrors, UseFormWatch} from "react-hook-form
 import clsx from "clsx";
 import {InformationCircleIcon} from "@heroicons/react/24/outline";
 import React, {useState} from "react";
-import {SchemaSections} from "@/app/booking/page";
-import {BookingSchemaType} from "@/app/booking/FormTypes";
+import {SchemaSections} from "@/app/(main)/booking/page";
+import {BookingSchemaType} from "@/app/(main)/booking/FormTypes";
 
 // Max number of guests in bookings
 export const MAX_NUMBER_GUEST = 6;
 // Generates a list from 1 to max number, used to display all options
-const GUESTS_LIST: number[] = Array.from({length: MAX_NUMBER_GUEST + 1}, (_, index) => index + 1);
+export const GUESTS_LIST: number[] = Array.from({length: MAX_NUMBER_GUEST + 1}, (_, index) => index + 1);
 
 /**
  * First step of the booking form where user choose how many people will be in the booking

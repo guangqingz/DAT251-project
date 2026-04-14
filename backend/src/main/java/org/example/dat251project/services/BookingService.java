@@ -21,6 +21,7 @@ public class BookingService {
         Booking booking = new Booking(
                 bookingDTO.getEmail(),
                 bookingDTO.getPhoneNumber(),
+                bookingDTO.getCountryCode(),
                 bookingDTO.getNumberGuest(),
                 bookingDTO.getTime(),
                 bookingDTO.getDate(),

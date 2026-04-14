@@ -21,6 +21,8 @@ public class BookingResponseDTO {
     private String email;
     @Schema(format = "phone number", example = "123456767")
     private String phoneNumber;
+    @Schema(format = "country code", example = "NO")
+    private String countryCode;
     @Schema(example = "4", minimum = "1", maximum = "6")
     private int numberGuest;
     @Schema(description = "The time of the booking", format = " time", example = "18:30:00")

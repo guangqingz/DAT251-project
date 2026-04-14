@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {SchemaSections} from "@/app/booking/page";
+import {SchemaSections} from "@/app/(main)/booking/page";
 import {Control, FieldErrors, useController, UseFormWatch} from "react-hook-form";
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import {BookingSchemaType} from "@/app/booking/FormTypes";
+import {BookingSchemaType} from "@/app/(main)/booking/FormTypes";
 import {getMonthToString} from "@/app/utils/utils";
 import FormCalendar from "@/app/(main)/booking/(formParts)/FormCalendarDays";
 

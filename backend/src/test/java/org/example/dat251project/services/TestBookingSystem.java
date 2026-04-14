@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestBookingSystem {
     private final String email = "email@email.com";
     private final String phoneNumber = "1234";
+    private final String countryCode = "NO";
     private Restaurant restaurant;
     private BookingSystem bookingSystem;
     @Mock
@@ -68,7 +69,7 @@ public class TestBookingSystem {
         LocalTime endTime = time.plusHours(2);
         Mockito.when(bookingService.findByDateAndTimeBetween(date, startTime, endTime))
                 .thenReturn(List.of(
-                        new Booking(email, phoneNumber, numGuests, time, date, "", bookedTables)
+                        new Booking(email, phoneNumber, countryCode, numGuests, time, date, "", bookedTables)
                 ));
     }
 
@@ -233,9 +234,9 @@ public class TestBookingSystem {
         List<Table> tables1 = bookingSystem.findAvailableTables(date, time1, numGuests);
         List<Table> tables2 = bookingSystem.findAvailableTables(date, time2, numGuests);
 
-        Booking booking1 = new Booking("alice@gmail.com", "123",
+        Booking booking1 = new Booking("alice@gmail.com", "123", "NO",
                 numGuests, time1, date, "Hello", tables1);
-        Booking booking2 = new Booking("bob@gmail.com", "321",
+        Booking booking2 = new Booking("bob@gmail.com", "321", "NO",
                 numGuests, time2, date, "Hello 2", tables2);
 
         List<Booking> bookings = new ArrayList<>();

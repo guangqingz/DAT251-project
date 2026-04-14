@@ -1,8 +1,8 @@
 import React from "react";
-import {SchemaSections} from "@/app/booking/page";
+import {SchemaSections} from "@/app/(main)/booking/page";
 import {ArrowLeftIcon} from "@heroicons/react/24/outline";
 import {FieldErrors, UseFormWatch, UseFormRegister} from "react-hook-form";
-import {BookingSchemaType} from "@/app/booking/FormTypes";
+import {BookingSchemaType} from "@/app/(main)/booking/FormTypes";
 import {CountryCode, getCountries} from "libphonenumber-js";
 
 /**

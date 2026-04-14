@@ -1,6 +1,7 @@
 import {z} from "zod";
 import {MAX_NUMBER_GUEST} from "@/app/(main)/booking/(formParts)/GuestsDetailsForm";
-import {CountryCode, isValidPhoneNumber} from "libphonenumber-js";
+import {CountryCode} from "libphonenumber-js";
+import {checkPhoneNumberInput} from "@/app/utils/utils";
 
 const customTimeRegex = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/;
 const customDateRegex = /^\d{4}-\d{2}-\d{2}$/
@@ -16,26 +17,16 @@ export const bookingSchema = z.object({
     ),
     email: z.email({message: "Ugyldig email"}),
     countryCode: z.string(),
-    phoneNumber: z.string(),
-    comment: z.string().max(255, "Kommentar kan ikke vÃ¦re mer enn 255 karakterer").optional()
+    phoneNumber: z.string({message: "Ugylig telefonnummer for valgt land"}),
+    comment: z.string().max(255, "Kommentar kan ikke være mer enn 255 karakterer").optional()
 }).refine(
-    (data) => isValidPhoneNumber(data.phoneNumber, data.countryCode as CountryCode), {
+    (data) => checkPhoneNumberInput(data.phoneNumber, data.countryCode as CountryCode), {
         message: "Ugylig telefonnummer for valgt land",
         path: ["phoneNumber"]
     }
 )
 
 export type BookingSchemaType = z.infer<typeof bookingSchema>
-
-export type BookingRequestType = {
-    id: string,
-    numberGuest: number,
-    time: string,
-    date: string,
-    email: string,
-    phoneNumber: string,
-    comment?: string,
-}
 
 export type TimeSlotType = {
     time: string,
