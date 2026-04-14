@@ -19,12 +19,26 @@ export default function DashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const currentDateText = new Date().toLocaleDateString("no-NO", {
     weekday: "long",
     day: "numeric",
     month: "long",
   });
+
+  const filteredBookings = bookings.filter((booking) => {
+  const query = searchQuery.toLowerCase().trim();
+
+  return (
+    booking.email.toLowerCase().includes(query) ||
+    booking.phoneNumber.toString().includes(query) ||
+    booking.numberGuest.toString().includes(query) ||
+    booking.comment.toLowerCase().includes(query) ||
+    formatDate(booking.date).toLowerCase().includes(query) ||
+    formatTime(booking.time).toLowerCase().includes(query)
+  );
+});
 
   useEffect(() => {
     async function fetchBookings() {
@@ -95,7 +109,10 @@ export default function DashboardPage() {
         </div>
 
         {/* RIGHT: Search */}
-        <SearchBar/>
+        <SearchBar
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+        />
 
 </div>
 
@@ -118,7 +135,7 @@ export default function DashboardPage() {
               </thead>
 
               <tbody>
-                {bookings.map((booking) => (
+                {filteredBookings.map((booking) => (
                   <tr key={booking.id} className="font-title border-b last:border-none text-sm">
                     <td className="p-8">{booking.email}</td>
 
@@ -143,7 +160,7 @@ export default function DashboardPage() {
                   </tr>
                 ))}
 
-                {bookings.length === 0 && (
+                {filteredBookings.length === 0 && (
                   <tr>
                     <td colSpan={7} className="px-6 py-10 text-center text-neutral-500">
                       Ingen bookinger i dag
