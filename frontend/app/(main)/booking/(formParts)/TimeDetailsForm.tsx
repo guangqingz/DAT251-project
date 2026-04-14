@@ -1,9 +1,9 @@
 import React, {useEffect} from "react";
-import {SchemaSections} from "@/app/booking/page";
+import {SchemaSections} from "@/app/(main)/booking/page";
 import {Control, FieldErrors, useController, UseFormWatch} from "react-hook-form";
 import clsx from "clsx";
 import {ArrowLeftIcon} from "@heroicons/react/24/outline";
-import {BookingSchemaType, TimeSlotExtendedType} from "@/app/booking/FormTypes";
+import {BookingSchemaType, TimeSlotExtendedType} from "@/app/(main)/booking/FormTypes";
 import {useTimeSlots} from "@/app/hooks/useTimeSlots";
 
 /**
@@ -50,6 +50,7 @@ export default function TimeDetailsForm({control, errors, watch, setSchemaSelect
                            aria-controls={"time-group"}
                            aria-describedby={"time-error"}
                            className={"sr-only"}/>
+            <p className={"text-center"}><span className={"font-bold"}>NB!</span> Du må booke minst 2 timer før</p>
             <div role={"group"} id="time-group" aria-label={"time slots buttons"} className={"grid grid-cols-4 gap-3"}>
                 {timeSlotsExtended.map((timeSlot: TimeSlotExtendedType)=>
                     <button key={timeSlot.time} type={"button"}

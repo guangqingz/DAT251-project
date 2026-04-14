@@ -1,7 +1,7 @@
 import {useEffect} from "react";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
-import {TimeSlotExtendedType, TimeSlotRequestType, TimeSlotType} from "@/app/booking/FormTypes";
+import {TimeSlotExtendedType, TimeSlotRequestType, TimeSlotType} from "@/app/(main)/booking/FormTypes";
 
 /**
  * Custom hook to get restaurant time slots

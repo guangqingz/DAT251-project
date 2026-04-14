@@ -12,6 +12,7 @@ import ContactDetailsForm from "@/app/(main)/booking/(formParts)/ContactDetailsF
 import useBookingSubmit from "@/app/hooks/useBookingSubmit";
 import {ExclamationTriangleIcon} from "@heroicons/react/16/solid";
 import Image from "next/image";
+import {CountryCode, isValidPhoneNumber} from "libphonenumber-js";
 
 export type SchemaSections = "GUESTS" | "DATE" | "TIME" | "CONTACT"
 
@@ -30,12 +31,10 @@ export default function Page () {
         mode: "onSubmit"
     })
     const [schemaSection, setSchemaSection] = useState<SchemaSections>("GUESTS");
-    const {mutate, isError, isPending} = useBookingSubmit();
+    const {mutate, isError, isPending, isRedirecting} = useBookingSubmit();
 
     const onSubmit: SubmitHandler<BookingSchemaType> = (data) => {
-        // remove country code field because it's not part of Booking model
-        const {countryCode, ...validRequestData} = data;
-        mutate(validRequestData);
+        mutate(data);
     }
 
     // Multistep form, renders one section at a time based on schemaSection
@@ -53,11 +52,11 @@ export default function Page () {
                {isError &&
                    <div className={"flex flex-col md:flex-row items-center gap-2 text-center md:text-left bg-red-200 border-2 border-red-600 p-3"}>
                        <ExclamationTriangleIcon aria-hidden={true} className={"size-13 sm:size-10"}/>
-                       <p>Det oppstod en feil ved innsending av skjemaet. Vennligst prÃ¸v igjen senere eller ring oss pÃ¥ telefon.</p>
+                       <p>Det oppstod en feil ved innsending av skjemaet. Vennligst prøv igjen senere eller ring oss på telefon.</p>
                    </div>
                }
            </div>
-           {!isPending &&
+           {(!isPending && !isRedirecting) &&
                <form onSubmit={handleSubmit(onSubmit)} className={"max-w-100 w-full"}>
                {schemaSection === "GUESTS" &&
                    <GuestsDetailsForm control={control}

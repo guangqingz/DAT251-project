@@ -1,6 +1,7 @@
 package org.example.dat251project.repositories;
 
 import org.example.dat251project.models.Booking;
+import org.example.dat251project.models.Table;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     List<Booking> findAllByDateAndTime(@Param("d") LocalDate date, @Param("t") LocalTime time);
 
     List<Booking> findAllByDate(LocalDate date);
+
+    @Query("select t from Booking b join b.tables t where b.id = :id")
+    List<Table> findAllTablesByBookingId(@Param("id") UUID id);
 }
