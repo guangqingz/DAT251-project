@@ -2,6 +2,7 @@
 
 import {
   Squares2X2Icon,
+  ClipboardDocumentListIcon,
   CalendarDaysIcon,
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
@@ -27,13 +28,18 @@ export default function AdminNavbar() {
             <CalendarDaysIcon className="w-8 h-8" />
             <span className="text-l">Bookings</span>
           </Link>
+
+          <Link href="/dashboard/menu" className="flex items-center gap-4 px-6 py-4 tracking-widest opacity-100 hover:bg-[#B25533] transition-colors duration-200">
+            <ClipboardDocumentListIcon className="w-8 h-8" />
+            <span className="text-l">Menu</span>
+          </Link>
         </nav>
       </div>
 
-      <button className="flex items-center gap-3 px-6 py-3 opacity-100  hover:bg-[#B25533] transition-colors duration-200">
+      <Link href="/login" className="flex items-center gap-4 px-6 py-4 tracking-widest  opacity-100  hover:bg-[#B25533] transition-colors duration-200">
         <ArrowRightOnRectangleIcon className="w-8 h-8" />
         <span className="text-l"> Log ut</span>
-      </button>
+      </Link>
     </aside>
   );
 }

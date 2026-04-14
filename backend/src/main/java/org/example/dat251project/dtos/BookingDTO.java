@@ -24,7 +24,7 @@ public class BookingDTO {
     private String email;
     @Schema(format = "phone number", example = "123456767")
     @NotNull
-    private Integer phoneNumber;
+    private String phoneNumber;
     @Schema(example = "4", minimum = "1", maximum = "6")
     @NotNull
     @Min(1)

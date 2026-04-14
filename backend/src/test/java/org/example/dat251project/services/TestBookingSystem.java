@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 public class TestBookingSystem {
     private final String email = "email@email.com";
-    private final Integer phoneNumber = 1234;
+    private final String phoneNumber = "1234";
     private Restaurant restaurant;
     private BookingSystem bookingSystem;
     @Mock
@@ -233,9 +233,9 @@ public class TestBookingSystem {
         List<Table> tables1 = bookingSystem.findAvailableTables(date, time1, numGuests);
         List<Table> tables2 = bookingSystem.findAvailableTables(date, time2, numGuests);
 
-        Booking booking1 = new Booking("alice@gmail.com", 123,
+        Booking booking1 = new Booking("alice@gmail.com", "123",
                 numGuests, time1, date, "Hello", tables1);
-        Booking booking2 = new Booking("bob@gmail.com", 321,
+        Booking booking2 = new Booking("bob@gmail.com", "321",
                 numGuests, time2, date, "Hello 2", tables2);
 
         List<Booking> bookings = new ArrayList<>();

@@ -20,7 +20,7 @@ public class BookingResponseDTO {
     @Schema(format = "email", example = "alice123@email.com")
     private String email;
     @Schema(format = "phone number", example = "123456767")
-    private Integer phoneNumber;
+    private String phoneNumber;
     @Schema(example = "4", minimum = "1", maximum = "6")
     private int numberGuest;
     @Schema(description = "The time of the booking", format = " time", example = "18:30:00")
