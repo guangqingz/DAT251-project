@@ -7,7 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.dat251project.configs.Role;
+import org.springframework.security.core.CredentialsContainer;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -15,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @jakarta.persistence.Table(name = "users")
-public class User {
+public class User implements UserDetails, CredentialsContainer {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -34,5 +39,20 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    @Override
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(this.role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.name;
+    }
+
+    @Override
+    public void eraseCredentials() {
+        password = null;
     }
 }

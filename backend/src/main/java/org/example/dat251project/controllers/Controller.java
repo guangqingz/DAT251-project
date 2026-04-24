@@ -44,6 +44,7 @@ public class Controller {
     @Autowired
     BookingSystem bookingSystem;
 
+
     @Operation(summary = "Create a new Booking")
     @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     @PostMapping("booking")

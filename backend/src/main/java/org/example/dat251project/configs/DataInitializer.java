@@ -54,6 +54,7 @@ public class DataInitializer {
             }
             if (userRepo.count() == 0) {
                 userService.createUser("admin", "admin123@email.com", "admin123", Role.ADMIN);
+                userService.createUser("staff","staff123@email.com","staff123",Role.STAFF);
             }
         };
     }

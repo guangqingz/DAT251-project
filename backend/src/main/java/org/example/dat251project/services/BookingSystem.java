@@ -15,6 +15,7 @@ import org.example.dat251project.models.Booking;
 import org.example.dat251project.models.Restaurant;
 import org.example.dat251project.models.Table;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,6 +34,8 @@ public class BookingSystem {
     private BookingService bookingService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private UserService userService;
 
     public BookingSystem(Restaurant restaurant) {
         if (restaurant != null) {
@@ -114,28 +117,16 @@ public class BookingSystem {
             LocalTime currTime = LocalTime.now().plusHours(restaurant.BOOKING_DURATION);
             for (LocalTime timeslot : restaurant.getTimeSlots()) {
                 if (timeslot.isAfter(currTime)) {
-                    availabilityList.add(TimeSlotDTO.builder()
-                            .time(timeslot)
-                            .available(checkAvailability(date, timeslot, numGuests))
-                            .pastTime(false)
-                            .build());
+                    availabilityList.add(TimeSlotDTO.builder().time(timeslot).available(checkAvailability(date, timeslot, numGuests)).pastTime(false).build());
                 } else {
                     // all past timeslots will not be available thus pastTime is true
-                    availabilityList.add(TimeSlotDTO.builder()
-                            .time(timeslot)
-                            .available(false)
-                            .pastTime(true)
-                            .build());
+                    availabilityList.add(TimeSlotDTO.builder().time(timeslot).available(false).pastTime(true).build());
                 }
             }
         } else {
             // If the booking is in a future date, then don't need to worry about the current time of booking
             for (LocalTime timeslot : restaurant.getTimeSlots()) {
-                availabilityList.add(TimeSlotDTO.builder()
-                        .time(timeslot)
-                        .available(checkAvailability(date, timeslot, numGuests))
-                        .pastTime(false)
-                        .build());
+                availabilityList.add(TimeSlotDTO.builder().time(timeslot).available(checkAvailability(date, timeslot, numGuests)).pastTime(false).build());
             }
         }
 
@@ -372,5 +363,14 @@ public class BookingSystem {
             result.add(dto);
         }
         return result;
+    }
+
+    public ResponseCookie userLogin(String name, String password) {
+        return userService.userLogin(name, password);
+
+    }
+
+    public ResponseCookie userLogOut() {
+        return userService.userLogOut();
     }
 }

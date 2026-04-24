@@ -1,17 +1,48 @@
 "use client";
 
-import { useState, FormEvent, ChangeEvent, CSSProperties } from "react";
-import { FaEnvelope, FaKey } from "react-icons/fa";
+import {CSSProperties} from "react";
+import {FaEnvelope, FaKey} from "react-icons/fa";
+import {SubmitHandler, useForm} from "react-hook-form";
 
+import z from "zod";
+import {useMutation} from "@tanstack/react-query";
+import axios from "axios";
+import {useRouter} from "next/navigation";
+import {zodResolver} from "@hookform/resolvers/zod";
+
+const apiClient = axios.create({
+    baseURL: "http://localhost:8080",
+    withCredentials: true
+
+})
+const loginSchema = z.object({
+    name: z.string(),
+    password: z.string()
+});
+
+type LoginType = z.infer<typeof loginSchema>;
 export default function Page() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const {
+        register,
+        handleSubmit,
+        formState: {errors}
+    } = useForm<LoginType>({
+        resolver: zodResolver(loginSchema),
+    });
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log({ email, password });
+    const router = useRouter();
+
+    const mutation = useMutation({
+        mutationFn: (userData: LoginType) => {
+            return apiClient.post("http://localhost:8080/users/login", userData);
+        },
+        onSuccess: (response) => {
+            router.push("/dashboard")
+        }
+    });
+    const onSubmit: SubmitHandler<LoginType> = (data) => {
+        mutation.mutate(data)
     };
-
     return (
         <div style={styles.container}>
             <div style={styles.card}>
@@ -23,31 +54,25 @@ export default function Page() {
                         margin: "0 auto 10px",
                         display: "block",
                     }}
-                    />
-
-                <form onSubmit={handleSubmit} style={styles.form}>
+                />
+                {(errors.name || errors.password) &&
+                    <span className={"text-red-800"}>Ugyldig brukerlegitimasjon</span>}
+                <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
                     <div style={styles.inputWrapper}>
-                        <FaEnvelope style={styles.icon} />
+                        <FaEnvelope style={styles.icon}/>
                         <input
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setEmail(e.target.value)
-                            }
+                            placeholder="name"
+                            {...register("name")}
                             style={styles.input}
                         />
                     </div>
 
                     <div style={styles.inputWrapper}>
-                        <FaKey style={styles.icon} />
+                        <FaKey style={styles.icon}/>
                         <input
                             type="password"
                             placeholder="Password"
-                            value={password}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setPassword(e.target.value)
-                            }
+                            {...register("password")}
                             style={styles.input}
                         />
                     </div>
@@ -59,7 +84,7 @@ export default function Page() {
             </div>
         </div>
     );
-}
+};
 
 const styles: Record<string, CSSProperties> = {
     container: {
